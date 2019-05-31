@@ -28,13 +28,13 @@ $ music-get https://y.qq.com/n/yqq/song/002Zkt5S2z8JZx.html
 - 下载专辑：
 ```
 $ music-get https://music.163.com/#/album?id=38373053
-$ music-get https://y.qq.com/n/yqq/song/002Zkt5S2z8JZx.html
+$ music-get https://y.qq.com/n/yqq/album/002fRO0N4FftzY.html
 ```
 
 - 下载歌单：
 ```
 $ music-get https://music.163.com/#/playlist?id=156934569
-$ music-get https://y.qq.com/n/yqq/album/002fRO0N4FftzY.html
+$ music-get https://y.qq.com/n/yqq/playsquare/5474239760.html
 ```
 
 - 下载歌手热门歌曲：

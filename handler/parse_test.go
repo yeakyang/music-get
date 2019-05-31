@@ -9,14 +9,15 @@ import (
 
 func TestParse(t *testing.T) {
 	const (
-		NeteaseSong     = "https://music.163.com/#/song?id=553310243"
-		NeteaseArtist   = "https://music.163.com/#/artist?id=13193"
-		NeteaseAlbum    = "https://music.163.com/#/album?id=38373053"
-		NeteasePlaylist = "https://music.163.com/#/playlist?id=156934569"
-		TencentSong     = "https://y.qq.com/n/yqq/song/002Zkt5S2z8JZx.html"
-		TencentSinger   = "https://y.qq.com/n/yqq/singer/000Sp0Bz4JXH0o.html"
-		TencentAlbum    = "https://y.qq.com/n/yqq/album/002fRO0N4FftzY.html"
-		TencentPlaylist = "https://y.qq.com/n/yqq/playsquare/5474239760.html"
+		NeteaseSong       = "https://music.163.com/#/song?id=553310243"
+		NeteaseArtist     = "https://music.163.com/#/artist?id=13193"
+		NeteaseAlbum      = "https://music.163.com/#/album?id=38373053"
+		NeteasePlaylist   = "https://music.163.com/#/playlist?id=156934569"
+		TencentSong       = "https://y.qq.com/n/yqq/song/002Zkt5S2z8JZx.html"
+		TencentSinger     = "https://y.qq.com/n/yqq/singer/000Sp0Bz4JXH0o.html"
+		TencentAlbum      = "https://y.qq.com/n/yqq/album/002fRO0N4FftzY.html"
+		TencentPlaySquare = "https://y.qq.com/n/yqq/playsquare/5474239760.html"
+		TencentPlaylist   = "https://y.qq.com/n/yqq/playlist/5474239760.html"
 	)
 
 	var req common.MusicRequest
@@ -53,6 +54,11 @@ func TestParse(t *testing.T) {
 	req, _ = Parse(TencentAlbum)
 	if _, ok := req.(*tencent.AlbumRequest); !ok {
 		t.Errorf("failed to parse %q", TencentAlbum)
+	}
+
+	req, _ = Parse(TencentPlaySquare)
+	if _, ok := req.(*tencent.PlaylistRequest); !ok {
+		t.Errorf("failed to parse %q", TencentPlaySquare)
 	}
 
 	req, _ = Parse(TencentPlaylist)
