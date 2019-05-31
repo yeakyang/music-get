@@ -12,12 +12,14 @@ install:
 
 script:
   - go test -v ./...
-  - GOOS=windows GOARCH=amd64 go build -o music-get.exe
-  - GOOS=linux GOARCH=amd64 go build -o music-get
+  - CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o music-get_windows_amd64.exe
+  - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o music-get_linux_amd64
+  - CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o music-get_darwin_amd64
 
 before_deploy:
-  - zip music-get_windows_amd64.zip music-get.exe README.md
-  - zip music-get_linux_amd64.zip music-get README.md
+  - zip music-get_windows_amd64.zip music-get_windows_amd64.exe README.md
+  - zip music-get_linux_amd64.zip music-get_linux_amd64 README.md
+  - zip music-get_darwin_amd64.zip music-get_darwin_amd64 README.md
 
 deploy:
   provider: releases
@@ -26,6 +28,7 @@ deploy:
   file:
     - music-get_windows_amd64.zip
     - music-get_linux_amd64.zip
+    - music-get_darwin_amd64.zip
   skip_cleanup: true
   on:
     tags: true
