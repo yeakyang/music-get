@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	UrlPattern = "/(song|singer|album|playsquare)/(\\w+)\\.html"
+	UrlPattern = "/(song|singer|album|playsquare|playlist)/(\\w+)\\.html"
 )
 
 func Parse(url string) (req common.MusicRequest, err error) {
@@ -25,7 +25,7 @@ func Parse(url string) (req common.MusicRequest, err error) {
 		req = NewSingerRequest(matched[2])
 	case "album":
 		req = NewAlbumRequest(matched[2])
-	case "playsquare":
+	case "playsquare", "playlist":
 		req = NewPlaylistRequest(matched[2])
 	}
 
