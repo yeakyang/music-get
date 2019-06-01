@@ -1,7 +1,6 @@
 package common
 
 import (
-	"errors"
 	"github.com/bogem/id3v2"
 	"github.com/winterssy/music-get/config"
 	"github.com/winterssy/music-get/utils"
@@ -23,6 +22,7 @@ const (
 
 const (
 	DownloadSuccess = 2000 + iota
+	DownloadAlready
 	DownloadNoCopyrightError
 	DownloadBuildPathError
 	DownloadHTTPRequestError
@@ -117,24 +117,37 @@ func (m *MP3) UpdateTag(wg *sync.WaitGroup) {
 	return
 }
 
-func (m *MP3) SingleDownload() error {
-	m.SavePath = filepath.Join(config.MP3DownloadDir, m.SavePath)
-	if err := utils.BuildPathIfNotExist(m.SavePath); err != nil {
-		return err
+func (m *MP3) SingleDownload() int {
+	if !m.Playable {
+		logger.Info.Printf("Ignore no coypright music: %s", m.Tag.Title)
+		return DownloadNoCopyrightError
 	}
 
-	resp, err := Request("GET", m.DownloadUrl, nil, nil, m.Origin)
-	if err != nil {
-		return err
+	m.SavePath = filepath.Join(config.MP3DownloadDir, m.SavePath)
+	if err := utils.BuildPathIfNotExist(m.SavePath); err != nil {
+		return DownloadBuildPathError
 	}
-	defer resp.Body.Close()
 
 	fPath := filepath.Join(m.SavePath, m.FileName)
 	f, err := os.Create(fPath)
 	if err != nil {
-		return err
+		return DownloadBuildFileError
 	}
 	defer f.Close()
+
+	if !config.DownloadOverwrite {
+		if downloaded, _ := utils.ExistsPath(fPath); downloaded {
+			logger.Info.Printf("Ignore already downloaded music: %s", m.Tag.Title)
+			return DownloadAlready
+		}
+	}
+
+	logger.Info.Printf("Downloading: %s", m.FileName)
+	resp, err := Request("GET", m.DownloadUrl, nil, nil, m.Origin)
+	if err != nil {
+		return DownloadHTTPRequestError
+	}
+	defer resp.Body.Close()
 
 	bar := pb.New(int(resp.ContentLength)).SetUnits(pb.U_BYTES).SetRefreshRate(100 * time.Millisecond)
 	bar.ShowSpeed = true
@@ -142,14 +155,15 @@ func (m *MP3) SingleDownload() error {
 	reader := bar.NewProxyReader(resp.Body)
 	n, err := io.Copy(f, reader)
 	if err != nil {
-		return err
+		return DownloadFileTransferError
 	}
 	if n != resp.ContentLength {
-		return errors.New("file transfer interrupted")
+		return DownloadFileTransferError
 	}
 
 	bar.Finish()
-	return nil
+	logger.Info.Print("Download complete")
+	return DownloadSuccess
 }
 
 func (m *MP3) ConcurrentDownload(taskList chan DownloadTask, taskQueue chan struct{}, wg *sync.WaitGroup) {
@@ -173,19 +187,11 @@ func (m *MP3) ConcurrentDownload(taskList chan DownloadTask, taskQueue chan stru
 		return
 	}
 
-	logger.Info.Printf("Downloading: %s", m.FileName)
 	m.SavePath = filepath.Join(config.MP3DownloadDir, m.SavePath)
 	if err = utils.BuildPathIfNotExist(m.SavePath); err != nil {
 		task.Status = DownloadBuildPathError
 		return
 	}
-
-	resp, err := Request("GET", m.DownloadUrl, nil, nil, m.Origin)
-	if err != nil {
-		task.Status = DownloadHTTPRequestError
-		return
-	}
-	defer resp.Body.Close()
 
 	fPath := filepath.Join(m.SavePath, m.FileName)
 	f, err := os.Create(fPath)
@@ -194,6 +200,22 @@ func (m *MP3) ConcurrentDownload(taskList chan DownloadTask, taskQueue chan stru
 		return
 	}
 	defer f.Close()
+
+	if !config.DownloadOverwrite {
+		if downloaded, _ := utils.ExistsPath(fPath); downloaded {
+			logger.Info.Printf("Ignore already downloaded music: %s", m.Tag.Title)
+			task.Status = DownloadAlready
+			return
+		}
+	}
+
+	logger.Info.Printf("Downloading: %s", m.FileName)
+	resp, err := Request("GET", m.DownloadUrl, nil, nil, m.Origin)
+	if err != nil {
+		task.Status = DownloadHTTPRequestError
+		return
+	}
+	defer resp.Body.Close()
 
 	n, err := io.Copy(f, resp.Body)
 	if err != nil {

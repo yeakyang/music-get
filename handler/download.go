@@ -3,7 +3,6 @@ package handler
 import (
 	"fmt"
 	"github.com/winterssy/music-get/common"
-	"github.com/winterssy/music-get/utils/logger"
 	"os"
 	"path/filepath"
 	"sync"
@@ -11,26 +10,22 @@ import (
 
 func SingleDownload(mp3List []*common.MP3) {
 	total, success, failure, ignore := len(mp3List), 0, 0, 0
-	var err error
+
 	wg := &sync.WaitGroup{}
 	for _, m := range mp3List {
-		if !m.Playable {
-			logger.Info.Printf("Ignore no coypright music: %s", m.Tag.Title)
+		switch m.SingleDownload() {
+		case common.DownloadSuccess:
+			success++
+			wg.Add(1)
+			go m.UpdateTag(wg)
+			break
+		case common.DownloadNoCopyrightError, common.DownloadAlready:
 			ignore++
-			continue
-		}
-		logger.Info.Printf("Downloading: %s", m.FileName)
-		if err = m.SingleDownload(); err != nil {
+			break
+		default:
 			failure++
-			logger.Error.Printf("Download error: %s", err.Error())
 			_ = os.Remove(filepath.Join(m.SavePath, m.FileName))
-			continue
 		}
-		logger.Info.Print("Download complete")
-		success++
-
-		wg.Add(1)
-		go m.UpdateTag(wg)
 	}
 	wg.Wait()
 
@@ -58,7 +53,7 @@ func ConcurrentDownload(mp3List []*common.MP3, n int) {
 			wg.Add(1)
 			go task.MP3.UpdateTag(wg)
 			break
-		case common.DownloadNoCopyrightError:
+		case common.DownloadNoCopyrightError, common.DownloadAlready:
 			ignore++
 			break
 		default:

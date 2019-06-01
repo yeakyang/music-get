@@ -24,6 +24,7 @@ var (
 	M                                MusicGet
 	MP3DownloadBr                    int
 	MP3DownloadDir                   string
+	DownloadOverwrite                bool
 	MP3ConcurrentDownloadTasksNumber int
 )
 
@@ -41,6 +42,7 @@ func init() {
 	downloadDir := filepath.Join(homedir, "Music-Get")
 	flag.StringVar(&MP3DownloadDir, "o", downloadDir, "MP3 download directory")
 	flag.IntVar(&MP3DownloadBr, "br", M.Br, "MP3 prior download bit rate, 128|192|320")
+	flag.BoolVar(&DownloadOverwrite, "f", false, "Overwrite existing files")
 	flag.IntVar(&MP3ConcurrentDownloadTasksNumber, "n", 1, "MP3 concurrent download tasks number, max 16")
 	flag.Parse()
 	M.Br = MP3DownloadBr
