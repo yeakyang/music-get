@@ -129,12 +129,6 @@ func (m *MP3) SingleDownload() int {
 	}
 
 	fPath := filepath.Join(m.SavePath, m.FileName)
-	f, err := os.Create(fPath)
-	if err != nil {
-		return DownloadBuildFileError
-	}
-	defer f.Close()
-
 	if !config.DownloadOverwrite {
 		if downloaded, _ := utils.ExistsPath(fPath); downloaded {
 			logger.Info.Printf("Ignore already downloaded music: %s", m.Tag.Title)
@@ -148,6 +142,12 @@ func (m *MP3) SingleDownload() int {
 		return DownloadHTTPRequestError
 	}
 	defer resp.Body.Close()
+
+	f, err := os.Create(fPath)
+	if err != nil {
+		return DownloadBuildFileError
+	}
+	defer f.Close()
 
 	bar := pb.New(int(resp.ContentLength)).SetUnits(pb.U_BYTES).SetRefreshRate(100 * time.Millisecond)
 	bar.ShowSpeed = true
@@ -194,13 +194,6 @@ func (m *MP3) ConcurrentDownload(taskList chan DownloadTask, taskQueue chan stru
 	}
 
 	fPath := filepath.Join(m.SavePath, m.FileName)
-	f, err := os.Create(fPath)
-	if err != nil {
-		task.Status = DownloadBuildFileError
-		return
-	}
-	defer f.Close()
-
 	if !config.DownloadOverwrite {
 		if downloaded, _ := utils.ExistsPath(fPath); downloaded {
 			logger.Info.Printf("Ignore already downloaded music: %s", m.Tag.Title)
@@ -216,6 +209,13 @@ func (m *MP3) ConcurrentDownload(taskList chan DownloadTask, taskQueue chan stru
 		return
 	}
 	defer resp.Body.Close()
+
+	f, err := os.Create(fPath)
+	if err != nil {
+		task.Status = DownloadBuildFileError
+		return
+	}
+	defer f.Close()
 
 	n, err := io.Copy(f, resp.Body)
 	if err != nil {
