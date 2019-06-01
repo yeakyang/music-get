@@ -25,49 +25,6 @@ type SongRequest struct {
 	Response SongResponse
 }
 
-type SingerResponse struct {
-	Code int `json:"code"`
-	Data struct {
-		List []struct {
-			MusicData Song `json:"musicData"`
-		} `json:"list"`
-		SingerId   string `json:"singer_id"`
-		SingerMid  string `json:"singer_mid"`
-		SingerName string `json:"singer_name"`
-		Total      int    `json:"total"`
-	} `json:"data"`
-}
-
-type SingerRequest struct {
-	Params   map[string]string
-	Response SingerResponse
-}
-
-type AlbumResponse struct {
-	Code int
-	Data struct {
-		GetAlbumInfo GetAlbumInfo `json:"getAlbumInfo"`
-		GetSongInfo  []Song       `json:"getSongInfo"`
-	} `json:"data"`
-}
-
-type AlbumRequest struct {
-	Params   map[string]string
-	Response AlbumResponse
-}
-
-type PlaylistResponse struct {
-	Code int `json:"code"`
-	Data struct {
-		CDList []CD `json:"cdlist"`
-	} `json:"data"`
-}
-
-type PlaylistRequest struct {
-	Params   map[string]string
-	Response PlaylistResponse
-}
-
 func NewSongRequest(mid string) *SongRequest {
 	query := map[string]string{
 		"songmid":  mid,
@@ -77,36 +34,12 @@ func NewSongRequest(mid string) *SongRequest {
 	return &SongRequest{Params: query}
 }
 
-func NewSingerRequest(mid string) *SingerRequest {
-	query := map[string]string{
-		"singermid": mid,
-		"begin":     "0",
-		"num":       "50",
-		"order":     "listen",
-		"newsong":   "1",
-		"platform":  "yqq",
-	}
-	return &SingerRequest{Params: query}
+func (s *SongRequest) RequireLogin() bool {
+	return false
 }
 
-func NewAlbumRequest(mid string) *AlbumRequest {
-	query := map[string]string{
-		"albummid": mid,
-		"newsong":  "1",
-		"platform": "yqq",
-		"format":   "json",
-	}
-	return &AlbumRequest{Params: query}
-}
-
-func NewPlaylistRequest(id string) *PlaylistRequest {
-	query := map[string]string{
-		"id":       id,
-		"newsong":  "1",
-		"platform": "yqq",
-		"format":   "json",
-	}
-	return &PlaylistRequest{Params: query}
+func (s *SongRequest) Login() error {
+	panic("implement me")
 }
 
 func (s *SongRequest) Do() error {
@@ -130,30 +63,99 @@ func (s *SongRequest) Extract() ([]*common.MP3, error) {
 	return ExtractMP3List(s.Response.Data, ".")
 }
 
-func (a *SingerRequest) Do() error {
-	resp, err := common.Request("GET", ArtistAPI, a.Params, nil, common.TencentMusic)
+type SingerResponse struct {
+	Code int `json:"code"`
+	Data struct {
+		List []struct {
+			MusicData Song `json:"musicData"`
+		} `json:"list"`
+		SingerId   string `json:"singer_id"`
+		SingerMid  string `json:"singer_mid"`
+		SingerName string `json:"singer_name"`
+		Total      int    `json:"total"`
+	} `json:"data"`
+}
+
+type SingerRequest struct {
+	Params   map[string]string
+	Response SingerResponse
+}
+
+func NewSingerRequest(mid string) *SingerRequest {
+	query := map[string]string{
+		"singermid": mid,
+		"begin":     "0",
+		"num":       "50",
+		"order":     "listen",
+		"newsong":   "1",
+		"platform":  "yqq",
+	}
+	return &SingerRequest{Params: query}
+}
+
+func (s *SingerRequest) RequireLogin() bool {
+	return false
+}
+
+func (s *SingerRequest) Login() error {
+	panic("implement me")
+}
+
+func (s *SingerRequest) Do() error {
+	resp, err := common.Request("GET", ArtistAPI, s.Params, nil, common.TencentMusic)
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
 
-	if err = json.NewDecoder(resp.Body).Decode(&a.Response); err != nil {
+	if err = json.NewDecoder(resp.Body).Decode(&s.Response); err != nil {
 		return err
 	}
-	if a.Response.Code != 0 {
-		return fmt.Errorf("%s %s error: %d", resp.Request.Method, resp.Request.URL.String(), a.Response.Code)
+	if s.Response.Code != 0 {
+		return fmt.Errorf("%s %s error: %d", resp.Request.Method, resp.Request.URL.String(), s.Response.Code)
 	}
 
 	return nil
 }
 
-func (a *SingerRequest) Extract() ([]*common.MP3, error) {
-	savePath := filepath.Join(".", utils.TrimInvalidFilePathChars(a.Response.Data.SingerName))
+func (s *SingerRequest) Extract() ([]*common.MP3, error) {
+	savePath := filepath.Join(".", utils.TrimInvalidFilePathChars(s.Response.Data.SingerName))
 	var songs []Song
-	for _, i := range a.Response.Data.List {
+	for _, i := range s.Response.Data.List {
 		songs = append(songs, i.MusicData)
 	}
 	return ExtractMP3List(songs, savePath)
+}
+
+type AlbumResponse struct {
+	Code int
+	Data struct {
+		GetAlbumInfo GetAlbumInfo `json:"getAlbumInfo"`
+		GetSongInfo  []Song       `json:"getSongInfo"`
+	} `json:"data"`
+}
+
+type AlbumRequest struct {
+	Params   map[string]string
+	Response AlbumResponse
+}
+
+func NewAlbumRequest(mid string) *AlbumRequest {
+	query := map[string]string{
+		"albummid": mid,
+		"newsong":  "1",
+		"platform": "yqq",
+		"format":   "json",
+	}
+	return &AlbumRequest{Params: query}
+}
+
+func (a *AlbumRequest) RequireLogin() bool {
+	return false
+}
+
+func (a *AlbumRequest) Login() error {
+	panic("implement me")
 }
 
 func (a *AlbumRequest) Do() error {
@@ -176,6 +178,36 @@ func (a *AlbumRequest) Do() error {
 func (a *AlbumRequest) Extract() ([]*common.MP3, error) {
 	savePath := filepath.Join(".", utils.TrimInvalidFilePathChars(a.Response.Data.GetAlbumInfo.FAlbumName))
 	return ExtractMP3List(a.Response.Data.GetSongInfo, savePath)
+}
+
+type PlaylistResponse struct {
+	Code int `json:"code"`
+	Data struct {
+		CDList []CD `json:"cdlist"`
+	} `json:"data"`
+}
+
+type PlaylistRequest struct {
+	Params   map[string]string
+	Response PlaylistResponse
+}
+
+func NewPlaylistRequest(id string) *PlaylistRequest {
+	query := map[string]string{
+		"id":       id,
+		"newsong":  "1",
+		"platform": "yqq",
+		"format":   "json",
+	}
+	return &PlaylistRequest{Params: query}
+}
+
+func (p *PlaylistRequest) RequireLogin() bool {
+	return false
+}
+
+func (p *PlaylistRequest) Login() error {
+	panic("implement me")
 }
 
 func (p *PlaylistRequest) Do() error {

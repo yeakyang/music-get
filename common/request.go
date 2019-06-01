@@ -2,25 +2,58 @@ package common
 
 import (
 	"fmt"
+	"github.com/winterssy/music-get/config"
+	"golang.org/x/net/publicsuffix"
 	"io"
 	"math/rand"
 	"net/http"
+	"net/http/cookiejar"
+	urlpkg "net/url"
 	"strings"
+	"sync"
 	"time"
 )
 
 const (
 	NeteaseMusicOrigin  = "https://music.163.com"
 	NeteaseMusicReferer = "https://music.163.com"
-	NeteaseMusicCookie  = "appver=4.1.3; MUSIC_U=dc5b075d43a3815098b96ce361510c5045495a205ea9ff85e5ea6c502a777644538edaa51b1a56a3e83f5c6c7e24588e4e655b70a75a628ebf122d59fa1ed6a2"
 	TencentMusicOrigin  = "https://c.y.qq.com"
 	TencentMusicReferer = "https://c.y.qq.com"
 	RequestTimeout      = 120 * time.Second
 )
 
+var (
+	getHTTPClientOnce     sync.Once
+	loadCachedCookiesOnce sync.Once
+	DefaultHTTPClient     *http.Client
+)
+
 type MusicRequest interface {
+	RequireLogin() bool
+	Login() error
 	Do() error
 	Extract() ([]*MP3, error)
+}
+
+func loadCachedCookies(reqURL *urlpkg.URL, client *http.Client) {
+	f := func() {
+		if len(config.M.Cookies) > 0 {
+			client.Jar.SetCookies(reqURL, config.M.Cookies)
+		}
+	}
+	loadCachedCookiesOnce.Do(f)
+}
+
+func getHTTPClient() *http.Client {
+	f := func() {
+		jar, _ := cookiejar.New(&cookiejar.Options{PublicSuffixList: publicsuffix.List})
+		DefaultHTTPClient = &http.Client{
+			Timeout: RequestTimeout,
+			Jar:     jar,
+		}
+	}
+	getHTTPClientOnce.Do(f)
+	return DefaultHTTPClient
 }
 
 func chooseUserAgent() string {
@@ -46,6 +79,14 @@ func chooseUserAgent() string {
 }
 
 func Request(method, url string, query map[string]string, body io.Reader, origin int) (*http.Response, error) {
+	reqURL, err := urlpkg.Parse(url)
+	if err != nil {
+		return nil, err
+	}
+
+	client := getHTTPClient()
+	loadCachedCookies(reqURL, client)
+
 	method = strings.ToUpper(method)
 	req, err := http.NewRequest(method, url, body)
 	if err != nil {
@@ -68,16 +109,12 @@ func Request(method, url string, query map[string]string, body io.Reader, origin
 	case NeteaseMusic:
 		req.Header.Set("Origin", NeteaseMusicOrigin)
 		req.Header.Set("Referer", NeteaseMusicReferer)
-		req.Header.Set("Cookie", NeteaseMusicCookie)
 	case TencentMusic:
 		req.Header.Set("Origin", TencentMusicOrigin)
 		req.Header.Set("Referer", TencentMusicReferer)
 	}
 	req.Header.Set("User-Agent", chooseUserAgent())
 
-	client := &http.Client{
-		Timeout: RequestTimeout,
-	}
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
@@ -87,5 +124,6 @@ func Request(method, url string, query map[string]string, body io.Reader, origin
 		return nil, fmt.Errorf("%s %s error: %s", method, url, resp.Status)
 	}
 
+	client.Jar.SetCookies(reqURL, resp.Cookies())
 	return resp, nil
 }

@@ -3,6 +3,7 @@ package tencent
 import (
 	"fmt"
 	"github.com/winterssy/music-get/common"
+	"github.com/winterssy/music-get/config"
 )
 
 const (
@@ -18,7 +19,7 @@ func ExtractMP3List(songs []Song, savePath string) ([]*common.MP3, error) {
 		return nil, err
 	}
 
-	br := common.MP3DownloadBr
+	br := config.MP3DownloadBr
 	mp3List := make([]*common.MP3, 0, len(songs))
 	for _, i := range songs {
 		mp3 := i.Extract()

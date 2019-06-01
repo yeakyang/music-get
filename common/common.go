@@ -3,11 +3,13 @@ package common
 import (
 	"errors"
 	"github.com/bogem/id3v2"
+	"github.com/winterssy/music-get/config"
 	"github.com/winterssy/music-get/utils"
 	"github.com/winterssy/music-get/utils/logger"
 	"gopkg.in/cheggaaa/pb.v1"
 	"io"
 	"io/ioutil"
+	"net/url"
 	"os"
 	"path/filepath"
 	"sync"
@@ -51,6 +53,32 @@ type DownloadTask struct {
 	Status int
 }
 
+func updateCoverImage(tag *id3v2.Tag, coverImage string, origin int) error {
+	if _, err := url.Parse(coverImage); err != nil {
+		return err
+	}
+
+	resp, err := Request("GET", coverImage, nil, nil, origin)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	data, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	pic := id3v2.PictureFrame{
+		Encoding:    id3v2.EncodingUTF8,
+		MimeType:    "image/jpg",
+		PictureType: id3v2.PTOther,
+		Picture:     data,
+	}
+	tag.AddAttachedPicture(pic)
+	return nil
+}
+
 func (m *MP3) UpdateTag(wg *sync.WaitGroup) {
 	var err error
 	defer func() {
@@ -63,17 +91,6 @@ func (m *MP3) UpdateTag(wg *sync.WaitGroup) {
 	}()
 
 	file := filepath.Join(m.SavePath, m.FileName)
-	resp, err := Request("GET", m.Tag.CoverImage, nil, nil, NeteaseMusic)
-	if err != nil {
-		return
-	}
-	defer resp.Body.Close()
-
-	data, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return
-	}
-
 	tag, err := id3v2.Open(file, id3v2.Options{Parse: true})
 	if err != nil {
 		return
@@ -81,13 +98,6 @@ func (m *MP3) UpdateTag(wg *sync.WaitGroup) {
 	defer tag.Close()
 
 	tag.SetDefaultEncoding(id3v2.EncodingUTF8)
-	pic := id3v2.PictureFrame{
-		Encoding:    id3v2.EncodingUTF8,
-		MimeType:    "image/jpg",
-		PictureType: id3v2.PTOther,
-		Picture:     data,
-	}
-	tag.AddAttachedPicture(pic)
 	tag.SetTitle(m.Tag.Title)
 	tag.SetArtist(m.Tag.Artist)
 	tag.SetAlbum(m.Tag.Album)
@@ -98,12 +108,17 @@ func (m *MP3) UpdateTag(wg *sync.WaitGroup) {
 	}
 	tag.AddFrame(tag.CommonID("Track number/Position in set"), textFrame)
 
+	err = updateCoverImage(tag, m.Tag.CoverImage, m.Origin)
+	if err != nil {
+		logger.Warning.Printf("Update music cover image error: %s: %s", m.FileName, err.Error())
+	}
+
 	err = tag.Save()
 	return
 }
 
 func (m *MP3) SingleDownload() error {
-	m.SavePath = filepath.Join(MP3DownloadDir, m.SavePath)
+	m.SavePath = filepath.Join(config.MP3DownloadDir, m.SavePath)
 	if err := utils.BuildPathIfNotExist(m.SavePath); err != nil {
 		return err
 	}
@@ -159,7 +174,7 @@ func (m *MP3) ConcurrentDownload(taskList chan DownloadTask, taskQueue chan stru
 	}
 
 	logger.Info.Printf("Downloading: %s", m.FileName)
-	m.SavePath = filepath.Join(MP3DownloadDir, m.SavePath)
+	m.SavePath = filepath.Join(config.MP3DownloadDir, m.SavePath)
 	if err = utils.BuildPathIfNotExist(m.SavePath); err != nil {
 		task.Status = DownloadBuildPathError
 		return
