@@ -43,6 +43,7 @@ func init() {
 	flag.IntVar(&MP3DownloadBr, "br", M.Br, "MP3 prior download bit rate, 128|192|320")
 	flag.IntVar(&MP3ConcurrentDownloadTasksNumber, "n", 1, "MP3 concurrent download tasks number, max 16")
 	flag.Parse()
+	M.Br = MP3DownloadBr
 }
 
 func Load(filename string) error {
