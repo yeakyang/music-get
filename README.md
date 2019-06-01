@@ -37,6 +37,8 @@ $ music-get https://music.163.com/#/playlist?id=156934569
 $ music-get https://y.qq.com/n/yqq/playsquare/5474239760.html
 ```
 
+>  注：网易云音乐『我喜欢的音乐』本质上是一个歌单，程序也支持一键解析并下载。
+
 - 下载歌手热门歌曲：
 ```
 $ music-get https://music.163.com/#/artist?id=13193
@@ -46,10 +48,15 @@ $ music-get https://y.qq.com/n/yqq/singer/000Sp0Bz4JXH0o.html
 命令选项：
 - `-br`：优先下载音质，可选128/192/320，默认128。
 - `-o`：下载保存目录，默认为 `/home/用户名/Music-Get`  （Windows为 `C:\\Users\\用户名\\Music-Get` ）。
+- `-f`：是否覆盖已下载的音乐，默认跳过。
 - `-n`：并发下载任务数，最大值16，默认1，即单任务下载。
 - `-h`：获取命令帮助。
 
 **注：** 命令选项必须先于其它命令行参数输入。
+
+## 配置文件
+
+程序的配置文件位于 `/home/用户名/music-get.json`（Windows为 `C:\\Users\\用户名\\music-get.json` ），用于本地存储cookies以及配置默认下载的比特率（优先级低于 `-br` 指令）。**请勿对该文件进行任何修改！**
 
 ## 运行截图
 
