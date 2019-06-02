@@ -20,25 +20,16 @@ func isAuthenticated() bool {
 	return false
 }
 
-func Login() error {
-	if isAuthenticated() {
-		return nil
-	}
-
+func login() error {
 	reader := bufio.NewReader(os.Stdin)
 	fmt.Print("Enter Phone Number: ")
 	phone, _ := reader.ReadString('\n')
-	phone = strings.TrimSpace(phone)
 
 	fmt.Print("Enter Password: ")
 	bytePassword, _ := terminal.ReadPassword(int(syscall.Stdin))
 	fmt.Println()
-	password := strings.TrimSpace(string(bytePassword))
+	password := string(bytePassword)
 
-	req := NewLoginRequest(phone, password)
-	if err := req.Do(); err != nil {
-		return err
-	}
-
-	return nil
+	req := NewLoginRequest(strings.TrimSpace(phone), strings.TrimSpace(password))
+	return req.Do()
 }

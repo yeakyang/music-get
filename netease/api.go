@@ -9,9 +9,7 @@ import (
 	"github.com/winterssy/music-get/config"
 	"github.com/winterssy/music-get/utils"
 	"net/http"
-	"net/url"
 	"path/filepath"
-	"strings"
 )
 
 const (
@@ -54,16 +52,7 @@ func NewSongURLRequest(ids ...int) *SongURLRequest {
 }
 
 func (s *SongURLRequest) Do() error {
-	enc, _ := json.Marshal(s.Params)
-	params, encSecKey, err := Encrypt(enc)
-	if err != nil {
-		return err
-	}
-
-	form := url.Values{}
-	form.Set("params", params)
-	form.Set("encSecKey", encSecKey)
-	resp, err := common.Request("POST", SongURLAPI, nil, strings.NewReader(form.Encode()), common.NeteaseMusic)
+	resp, err := post(SongURLAPI, s.Params)
 	if err != nil {
 		return err
 	}
@@ -109,20 +98,11 @@ func (s *SongRequest) RequireLogin() bool {
 }
 
 func (s *SongRequest) Login() error {
-	return Login()
+	return login()
 }
 
 func (s *SongRequest) Do() error {
-	enc, _ := json.Marshal(s.Params)
-	params, encSecKey, err := Encrypt(enc)
-	if err != nil {
-		return err
-	}
-
-	form := url.Values{}
-	form.Set("params", params)
-	form.Set("encSecKey", encSecKey)
-	resp, err := common.Request("POST", SongAPI, nil, strings.NewReader(form.Encode()), common.NeteaseMusic)
+	resp, err := post(SongAPI, s.Params)
 	if err != nil {
 		return err
 	}
@@ -166,20 +146,11 @@ func (a *ArtistRequest) RequireLogin() bool {
 }
 
 func (a *ArtistRequest) Login() error {
-	return Login()
+	return login()
 }
 
 func (a *ArtistRequest) Do() error {
-	enc, _ := json.Marshal(a.Params)
-	params, encSecKey, err := Encrypt(enc)
-	if err != nil {
-		return err
-	}
-
-	form := url.Values{}
-	form.Set("params", params)
-	form.Set("encSecKey", encSecKey)
-	resp, err := common.Request("POST", ArtistAPI+fmt.Sprintf("/%d", a.Id), nil, strings.NewReader(form.Encode()), common.NeteaseMusic)
+	resp, err := post(ArtistAPI+fmt.Sprintf("/%d", a.Id), a.Params)
 	if err != nil {
 		return err
 	}
@@ -232,20 +203,11 @@ func (a *AlbumRequest) RequireLogin() bool {
 }
 
 func (a *AlbumRequest) Login() error {
-	return Login()
+	return login()
 }
 
 func (a *AlbumRequest) Do() error {
-	enc, _ := json.Marshal(a.Params)
-	params, encSecKey, err := Encrypt(enc)
-	if err != nil {
-		return err
-	}
-
-	form := url.Values{}
-	form.Set("params", params)
-	form.Set("encSecKey", encSecKey)
-	resp, err := common.Request("POST", AlbumAPI+fmt.Sprintf("/%d", a.Id), nil, strings.NewReader(form.Encode()), common.NeteaseMusic)
+	resp, err := post(AlbumAPI+fmt.Sprintf("/%d", a.Id), a.Params)
 	if err != nil {
 		return err
 	}
@@ -293,20 +255,11 @@ func (p *PlaylistRequest) RequireLogin() bool {
 }
 
 func (p *PlaylistRequest) Login() error {
-	return Login()
+	return login()
 }
 
 func (p *PlaylistRequest) Do() error {
-	enc, _ := json.Marshal(p.Params)
-	params, encSecKey, err := Encrypt(enc)
-	if err != nil {
-		return err
-	}
-
-	form := url.Values{}
-	form.Set("params", params)
-	form.Set("encSecKey", encSecKey)
-	resp, err := common.Request("POST", PlaylistAPI, nil, strings.NewReader(form.Encode()), common.NeteaseMusic)
+	resp, err := post(PlaylistAPI, p.Params)
 	if err != nil {
 		return err
 	}
@@ -361,16 +314,7 @@ func NewLoginRequest(phone, password string) *LoginRequest {
 }
 
 func (l *LoginRequest) Do() error {
-	enc, _ := json.Marshal(l.Params)
-	params, encSecKey, err := Encrypt(enc)
-	if err != nil {
-		return err
-	}
-
-	form := url.Values{}
-	form.Set("params", params)
-	form.Set("encSecKey", encSecKey)
-	resp, err := common.Request("POST", LoginAPI, nil, strings.NewReader(form.Encode()), common.NeteaseMusic)
+	resp, err := post(LoginAPI, l.Params)
 	if err != nil {
 		return err
 	}
