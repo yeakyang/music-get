@@ -16,14 +16,14 @@ type Artist struct {
 type Album struct {
 	Id          int    `json:"id"`
 	Name        string `json:"name"`
-	PicUrl      string `json:"picUrl"`
+	PicURL      string `json:"picURL"`
 	PublishTime int64  `json:"publishTime"`
 }
 
-type SongUrl struct {
+type SongURL struct {
 	Id   int    `json:"id"`
 	Code int    `json:"code"`
-	Url  string `json:"url"`
+	URL  string `json:"url"`
 }
 
 type Song struct {
@@ -49,7 +49,7 @@ func (s *Song) Extract() *common.MP3 {
 	title, album := strings.TrimSpace(s.Name), strings.TrimSpace(s.Album.Name)
 	publishTime := time.Unix(0, s.PublishTime*1000*1000)
 	year, track := fmt.Sprintf("%d", publishTime.Year()), fmt.Sprintf("%d", s.Position)
-	coverImage := s.Album.PicUrl
+	coverImage := s.Album.PicURL
 
 	artistList := make([]string, 0, len(s.Artist))
 	for _, ar := range s.Artist {

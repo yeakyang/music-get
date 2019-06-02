@@ -24,7 +24,8 @@ func SingleDownload(mp3List []*common.MP3) {
 			break
 		default:
 			failure++
-			_ = os.Remove(filepath.Join(m.SavePath, m.FileName))
+			// ignore error
+			os.Remove(filepath.Join(m.SavePath, m.FileName))
 		}
 	}
 	wg.Wait()
@@ -58,7 +59,8 @@ func ConcurrentDownload(mp3List []*common.MP3, n int) {
 			break
 		default:
 			failure++
-			_ = os.Remove(filepath.Join(task.MP3.SavePath, task.MP3.FileName))
+			// ignore error
+			os.Remove(filepath.Join(task.MP3.SavePath, task.MP3.FileName))
 		}
 	}
 	wg.Wait()

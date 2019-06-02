@@ -8,11 +8,11 @@ import (
 )
 
 const (
-	UrlPattern = "/(song|artist|album|playlist)\\?id=(\\d+)"
+	URLPattern = "/(song|artist|album|playlist)\\?id=(\\d+)"
 )
 
 func Parse(url string) (req common.MusicRequest, err error) {
-	re := regexp.MustCompile(UrlPattern)
+	re := regexp.MustCompile(URLPattern)
 	matched, ok := re.FindStringSubmatch(url), re.MatchString(url)
 	if !ok || len(matched) < 3 {
 		err = fmt.Errorf("could not parse the url: %s", url)

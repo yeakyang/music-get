@@ -43,7 +43,7 @@ type MP3 struct {
 	FileName    string
 	SavePath    string
 	Playable    bool
-	DownloadUrl string
+	DownloadURL string
 	Tag         Tag
 	Origin      int
 }
@@ -53,11 +53,7 @@ type DownloadTask struct {
 	Status int
 }
 
-func updateCoverImage(tag *id3v2.Tag, coverImage string, origin int) error {
-	if _, err := url.Parse(coverImage); err != nil {
-		return err
-	}
-
+func writeCoverImage(tag *id3v2.Tag, coverImage string, origin int) error {
 	resp, err := Request("GET", coverImage, nil, nil, origin)
 	if err != nil {
 		return err
@@ -84,8 +80,6 @@ func (m *MP3) UpdateTag(wg *sync.WaitGroup) {
 	defer func() {
 		if err != nil {
 			logger.Error.Printf("Update music tag error: %s: %s", m.FileName, err.Error())
-		} else {
-			logger.Info.Printf("Music tag updated: %s", m.FileName)
 		}
 		wg.Done()
 	}()
@@ -108,18 +102,33 @@ func (m *MP3) UpdateTag(wg *sync.WaitGroup) {
 	}
 	tag.AddFrame(tag.CommonID("Track number/Position in set"), textFrame)
 
-	err = updateCoverImage(tag, m.Tag.CoverImage, m.Origin)
-	if err != nil {
-		logger.Warning.Printf("Update music cover image error: %s: %s", m.FileName, err.Error())
+	if picURL, _ := url.Parse(m.Tag.CoverImage); picURL != nil {
+		if err = writeCoverImage(tag, m.Tag.CoverImage, m.Origin); err != nil {
+			logger.Warning.Printf("Update music cover image error: %s: %s", m.FileName, err.Error())
+		}
 	}
 
-	err = tag.Save()
+	if err = tag.Save(); err == nil {
+		logger.Info.Printf("Music tag updated: %s", m.FileName)
+	}
 	return
 }
 
-func (m *MP3) SingleDownload() int {
+func (m *MP3) SingleDownload() (status int) {
+	defer func() {
+		switch status {
+		case DownloadSuccess:
+			logger.Info.Print("Download complete")
+		case DownloadNoCopyrightError:
+			logger.Info.Printf("Ignore no coypright music: %s", m.Tag.Title)
+		case DownloadAlready:
+			logger.Info.Printf("Ignore already downloaded music: %s", m.Tag.Title)
+		default:
+			logger.Error.Printf("Download error: %d", status)
+		}
+	}()
+
 	if !m.Playable {
-		logger.Info.Printf("Ignore no coypright music: %s", m.Tag.Title)
 		return DownloadNoCopyrightError
 	}
 
@@ -131,13 +140,12 @@ func (m *MP3) SingleDownload() int {
 	fPath := filepath.Join(m.SavePath, m.FileName)
 	if !config.DownloadOverwrite {
 		if downloaded, _ := utils.ExistsPath(fPath); downloaded {
-			logger.Info.Printf("Ignore already downloaded music: %s", m.Tag.Title)
 			return DownloadAlready
 		}
 	}
 
 	logger.Info.Printf("Downloading: %s", m.FileName)
-	resp, err := Request("GET", m.DownloadUrl, nil, nil, m.Origin)
+	resp, err := Request("GET", m.DownloadURL, nil, nil, m.Origin)
 	if err != nil {
 		return DownloadHTTPRequestError
 	}
@@ -154,15 +162,11 @@ func (m *MP3) SingleDownload() int {
 	bar.Start()
 	reader := bar.NewProxyReader(resp.Body)
 	n, err := io.Copy(f, reader)
-	if err != nil {
-		return DownloadFileTransferError
-	}
-	if n != resp.ContentLength {
+	if err != nil || n != resp.ContentLength {
 		return DownloadFileTransferError
 	}
 
 	bar.Finish()
-	logger.Info.Print("Download complete")
 	return DownloadSuccess
 }
 
@@ -203,7 +207,7 @@ func (m *MP3) ConcurrentDownload(taskList chan DownloadTask, taskQueue chan stru
 	}
 
 	logger.Info.Printf("Downloading: %s", m.FileName)
-	resp, err := Request("GET", m.DownloadUrl, nil, nil, m.Origin)
+	resp, err := Request("GET", m.DownloadURL, nil, nil, m.Origin)
 	if err != nil {
 		task.Status = DownloadHTTPRequestError
 		return
@@ -227,7 +231,7 @@ func (m *MP3) ConcurrentDownload(taskList chan DownloadTask, taskQueue chan stru
 		return
 	}
 
-	task.Status = DownloadSuccess
 	logger.Info.Printf("Download complete: %s", m.FileName)
+	task.Status = DownloadSuccess
 	return
 }

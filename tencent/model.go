@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	AlbumPicUrl = "https://y.gtimg.cn/music/photo_new/T002R300x300M000%s.jpg"
+	AlbumPicURL = "https://y.gtimg.cn/music/photo_new/T002R300x300M000%s.jpg"
 )
 
 type Singer struct {
@@ -55,7 +55,7 @@ func (s *Song) Extract() *common.MP3 {
 	//playable := s.Action.Switch == 65537
 	publishTime, _ := time.Parse("2006-01-02", s.TimePublic)
 	year, track := fmt.Sprintf("%d", publishTime.Year()), fmt.Sprintf("%d", s.IndexAlbum)
-	coverImage := fmt.Sprintf(AlbumPicUrl, s.Album.Mid)
+	coverImage := fmt.Sprintf(AlbumPicURL, s.Album.Mid)
 
 	artistList := make([]string, 0, len(s.Singer))
 	for _, ar := range s.Singer {

@@ -17,30 +17,30 @@ import (
 const (
 	WeAPI       = "https://music.163.com/weapi"
 	LoginAPI    = WeAPI + "/login/cellphone"
-	SongUrlAPI  = WeAPI + "/song/enhance/player/url"
+	SongURLAPI  = WeAPI + "/song/enhance/player/url"
 	SongAPI     = WeAPI + "/v3/song/detail"
 	ArtistAPI   = WeAPI + "/v1/artist"
 	AlbumAPI    = WeAPI + "/v1/album"
 	PlaylistAPI = WeAPI + "/v3/playlist/detail"
 )
 
-type SongUrlParams struct {
+type SongURLParams struct {
 	Ids string `json:"ids"`
 	Br  int    `json:"br"`
 }
 
-type SongUrlResponse struct {
+type SongURLResponse struct {
 	Code int       `json:"code"`
 	Msg  string    `json:"msg"`
-	Data []SongUrl `json:"data"`
+	Data []SongURL `json:"data"`
 }
 
-type SongUrlRequest struct {
-	Params   SongUrlParams
-	Response SongUrlResponse
+type SongURLRequest struct {
+	Params   SongURLParams
+	Response SongURLResponse
 }
 
-func NewSongUrlRequest(ids ...int) *SongUrlRequest {
+func NewSongURLRequest(ids ...int) *SongURLRequest {
 	br := config.MP3DownloadBr
 	switch br {
 	case 128, 192, 320:
@@ -50,10 +50,10 @@ func NewSongUrlRequest(ids ...int) *SongUrlRequest {
 		br = 999 * 1000
 	}
 	enc, _ := json.Marshal(ids)
-	return &SongUrlRequest{Params: SongUrlParams{Ids: string(enc), Br: br}}
+	return &SongURLRequest{Params: SongURLParams{Ids: string(enc), Br: br}}
 }
 
-func (s *SongUrlRequest) Do() error {
+func (s *SongURLRequest) Do() error {
 	enc, _ := json.Marshal(s.Params)
 	params, encSecKey, err := Encrypt(enc)
 	if err != nil {
@@ -63,7 +63,7 @@ func (s *SongUrlRequest) Do() error {
 	form := url.Values{}
 	form.Set("params", params)
 	form.Set("encSecKey", encSecKey)
-	resp, err := common.Request("POST", SongUrlAPI, nil, strings.NewReader(form.Encode()), common.NeteaseMusic)
+	resp, err := common.Request("POST", SongURLAPI, nil, strings.NewReader(form.Encode()), common.NeteaseMusic)
 	if err != nil {
 		return err
 	}

@@ -37,8 +37,6 @@ $ music-get https://music.163.com/#/playlist?id=156934569
 $ music-get https://y.qq.com/n/yqq/playsquare/5474239760.html
 ```
 
->  注：网易云音乐『我喜欢的音乐』本质上是一个歌单，程序也支持一键解析并下载。
-
 - 下载歌手热门歌曲：
 ```
 $ music-get https://music.163.com/#/artist?id=13193
@@ -56,7 +54,7 @@ $ music-get https://y.qq.com/n/yqq/singer/000Sp0Bz4JXH0o.html
 
 ## 配置文件
 
-程序的配置文件位于 `/home/用户名/music-get.json`（Windows为 `C:\\Users\\用户名\\music-get.json` ），用于本地存储cookies以及配置默认下载的比特率（优先级低于 `-br` 指令）。**请勿对该文件进行任何修改！**
+程序的配置文件位于 `/home/用户名/music-get.json`（Windows为 `C:\\Users\\用户名\\music-get.json` ），用于本地存储cookies以及配置默认下载的比特率（最近一次使用的值，优先级低于 `-br` 指令）。**请勿对该文件进行任何修改！**
 
 ## 运行截图
 
@@ -71,6 +69,24 @@ $ music-get https://y.qq.com/n/yqq/singer/000Sp0Bz4JXH0o.html
 - 自动更新音乐标签（效果预览）：
 
 ![](/screenshots/tag-updated.png)
+
+## FAQ
+
+- 是否支持一键下载网易云音乐『我喜欢的音乐』列表？
+
+  > 支持。它本质上是一个歌单。
+
+- 为什么指定了 `-br=320` 下载的却是128kbps？
+
+  > 这只是在请求上优先保证，实际上下载的比特率由服务器返回的数据决定。
+
+- 是否有支持其它音乐平台的计划？
+
+  > 目前暂无，但开发者可以fork本项目的源码自行实现，只须实现 `MusicRequest` 接口即可。同时，欢迎PR。
+
+- 下载失败的原因？
+
+  > 网络状态不佳导致响应超时；触发了服务端的反爬机制（下调并发下载任务数/隔一段时间再试）；音乐提供商变更了API（这种情况下请提issue反馈）。
 
 ## 致谢
 

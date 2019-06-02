@@ -28,6 +28,7 @@ var (
 	DefaultHTTPClient     *http.Client
 )
 
+// any parsed request must implement this interface
 type MusicRequest interface {
 	RequireLogin() bool
 	Login() error

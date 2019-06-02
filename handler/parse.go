@@ -9,11 +9,11 @@ import (
 )
 
 const (
-	UrlPattern = "music.163.com|y.qq.com"
+	URLPattern = "music.163.com|y.qq.com"
 )
 
 func Parse(url string) (req common.MusicRequest, err error) {
-	re := regexp.MustCompile(UrlPattern)
+	re := regexp.MustCompile(URLPattern)
 	matched, ok := re.FindString(url), re.MatchString(url)
 	if !ok {
 		err = fmt.Errorf("could not parse the url: %s", url)
