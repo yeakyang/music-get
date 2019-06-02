@@ -47,7 +47,7 @@ type Playlist struct {
 
 func (s *Song) Extract() *common.MP3 {
 	title, album := strings.TrimSpace(s.Name), strings.TrimSpace(s.Album.Name)
-	publishTime := time.Unix(0, s.PublishTime*1000*1000)
+	publishTime := time.Unix(s.PublishTime/1000, s.PublishTime%1000*1000*1000)
 	year, track := fmt.Sprintf("%d", publishTime.Year()), fmt.Sprintf("%d", s.Position)
 	coverImage := s.Album.PicURL
 
