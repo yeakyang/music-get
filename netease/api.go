@@ -303,6 +303,18 @@ func (p *PlaylistRequest) Extract() ([]*common.MP3, error) {
 		ids = append(ids, i.Id)
 	}
 
+	if len(ids) > 0 {
+		req := NewSongRequest(ids...)
+		if err := req.Do(); err != nil {
+			return nil, err
+		}
+		batch, err := ExtractMP3List(req.Response.Songs, savePath)
+		if err != nil {
+			return nil, err
+		}
+		mp3List = append(mp3List, batch...)
+	}
+
 	return mp3List, nil
 }
 
