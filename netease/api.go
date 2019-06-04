@@ -22,6 +22,10 @@ const (
 	PlaylistAPI = WeAPI + "/v3/playlist/detail"
 )
 
+const (
+	MaxSongsCount = 1000
+)
+
 type SongURLParams struct {
 	Ids string `json:"ids"`
 	Br  int    `json:"br"`
@@ -276,18 +280,30 @@ func (p *PlaylistRequest) Do() error {
 }
 
 func (p *PlaylistRequest) Extract() ([]*common.MP3, error) {
-	ids := make([]int, 0, len(p.Response.Playlist.TrackIds))
+	savePath := filepath.Join(".", utils.TrimInvalidFilePathChars(p.Response.Playlist.Name))
+	ids, mp3List := make([]int, 0), make([]*common.MP3, 0, len(p.Response.Playlist.TrackIds))
+
+	count := 0
 	for _, i := range p.Response.Playlist.TrackIds {
+		count++
+		if count > MaxSongsCount {
+			req := NewSongRequest(ids...)
+			ids = make([]int, 0)
+			count = 0
+			if err := req.Do(); err != nil {
+				return nil, err
+			}
+
+			batch, err := ExtractMP3List(req.Response.Songs, savePath)
+			if err != nil {
+				return nil, err
+			}
+			mp3List = append(mp3List, batch...)
+		}
 		ids = append(ids, i.Id)
 	}
 
-	req := NewSongRequest(ids...)
-	if err := req.Do(); err != nil {
-		return nil, err
-	}
-
-	savePath := filepath.Join(".", utils.TrimInvalidFilePathChars(p.Response.Playlist.Name))
-	return ExtractMP3List(req.Response.Songs, savePath)
+	return mp3List, nil
 }
 
 type LoginParams struct {
