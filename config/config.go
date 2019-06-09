@@ -3,11 +3,12 @@ package config
 import (
 	"encoding/json"
 	"flag"
-	"github.com/winterssy/music-get/utils/logger"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
+
+	"github.com/winterssy/music-get/utils/logger"
 )
 
 const (

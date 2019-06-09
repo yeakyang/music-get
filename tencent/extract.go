@@ -2,6 +2,7 @@ package tencent
 
 import (
 	"fmt"
+
 	"github.com/winterssy/music-get/common"
 	"github.com/winterssy/music-get/config"
 )
@@ -27,7 +28,6 @@ func ExtractMP3List(songs []Song, savePath string) ([]*common.MP3, error) {
 		switch br {
 		case 192, 320:
 			mp3.DownloadURL = fmt.Sprintf(ThirdSongDownloadAPI, i.Mid, br)
-			break
 		default:
 			mp3.DownloadURL = fmt.Sprintf(SelfSongDownloadURL, i.Mid, guid, vKey)
 		}

@@ -1,10 +1,11 @@
 package handler
 
 import (
+	"testing"
+
 	"github.com/winterssy/music-get/common"
 	"github.com/winterssy/music-get/netease"
 	"github.com/winterssy/music-get/tencent"
-	"testing"
 )
 
 func TestParse(t *testing.T) {

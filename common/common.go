@@ -1,11 +1,6 @@
 package common
 
 import (
-	"github.com/bogem/id3v2"
-	"github.com/winterssy/music-get/config"
-	"github.com/winterssy/music-get/utils"
-	"github.com/winterssy/music-get/utils/logger"
-	"gopkg.in/cheggaaa/pb.v1"
 	"io"
 	"io/ioutil"
 	"net/url"
@@ -13,6 +8,12 @@ import (
 	"path/filepath"
 	"sync"
 	"time"
+
+	"github.com/bogem/id3v2"
+	"github.com/winterssy/music-get/config"
+	"github.com/winterssy/music-get/utils"
+	"github.com/winterssy/music-get/utils/logger"
+	"gopkg.in/cheggaaa/pb.v1"
 )
 
 const (
@@ -111,7 +112,6 @@ func (m *MP3) UpdateTag(wg *sync.WaitGroup) {
 	if err = tag.Save(); err == nil {
 		logger.Info.Printf("Music tag updated: %s", m.FileName)
 	}
-	return
 }
 
 func (m *MP3) SingleDownload() (status int) {
@@ -233,5 +233,4 @@ func (m *MP3) ConcurrentDownload(taskList chan DownloadTask, taskQueue chan stru
 
 	logger.Info.Printf("Download complete: %s", m.FileName)
 	task.Status = DownloadSuccess
-	return
 }

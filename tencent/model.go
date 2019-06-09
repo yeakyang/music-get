@@ -2,10 +2,11 @@ package tencent
 
 import (
 	"fmt"
-	"github.com/winterssy/music-get/common"
-	"github.com/winterssy/music-get/utils"
 	"strings"
 	"time"
+
+	"github.com/winterssy/music-get/common"
+	"github.com/winterssy/music-get/utils"
 )
 
 const (

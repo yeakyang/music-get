@@ -2,8 +2,6 @@ package common
 
 import (
 	"fmt"
-	"github.com/winterssy/music-get/config"
-	"golang.org/x/net/publicsuffix"
 	"io"
 	"math/rand"
 	"net/http"
@@ -12,6 +10,9 @@ import (
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/winterssy/music-get/config"
+	"golang.org/x/net/publicsuffix"
 )
 
 const (

@@ -2,10 +2,11 @@ package netease
 
 import (
 	"encoding/json"
-	"github.com/winterssy/music-get/common"
 	"net/http"
 	urlpkg "net/url"
 	"strings"
+
+	"github.com/winterssy/music-get/common"
 )
 
 func post(url string, data interface{}) (*http.Response, error) {

@@ -2,9 +2,10 @@ package netease
 
 import (
 	"fmt"
-	"github.com/winterssy/music-get/common"
 	"regexp"
 	"strconv"
+
+	"github.com/winterssy/music-get/common"
 )
 
 const (

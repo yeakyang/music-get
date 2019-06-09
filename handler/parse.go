@@ -2,10 +2,11 @@ package handler
 
 import (
 	"fmt"
+	"regexp"
+
 	"github.com/winterssy/music-get/common"
 	"github.com/winterssy/music-get/netease"
 	"github.com/winterssy/music-get/tencent"
-	"regexp"
 )
 
 const (

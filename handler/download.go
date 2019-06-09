@@ -2,10 +2,11 @@ package handler
 
 import (
 	"fmt"
-	"github.com/winterssy/music-get/common"
 	"os"
 	"path/filepath"
 	"sync"
+
+	"github.com/winterssy/music-get/common"
 )
 
 func SingleDownload(mp3List []*common.MP3) {
@@ -18,10 +19,8 @@ func SingleDownload(mp3List []*common.MP3) {
 			success++
 			wg.Add(1)
 			go m.UpdateTag(wg)
-			break
 		case common.DownloadNoCopyrightError, common.DownloadAlready:
 			ignore++
-			break
 		default:
 			failure++
 			// ignore error
@@ -53,10 +52,8 @@ func ConcurrentDownload(mp3List []*common.MP3, n int) {
 			success++
 			wg.Add(1)
 			go task.MP3.UpdateTag(wg)
-			break
 		case common.DownloadNoCopyrightError, common.DownloadAlready:
 			ignore++
-			break
 		default:
 			failure++
 			// ignore error

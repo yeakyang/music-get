@@ -5,11 +5,12 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"path/filepath"
+
 	"github.com/winterssy/music-get/common"
 	"github.com/winterssy/music-get/config"
 	"github.com/winterssy/music-get/utils"
-	"net/http"
-	"path/filepath"
 )
 
 const (
@@ -47,7 +48,6 @@ func NewSongURLRequest(ids ...int) *SongURLRequest {
 	switch br {
 	case 128, 192, 320:
 		br *= 1000
-		break
 	default:
 		br = 999 * 1000
 	}

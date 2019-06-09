@@ -3,9 +3,10 @@ package tencent
 import (
 	"encoding/json"
 	"fmt"
+	"path/filepath"
+
 	"github.com/winterssy/music-get/common"
 	"github.com/winterssy/music-get/utils"
-	"path/filepath"
 )
 
 const (

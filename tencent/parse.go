@@ -2,8 +2,9 @@ package tencent
 
 import (
 	"fmt"
-	"github.com/winterssy/music-get/common"
 	"regexp"
+
+	"github.com/winterssy/music-get/common"
 )
 
 const (

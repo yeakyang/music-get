@@ -3,12 +3,13 @@ package netease
 import (
 	"bufio"
 	"fmt"
-	"github.com/winterssy/music-get/config"
-	"golang.org/x/crypto/ssh/terminal"
 	"os"
 	"strings"
 	"syscall"
 	"time"
+
+	"github.com/winterssy/music-get/config"
+	"golang.org/x/crypto/ssh/terminal"
 )
 
 func isAuthenticated() bool {
