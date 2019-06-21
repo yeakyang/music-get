@@ -27,7 +27,12 @@ func ExtractMP3List(songs []Song, savePath string) ([]*common.MP3, error) {
 		mp3.SavePath = savePath
 		switch br {
 		case 192, 320:
-			mp3.DownloadURL = fmt.Sprintf(ThirdSongDownloadAPI, i.Mid, br)
+			if mp3.Playable {
+				mp3.DownloadURL = fmt.Sprintf(ThirdSongDownloadAPI, i.Mid, br)
+			} else {
+				mp3.DownloadURL = fmt.Sprintf(SelfSongDownloadURL, i.Mid, guid, vKey)
+				mp3.Playable = true
+			}
 		default:
 			mp3.DownloadURL = fmt.Sprintf(SelfSongDownloadURL, i.Mid, guid, vKey)
 		}
