@@ -13,8 +13,9 @@ func SingleDownload(mp3List []*common.MP3) {
 	total, success, failure, ignore := len(mp3List), 0, 0, 0
 
 	wg := &sync.WaitGroup{}
+	var failureInfo []DownloadError
 	for _, m := range mp3List {
-		switch m.SingleDownload() {
+		switch status := m.SingleDownload(); status {
 		case common.DownloadSuccess:
 			success++
 			wg.Add(1)
@@ -23,6 +24,7 @@ func SingleDownload(mp3List []*common.MP3) {
 			ignore++
 		default:
 			failure++
+			failureInfo = append(failureInfo, newDownloadError(m.FileName, m.DownloadURL, status))
 			// ignore error
 			os.Remove(filepath.Join(m.SavePath, m.FileName))
 		}
@@ -30,6 +32,13 @@ func SingleDownload(mp3List []*common.MP3) {
 	wg.Wait()
 
 	fmt.Printf("\nDownload report --> total: %d, success: %d, failure: %d, ignore: %d\n", total, success, failure, ignore)
+
+	if len(failureInfo) == 0 {
+		return
+	}
+	if err := outputLog(failureInfo); err == nil {
+		fmt.Printf("\nSee more info in %q\n", LogFileName)
+	}
 }
 
 func ConcurrentDownload(mp3List []*common.MP3, n int) {
@@ -45,9 +54,10 @@ func ConcurrentDownload(mp3List []*common.MP3, n int) {
 	}
 	wg.Wait()
 
+	var failureInfo []DownloadError
 	for range mp3List {
 		task := <-taskList
-		switch task.Status {
+		switch status := task.Status; status {
 		case common.DownloadSuccess:
 			success++
 			wg.Add(1)
@@ -56,6 +66,7 @@ func ConcurrentDownload(mp3List []*common.MP3, n int) {
 			ignore++
 		default:
 			failure++
+			failureInfo = append(failureInfo, newDownloadError(task.MP3.FileName, task.MP3.DownloadURL, status))
 			// ignore error
 			os.Remove(filepath.Join(task.MP3.SavePath, task.MP3.FileName))
 		}
@@ -63,4 +74,11 @@ func ConcurrentDownload(mp3List []*common.MP3, n int) {
 	wg.Wait()
 
 	fmt.Printf("\nDownload report --> total: %d, success: %d, failure: %d, ignore: %d\n", total, success, failure, ignore)
+
+	if len(failureInfo) == 0 {
+		return
+	}
+	if err := outputLog(failureInfo); err == nil {
+		fmt.Printf("\nSee more info in %q\n", LogFileName)
+	}
 }
