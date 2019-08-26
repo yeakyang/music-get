@@ -1,4 +1,4 @@
-package config
+package conf
 
 import (
 	"encoding/json"
@@ -8,7 +8,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/winterssy/music-get/utils/logger"
+	"github.com/winterssy/music-get/pkg/easylog"
 )
 
 const (
@@ -32,7 +32,7 @@ var (
 func init() {
 	homedir, err := os.UserHomeDir()
 	if err != nil {
-		logger.Error.Fatal(err)
+		easylog.Fatal(err)
 	}
 
 	file := filepath.Join(homedir, "music-get.json")

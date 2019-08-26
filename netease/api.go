@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 
 	"github.com/winterssy/music-get/common"
-	"github.com/winterssy/music-get/config"
+	"github.com/winterssy/music-get/conf"
 	"github.com/winterssy/music-get/utils"
 )
 
@@ -44,7 +44,7 @@ type SongURLRequest struct {
 }
 
 func NewSongURLRequest(ids ...int) *SongURLRequest {
-	br := config.MP3DownloadBr
+	br := conf.MP3DownloadBr
 	switch br {
 	case 128, 192, 320:
 		br *= 1000
@@ -355,6 +355,6 @@ func (l *LoginRequest) Do() error {
 		return fmt.Errorf("%s %s error: %d %s", resp.Request.Method, resp.Request.URL.String(), l.Response.Code, l.Response.Msg)
 	}
 
-	config.M.Cookies = resp.Cookies()
+	conf.M.Cookies = resp.Cookies()
 	return nil
 }

@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/bogem/id3v2"
-	"github.com/winterssy/music-get/config"
+	"github.com/winterssy/music-get/conf"
+	"github.com/winterssy/music-get/pkg/easylog"
 	"github.com/winterssy/music-get/utils"
-	"github.com/winterssy/music-get/utils/logger"
 	"gopkg.in/cheggaaa/pb.v1"
 )
 
@@ -80,7 +80,7 @@ func (m *MP3) UpdateTag(wg *sync.WaitGroup) {
 	var err error
 	defer func() {
 		if err != nil {
-			logger.Error.Printf("Update music tag error: %s: %s", m.FileName, err.Error())
+			easylog.Errorf("Update music tag error: %s: %s", m.FileName, err.Error())
 		}
 		wg.Done()
 	}()
@@ -105,12 +105,12 @@ func (m *MP3) UpdateTag(wg *sync.WaitGroup) {
 
 	if picURL, _ := url.Parse(m.Tag.CoverImage); picURL != nil {
 		if err = writeCoverImage(tag, m.Tag.CoverImage, m.Origin); err != nil {
-			logger.Warning.Printf("Update music cover image error: %s: %s", m.FileName, err.Error())
+			easylog.Warnf("Update music cover image error: %s: %s", m.FileName, err.Error())
 		}
 	}
 
 	if err = tag.Save(); err == nil {
-		logger.Info.Printf("Music tag updated: %s", m.FileName)
+		easylog.Infof("Music tag updated: %s", m.FileName)
 	}
 }
 
@@ -118,13 +118,13 @@ func (m *MP3) SingleDownload() (status int) {
 	defer func() {
 		switch status {
 		case DownloadSuccess:
-			logger.Info.Print("Download complete")
+			easylog.Infof("Download complete")
 		case DownloadNoCopyrightError:
-			logger.Info.Printf("Ignore no coypright music: %s", m.Tag.Title)
+			easylog.Infof("Ignore no coypright music: %s", m.Tag.Title)
 		case DownloadAlready:
-			logger.Info.Printf("Ignore already downloaded music: %s", m.Tag.Title)
+			easylog.Infof("Ignore already downloaded music: %s", m.Tag.Title)
 		default:
-			logger.Error.Printf("Download error: %d", status)
+			easylog.Errorf("Download error: %d", status)
 		}
 	}()
 
@@ -132,19 +132,19 @@ func (m *MP3) SingleDownload() (status int) {
 		return DownloadNoCopyrightError
 	}
 
-	m.SavePath = filepath.Join(config.MP3DownloadDir, m.SavePath)
+	m.SavePath = filepath.Join(conf.MP3DownloadDir, m.SavePath)
 	if err := utils.BuildPathIfNotExist(m.SavePath); err != nil {
 		return DownloadBuildPathError
 	}
 
 	fPath := filepath.Join(m.SavePath, m.FileName)
-	if !config.DownloadOverwrite {
+	if !conf.DownloadOverwrite {
 		if downloaded, _ := utils.ExistsPath(fPath); downloaded {
 			return DownloadAlready
 		}
 	}
 
-	logger.Info.Printf("Downloading: %s", m.FileName)
+	easylog.Infof("Downloading: %s", m.FileName)
 	resp, err := Request("GET", m.DownloadURL, nil, nil, m.Origin)
 	if err != nil {
 		return DownloadHTTPRequestError
@@ -178,7 +178,7 @@ func (m *MP3) ConcurrentDownload(taskList chan DownloadTask, taskQueue chan stru
 
 	defer func() {
 		if err != nil {
-			logger.Error.Printf("Download error: %s: %s", m.FileName, err.Error())
+			easylog.Errorf("Download error: %s: %s", m.FileName, err.Error())
 		}
 		wg.Done()
 		taskList <- task
@@ -186,27 +186,27 @@ func (m *MP3) ConcurrentDownload(taskList chan DownloadTask, taskQueue chan stru
 	}()
 
 	if !m.Playable {
-		logger.Info.Printf("Ignore no coypright music: %s", m.Tag.Title)
+		easylog.Infof("Ignore no coypright music: %s", m.Tag.Title)
 		task.Status = DownloadNoCopyrightError
 		return
 	}
 
-	m.SavePath = filepath.Join(config.MP3DownloadDir, m.SavePath)
+	m.SavePath = filepath.Join(conf.MP3DownloadDir, m.SavePath)
 	if err = utils.BuildPathIfNotExist(m.SavePath); err != nil {
 		task.Status = DownloadBuildPathError
 		return
 	}
 
 	fPath := filepath.Join(m.SavePath, m.FileName)
-	if !config.DownloadOverwrite {
+	if !conf.DownloadOverwrite {
 		if downloaded, _ := utils.ExistsPath(fPath); downloaded {
-			logger.Info.Printf("Ignore already downloaded music: %s", m.Tag.Title)
+			easylog.Infof("Ignore already downloaded music: %s", m.Tag.Title)
 			task.Status = DownloadAlready
 			return
 		}
 	}
 
-	logger.Info.Printf("Downloading: %s", m.FileName)
+	easylog.Infof("Downloading: %s", m.FileName)
 	resp, err := Request("GET", m.DownloadURL, nil, nil, m.Origin)
 	if err != nil {
 		task.Status = DownloadHTTPRequestError
@@ -231,6 +231,6 @@ func (m *MP3) ConcurrentDownload(taskList chan DownloadTask, taskQueue chan stru
 		return
 	}
 
-	logger.Info.Printf("Download complete: %s", m.FileName)
+	easylog.Infof("Download complete: %s", m.FileName)
 	task.Status = DownloadSuccess
 }

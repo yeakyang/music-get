@@ -17,10 +17,10 @@ type MusicExpress struct {
 	Key     string   `json:"key"`
 }
 
-//func createGuid() string {
-//	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-//	return strconv.Itoa(r.Intn(10000000000-1000000000) + 1000000000)
-//}
+// func createGuid() string {
+// 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+// 	return strconv.Itoa(r.Intn(10000000000-1000000000) + 1000000000)
+// }
 
 func getVKey(guid string) (string, error) {
 	query := map[string]string{

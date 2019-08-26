@@ -8,12 +8,12 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/winterssy/music-get/config"
+	"github.com/winterssy/music-get/conf"
 	"golang.org/x/crypto/ssh/terminal"
 )
 
 func isAuthenticated() bool {
-	for _, i := range config.M.Cookies {
+	for _, i := range conf.M.Cookies {
 		if strings.ToUpper(i.Name) == "MUSIC_U" && i.Expires.After(time.Now()) {
 			return true
 		}

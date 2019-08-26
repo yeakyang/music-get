@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/winterssy/music-get/config"
+	"github.com/winterssy/music-get/conf"
 	"golang.org/x/net/publicsuffix"
 )
 
@@ -39,8 +39,8 @@ type MusicRequest interface {
 
 func loadCachedCookies(reqURL *urlpkg.URL, client *http.Client) {
 	f := func() {
-		if len(config.M.Cookies) > 0 {
-			client.Jar.SetCookies(reqURL, config.M.Cookies)
+		if len(conf.M.Cookies) > 0 {
+			client.Jar.SetCookies(reqURL, conf.M.Cookies)
 		}
 	}
 	loadCachedCookiesOnce.Do(f)

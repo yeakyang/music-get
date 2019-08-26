@@ -1,8 +1,11 @@
 package handler
 
 import (
+	"bufio"
 	"encoding/json"
-	"github.com/winterssy/music-get/utils/logger"
+	"fmt"
+	"os"
+	"path/filepath"
 )
 
 const (
@@ -28,5 +31,25 @@ func outputLog(errs []DownloadError) error {
 		}
 		lines = append(lines, string(line))
 	}
-	return logger.WriteToFile(LogFileName, lines)
+	return writeToFile(LogFileName, lines)
+}
+
+func writeToFile(filename string, lines []string) error {
+	currentDir, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+
+	file, err := os.OpenFile(filepath.Join(currentDir, filename), os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	w := bufio.NewWriter(file)
+	for _, line := range lines {
+		fmt.Fprintln(w, line)
+	}
+
+	return w.Flush()
 }

@@ -4,12 +4,10 @@ import (
 	"fmt"
 
 	"github.com/winterssy/music-get/common"
-	"github.com/winterssy/music-get/config"
 )
 
 const (
-	SelfSongDownloadURL  = "http://dl.stream.qqmusic.qq.com/M500%s.mp3?guid=%s&vkey=%s&fromtag=1"
-	ThirdSongDownloadAPI = "https://v1.itooi.cn/tencent/url?id=%s&quality=%d"
+	SelfSongDownloadURL = "http://dl.stream.qqmusic.qq.com/M500%s.mp3?guid=%s&vkey=%s&fromtag=1"
 )
 
 func ExtractMP3List(songs []Song, savePath string) ([]*common.MP3, error) {
@@ -20,22 +18,11 @@ func ExtractMP3List(songs []Song, savePath string) ([]*common.MP3, error) {
 		return nil, err
 	}
 
-	br := config.MP3DownloadBr
 	mp3List := make([]*common.MP3, 0, len(songs))
 	for _, i := range songs {
 		mp3 := i.Extract()
 		mp3.SavePath = savePath
-		switch br {
-		case 192, 320:
-			if mp3.Playable {
-				mp3.DownloadURL = fmt.Sprintf(ThirdSongDownloadAPI, i.Mid, br)
-			} else {
-				mp3.DownloadURL = fmt.Sprintf(SelfSongDownloadURL, i.Mid, guid, vKey)
-				mp3.Playable = true
-			}
-		default:
-			mp3.DownloadURL = fmt.Sprintf(SelfSongDownloadURL, i.Mid, guid, vKey)
-		}
+		mp3.DownloadURL = fmt.Sprintf(SelfSongDownloadURL, i.Mid, guid, vKey)
 		mp3List = append(mp3List, mp3)
 	}
 
