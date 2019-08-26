@@ -96,7 +96,6 @@ $ music-get https://y.qq.com/n/yqq/singer/000Sp0Bz4JXH0o.html
 
 - 网易云音乐 Node.js API：[Binaryify/NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi)
 
-- [@mrdong916](https://github.com/mrdong916) 提供的QQ音乐接口（用于支持320kbps高音质下载）：[MessAPI](https://mrdong916.github.io/mess-api-doc/)
 
 ## License
 
