@@ -3,9 +3,9 @@ package main
 import (
 	"flag"
 
+	"github.com/winterssy/easylog"
 	"github.com/winterssy/music-get/conf"
 	"github.com/winterssy/music-get/handler"
-	"github.com/winterssy/music-get/pkg/easylog"
 	"github.com/winterssy/music-get/utils"
 )
 

@@ -8,7 +8,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/winterssy/music-get/pkg/easylog"
+	"github.com/winterssy/easylog"
 )
 
 const (

@@ -2,8 +2,8 @@ package tencent
 
 import (
 	"fmt"
-	"github.com/winterssy/music-get/pkg/easylog"
 
+	"github.com/winterssy/easylog"
 	"github.com/winterssy/music-get/common"
 )
 

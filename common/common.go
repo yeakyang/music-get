@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/bogem/id3v2"
+	"github.com/winterssy/easylog"
 	"github.com/winterssy/music-get/conf"
-	"github.com/winterssy/music-get/pkg/easylog"
 	"github.com/winterssy/music-get/utils"
 	"gopkg.in/cheggaaa/pb.v1"
 )
