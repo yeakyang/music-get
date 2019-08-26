@@ -45,6 +45,10 @@ func main() {
 		easylog.Fatal(err)
 	}
 
+	if len(mp3List) == 0 {
+		return
+	}
+
 	n := conf.MP3ConcurrentDownloadTasksNumber
 	if n > conf.MaxConcurrentDownloadTasksNumber {
 		n = conf.MaxConcurrentDownloadTasksNumber

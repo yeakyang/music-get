@@ -18,7 +18,7 @@ func ExtractMP3List(songs []Song, savePath string) ([]*common.MP3, error) {
 	for _, i := range songs {
 		mp3 := i.Extract()
 		vkey, filename, err := getVKey(guid, i.Mid, "M500", "mp3")
-		if err != nil {
+		if err != nil || vkey == "" {
 			easylog.Errorf("get vkey failed: %s", i.Mid)
 			continue
 		}
