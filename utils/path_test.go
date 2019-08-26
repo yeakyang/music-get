@@ -8,7 +8,7 @@ func TestExistsPath(t *testing.T) {
 		want  bool
 	}{
 		{
-			input: "logger",
+			input: "../utils",
 			want:  true,
 		},
 		{
