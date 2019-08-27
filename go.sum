@@ -10,6 +10,10 @@ github.com/mattn/go-runewidth v0.0.4 h1:2BvfKmzob6Bmd4YsL0zygOqfdFnK7GR4QL06Do4/
 github.com/mattn/go-runewidth v0.0.4/go.mod h1:LwmH8dsx7+W8Uxz3IHJYH5QSwggIsqBzpuz5H//U1FU=
 github.com/winterssy/easylog v0.0.0-20190826071358-feb0b64e4138 h1:n2dGzkYFWFbBCKoP2BI4cs8oW2xEYv/fsUPiAIkyDgA=
 github.com/winterssy/easylog v0.0.0-20190826071358-feb0b64e4138/go.mod h1:fT72gAFhtFiyAEEmIL3lR1tGCKLWAxVbG7tu9MV386Y=
+github.com/winterssy/easylog v0.0.0-20190826133030-c68f6ba8db88 h1:vgxT5nCUgejSJiKWT4mD7iUkAQ2245gt+dYtvbOJ9cE=
+github.com/winterssy/easylog v0.0.0-20190826133030-c68f6ba8db88/go.mod h1:fT72gAFhtFiyAEEmIL3lR1tGCKLWAxVbG7tu9MV386Y=
+github.com/winterssy/easylog v0.0.0-20190827120551-e22e61835b94 h1:AYAcSCsgPO2akhJkJOZWbjcZFdKvzC2/O0x4mVOo2PE=
+github.com/winterssy/easylog v0.0.0-20190827120551-e22e61835b94/go.mod h1:fT72gAFhtFiyAEEmIL3lR1tGCKLWAxVbG7tu9MV386Y=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
 golang.org/x/crypto v0.0.0-20190530122614-20be4c3c3ed5 h1:8dUaAV7K4uHsF56JQWkprecIQKdPHtR9jCHF5nB8uzc=
 golang.org/x/crypto v0.0.0-20190530122614-20be4c3c3ed5/go.mod h1:yigFU9vqHzYiE8UmvKecakEJjdnWj3jj499lnFckfCI=
