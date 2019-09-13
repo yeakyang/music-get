@@ -3,8 +3,9 @@ package tencent
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/winterssy/music-get/common"
 	"regexp"
+
+	"github.com/winterssy/music-get/common"
 )
 
 const (
@@ -68,6 +69,7 @@ func getVkey(guid, songmid string) (vkey string, err error) {
 		s := regexp.MustCompile("vkey=(\\w+)").FindStringSubmatch(m.Req0.Data.TestFile2g)
 		if len(s) < 2 || s[1] == "" {
 			err = fmt.Errorf("get vkey failed: %s", songmid)
+			return
 		}
 		vkey = s[1]
 		return
