@@ -3,22 +3,24 @@ package tencent
 import (
 	"encoding/json"
 	"fmt"
-
 	"github.com/winterssy/music-get/common"
+	"regexp"
 )
 
 const (
-	MusicExpressAPI = "https://c.y.qq.com/base/fcgi-bin/fcg_music_express_mobile3.fcg"
+	MusicExpressAPI = "https://u.y.qq.com/cgi-bin/musicu.fcg"
 )
 
 type MusicExpress struct {
 	Code int `json:"code"`
-	Data struct {
-		Items []struct {
-			Filename string `json:"filename"`
-			VKey     string `json:"vkey"`
-		}
-	} `json:"data"`
+	Req0 struct {
+		Data struct {
+			MidUrlInfo []struct {
+				Vkey string `json:"vkey"`
+			} `json:"midurlinfo"`
+			TestFile2g string `json:"testfile2g"`
+		} `json:"data"`
+	} `json:"req0"`
 }
 
 // func createGuid() string {
@@ -26,15 +28,31 @@ type MusicExpress struct {
 // 	return strconv.Itoa(r.Intn(10000000000-1000000000) + 1000000000)
 // }
 
-func getVKey(guid string, songmid string, brCode string, ext string) (vkey string, filename string, err error) {
-	query := map[string]string{
-		"cid":      "205361747",
-		"guid":     guid,
-		"format":   "json",
-		"songmid":  songmid,
-		"filename": fmt.Sprintf("%s%s.%s", brCode, songmid, ext),
+func getVkey(guid, songmid string) (vkey string, err error) {
+	param := map[string]interface{}{
+		"guid":      guid,
+		"loginflag": 1,
+		"songmid":   []string{songmid},
+		"songtype":  []int{0},
+		"uin":       "0",
+		"platform":  "20",
+	}
+	req0 := map[string]interface{}{
+		"module": "vkey.GetVkeyServer",
+		"method": "CgiGetVkey",
+		"param":  param,
+	}
+	data := map[string]interface{}{
+		"req0": req0,
+	}
+	enc, err := json.Marshal(data)
+	if err != nil {
+		return
 	}
 
+	query := map[string]string{
+		"data": string(enc),
+	}
 	resp, err := common.Request("GET", MusicExpressAPI, query, nil, common.TencentMusic)
 	if err != nil {
 		return
@@ -46,12 +64,15 @@ func getVKey(guid string, songmid string, brCode string, ext string) (vkey strin
 		return
 	}
 
-	if len(m.Data.Items) == 0 {
-		err = fmt.Errorf("get vkey failed: %s", songmid)
+	if len(m.Req0.Data.MidUrlInfo) == 0 || m.Req0.Data.MidUrlInfo[0].Vkey == "" {
+		s := regexp.MustCompile("vkey=(\\w+)").FindStringSubmatch(m.Req0.Data.TestFile2g)
+		if len(s) < 2 || s[1] == "" {
+			err = fmt.Errorf("get vkey failed: %s", songmid)
+		}
+		vkey = s[1]
 		return
 	}
 
-	vkey = m.Data.Items[0].VKey
-	filename = m.Data.Items[0].Filename
+	vkey = m.Req0.Data.MidUrlInfo[0].Vkey
 	return
 }
