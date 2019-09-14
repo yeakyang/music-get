@@ -21,7 +21,7 @@ type SongURLResponse struct {
 	Code int `json:"code"`
 	Req0 struct {
 		Data struct {
-			MidUrlInfo []struct {
+			MidURLInfo []struct {
 				SongMid string `json:"songmid"`
 				Vkey    string `json:"vkey"`
 			} `json:"midurlinfo"`
