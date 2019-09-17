@@ -2,10 +2,12 @@ package netease
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
-	"github.com/winterssy/music-get/common"
+	"github.com/winterssy/music-get/provider"
+
 	"github.com/winterssy/music-get/utils"
 )
 
@@ -46,10 +48,12 @@ type Playlist struct {
 	TrackIds []TrackId `json:"trackIds"`
 }
 
-func (s *Song) Extract() *common.MP3 {
-	title, album := strings.TrimSpace(s.Name), strings.TrimSpace(s.Album.Name)
+func (s *Song) resolve() *provider.MP3 {
+	title := strings.TrimSpace(s.Name)
+	album := strings.TrimSpace(s.Album.Name)
 	publishTime := time.Unix(s.PublishTime/1000, s.PublishTime%1000*1000*1000)
-	year, track := fmt.Sprintf("%d", publishTime.Year()), fmt.Sprintf("%d", s.Position)
+	year := strconv.Itoa(publishTime.Year())
+	track := strconv.Itoa(s.Position)
 	coverImage := s.Album.PicURL
 
 	artistList := make([]string, 0, len(s.Artist))
@@ -59,18 +63,18 @@ func (s *Song) Extract() *common.MP3 {
 	artist := strings.Join(artistList, "/")
 
 	fileName := utils.TrimInvalidFilePathChars(fmt.Sprintf("%s - %s.mp3", strings.Join(artistList, " "), title))
-	tag := common.Tag{
-		Title:      title,
-		Artist:     artist,
-		Album:      album,
-		Year:       year,
-		Track:      track,
-		CoverImage: coverImage,
+	tag := provider.Tag{
+		Title:         title,
+		Artist:        artist,
+		Album:         album,
+		Year:          year,
+		Track:         track,
+		CoverImageURL: coverImage,
 	}
 
-	return &common.MP3{
+	return &provider.MP3{
 		FileName: fileName,
 		Tag:      tag,
-		Origin:   common.NeteaseMusic,
+		Provider: provider.NetEaseMusic,
 	}
 }

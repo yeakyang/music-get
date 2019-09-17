@@ -6,21 +6,13 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+
+	"github.com/winterssy/music-get/conf"
 )
 
 const (
 	LogFileName = "music-get.log"
 )
-
-type DownloadError struct {
-	Name string `json:"name"`
-	URL  string `json:"url"`
-	Code int    `json:"code"`
-}
-
-func newDownloadError(name, url string, code int) DownloadError {
-	return DownloadError{name, url, code}
-}
 
 func outputLog(errs []DownloadError) error {
 	lines := make([]string, 0, len(errs))
@@ -35,12 +27,7 @@ func outputLog(errs []DownloadError) error {
 }
 
 func writeToFile(filename string, lines []string) error {
-	currentDir, err := os.Getwd()
-	if err != nil {
-		return err
-	}
-
-	file, err := os.OpenFile(filepath.Join(currentDir, filename), os.O_CREATE|os.O_WRONLY, 0644)
+	file, err := os.OpenFile(filepath.Join(conf.Workspace, filename), os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return err
 	}

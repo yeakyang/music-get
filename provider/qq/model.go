@@ -1,11 +1,12 @@
-package tencent
+package qq
 
 import (
 	"fmt"
 	"strings"
 	"time"
 
-	"github.com/winterssy/music-get/common"
+	"github.com/winterssy/music-get/provider"
+
 	"github.com/winterssy/music-get/utils"
 )
 
@@ -50,7 +51,7 @@ type CD struct {
 	SongList []Song `json:"songlist"`
 }
 
-func (s *Song) Extract() *common.MP3 {
+func (s *Song) Extract() *provider.MP3 {
 	title, album := strings.TrimSpace(s.Title), strings.TrimSpace(s.Album.Name)
 	playable := s.Action.Switch != 65537
 	publishTime, _ := time.Parse("2006-01-02", s.TimePublic)
@@ -64,19 +65,19 @@ func (s *Song) Extract() *common.MP3 {
 	artist := strings.Join(artistList, "/")
 
 	fileName := utils.TrimInvalidFilePathChars(fmt.Sprintf("%s - %s.mp3", strings.Join(artistList, " "), title))
-	tag := common.Tag{
-		Title:      title,
-		Artist:     artist,
-		Album:      album,
-		Year:       year,
-		Track:      track,
-		CoverImage: coverImage,
+	tag := provider.Tag{
+		Title:         title,
+		Artist:        artist,
+		Album:         album,
+		Year:          year,
+		Track:         track,
+		CoverImageURL: coverImage,
 	}
 
-	return &common.MP3{
+	return &provider.MP3{
 		FileName: fileName,
 		Playable: playable,
 		Tag:      tag,
-		Origin:   common.TencentMusic,
+		Provider: provider.QQMusic,
 	}
 }

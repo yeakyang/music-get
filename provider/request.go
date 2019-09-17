@@ -1,4 +1,4 @@
-package common
+package provider
 
 import (
 	"fmt"
@@ -20,7 +20,7 @@ const (
 	NeteaseMusicReferer = "https://music.163.com"
 	TencentMusicOrigin  = "https://c.y.qq.com"
 	TencentMusicReferer = "https://c.y.qq.com"
-	RequestTimeout      = 120 * time.Second
+	RequestTimeout      = 60 * time.Second
 )
 
 var (
@@ -28,14 +28,6 @@ var (
 	loadCachedCookiesOnce sync.Once
 	DefaultHTTPClient     *http.Client
 )
-
-// any parsed request must implement this interface
-type MusicRequest interface {
-	RequireLogin() bool
-	Login() error
-	Do() error
-	Extract() ([]*MP3, error)
-}
 
 func loadCachedCookies(reqURL *urlpkg.URL, client *http.Client) {
 	f := func() {
@@ -108,10 +100,10 @@ func Request(method, url string, query map[string]string, body io.Reader, origin
 	}
 
 	switch origin {
-	case NeteaseMusic:
+	case NetEaseMusic:
 		req.Header.Set("Origin", NeteaseMusicOrigin)
 		req.Header.Set("Referer", NeteaseMusicReferer)
-	case TencentMusic:
+	case QQMusic:
 		req.Header.Set("Origin", TencentMusicOrigin)
 		req.Header.Set("Referer", TencentMusicReferer)
 	}

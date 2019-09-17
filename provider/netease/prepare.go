@@ -1,10 +1,10 @@
 package netease
 
 import (
-	"github.com/winterssy/music-get/common"
+	"github.com/winterssy/music-get/provider"
 )
 
-func ExtractMP3List(songs []Song, savePath string) ([]*common.MP3, error) {
+func prepare(songs []Song, savePath string) ([]*provider.MP3, error) {
 	n := len(songs)
 	ids := make([]int, 0, n)
 	for _, i := range songs {
@@ -22,9 +22,9 @@ func ExtractMP3List(songs []Song, savePath string) ([]*common.MP3, error) {
 		urlMap[i.Id] = i.URL
 	}
 
-	mp3List := make([]*common.MP3, 0, n)
+	mp3List := make([]*provider.MP3, 0, n)
 	for _, i := range songs {
-		mp3 := i.Extract()
+		mp3 := i.resolve()
 		mp3.SavePath = savePath
 		mp3.Playable = codeMap[i.Id] == 200
 		mp3.DownloadURL = urlMap[i.Id]

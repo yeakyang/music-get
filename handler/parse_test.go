@@ -3,9 +3,9 @@ package handler
 import (
 	"testing"
 
-	"github.com/winterssy/music-get/common"
-	"github.com/winterssy/music-get/netease"
-	"github.com/winterssy/music-get/tencent"
+	"github.com/winterssy/music-get/provider"
+	"github.com/winterssy/music-get/provider/netease"
+	"github.com/winterssy/music-get/provider/qq"
 )
 
 func TestParse(t *testing.T) {
@@ -21,7 +21,7 @@ func TestParse(t *testing.T) {
 		TencentPlaylist   = "https://y.qq.com/n/yqq/playlist/5474239760.html"
 	)
 
-	var req common.MusicRequest
+	var req provider.MusicRequest
 	req, _ = Parse(NeteaseSong)
 	if _, ok := req.(*netease.SongRequest); !ok {
 		t.Errorf("failed to parse %q", NeteaseSong)
@@ -43,27 +43,27 @@ func TestParse(t *testing.T) {
 	}
 
 	req, _ = Parse(TencentSong)
-	if _, ok := req.(*tencent.SongRequest); !ok {
+	if _, ok := req.(*qq.SongRequest); !ok {
 		t.Errorf("failed to parse %q", TencentSong)
 	}
 
 	req, _ = Parse(TencentSinger)
-	if _, ok := req.(*tencent.SingerRequest); !ok {
+	if _, ok := req.(*qq.SingerRequest); !ok {
 		t.Errorf("failed to parse %q", TencentSinger)
 	}
 
 	req, _ = Parse(TencentAlbum)
-	if _, ok := req.(*tencent.AlbumRequest); !ok {
+	if _, ok := req.(*qq.AlbumRequest); !ok {
 		t.Errorf("failed to parse %q", TencentAlbum)
 	}
 
 	req, _ = Parse(TencentPlaySquare)
-	if _, ok := req.(*tencent.PlaylistRequest); !ok {
+	if _, ok := req.(*qq.PlaylistRequest); !ok {
 		t.Errorf("failed to parse %q", TencentPlaySquare)
 	}
 
 	req, _ = Parse(TencentPlaylist)
-	if _, ok := req.(*tencent.PlaylistRequest); !ok {
+	if _, ok := req.(*qq.PlaylistRequest); !ok {
 		t.Errorf("failed to parse %q", TencentPlaylist)
 	}
 }

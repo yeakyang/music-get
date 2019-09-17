@@ -7,7 +7,7 @@
 
 [网易云音乐](https://music.163.com) | [QQ音乐](https://y.qq.com) 下载助手，支持一键下载单曲/专辑/歌单以及歌手热门歌曲，并自动更新音乐标签。
 
-![music-get](/screenshots/music-get.gif)
+![preview](/docs/preview.gif)
 
 >本项目仅供学习研究使用。如侵犯你的权益，请 [联系作者](mailto:winterssy@foxmail.com) 删除。
 
@@ -44,31 +44,12 @@ $ music-get https://y.qq.com/n/yqq/singer/000Sp0Bz4JXH0o.html
 ```
 
 命令选项：
-- `-br`：优先下载音质，可选128/192/320，默认128。
-- `-o`：下载保存目录，默认为 `/home/用户名/Music-Get`  （Windows为 `C:\\Users\\用户名\\Music-Get` ）。
+- `-br`：优先下载音质，可选128/192/320，默认128（当前该选项无效）。
 - `-f`：是否覆盖已下载的音乐，默认跳过。
 - `-n`：并发下载任务数，最大值16，默认1，即单任务下载。
 - `-h`：获取命令帮助。
 
 **注：** 命令选项必须先于其它命令行参数输入。
-
-## 配置文件
-
-程序的配置文件位于 `/home/用户名/music-get.json`（Windows为 `C:\\Users\\用户名\\music-get.json` ），用于本地存储cookies以及配置默认下载的比特率（最近一次使用的值，优先级低于 `-br` 指令）。**请勿对该文件进行任何修改！**
-
-## 运行截图
-
-- 单任务下载：
-
-![](/screenshots/single-download.png)
-
-- 多任务同时下载：
-
-![](/screenshots/concurrent-download.png)
-
-- 自动更新音乐标签（效果预览）：
-
-![](/screenshots/tag-updated.png)
 
 ## FAQ
 

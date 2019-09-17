@@ -6,7 +6,6 @@ import (
 	"github.com/winterssy/easylog"
 	"github.com/winterssy/music-get/conf"
 	"github.com/winterssy/music-get/handler"
-	"github.com/winterssy/music-get/utils"
 )
 
 func main() {
@@ -16,10 +15,6 @@ func main() {
 
 	if len(flag.Args()) == 0 {
 		easylog.Fatal("Missing music address")
-	}
-
-	if err := utils.BuildPathIfNotExist(conf.MP3DownloadDir); err != nil {
-		easylog.Fatalf("Failed to build path: %s: %s", conf.MP3DownloadDir, err)
 	}
 
 	url := flag.Args()[0]
@@ -37,14 +32,14 @@ func main() {
 	}
 
 	if err := conf.M.Save(); err != nil {
-		easylog.Warnf("Save config error: %s", err.Error())
+		easylog.Errorf("Save config failed: %s", err.Error())
 	}
 
 	if err = req.Do(); err != nil {
 		easylog.Fatal(err)
 	}
 
-	mp3List, err := req.Extract()
+	mp3List, err := req.Prepare()
 	if err != nil {
 		easylog.Fatal(err)
 	}
@@ -57,6 +52,7 @@ func main() {
 	if n > conf.MaxConcurrentDownloadTasksNumber {
 		n = conf.MaxConcurrentDownloadTasksNumber
 	}
+
 	switch {
 	case n > 1:
 		handler.ConcurrentDownload(mp3List, n)

@@ -1,11 +1,12 @@
-package tencent
+package qq
 
 import (
 	"encoding/json"
-	"fmt"
 	"path/filepath"
 
-	"github.com/winterssy/music-get/common"
+	"github.com/winterssy/music-get/pkg/ecode"
+	"github.com/winterssy/music-get/provider"
+
 	"github.com/winterssy/music-get/utils"
 )
 
@@ -61,17 +62,17 @@ func NewSongURLRequest(guid string, mids ...string) *SongURLRequest {
 }
 
 func (s *SongURLRequest) Do() error {
-	resp, err := common.Request("GET", SongURLAPI, s.Params, nil, common.TencentMusic)
+	resp, err := provider.Request("GET", SongURLAPI, s.Params, nil, provider.QQMusic)
 	if err != nil {
-		return err
+		return ecode.NewError(ecode.HTTPRequestException, "qq.SongURLRequest.Do")
 	}
 	defer resp.Body.Close()
 
 	if err = json.NewDecoder(resp.Body).Decode(&s.Response); err != nil {
-		return err
+		return ecode.NewError(ecode.APIResponseException, "qq.SongURLRequest.Do:json.Unmarshal")
 	}
 	if s.Response.Code != 0 {
-		return fmt.Errorf("%s %s error: %d", resp.Request.Method, resp.Request.URL.String(), s.Response.Code)
+		return ecode.NewError(ecode.APIResponseException, "qq.SongURLRequest.Do")
 	}
 
 	return nil
@@ -105,24 +106,24 @@ func (s *SongRequest) Login() error {
 }
 
 func (s *SongRequest) Do() error {
-	resp, err := common.Request("GET", SongAPI, s.Params, nil, common.TencentMusic)
+	resp, err := provider.Request("GET", SongAPI, s.Params, nil, provider.QQMusic)
 	if err != nil {
-		return err
+		return ecode.NewError(ecode.HTTPRequestException, "qq.SongRequest.Do")
 	}
 	defer resp.Body.Close()
 
 	if err = json.NewDecoder(resp.Body).Decode(&s.Response); err != nil {
-		return err
+		return ecode.NewError(ecode.APIResponseException, "qq.SongRequest.Do:json.Unmarshal")
 	}
 	if s.Response.Code != 0 {
-		return fmt.Errorf("%s %s error: %d", resp.Request.Method, resp.Request.URL.String(), s.Response.Code)
+		return ecode.NewError(ecode.APIResponseException, "qq.SongRequest.Do")
 	}
 
 	return nil
 }
 
-func (s *SongRequest) Extract() ([]*common.MP3, error) {
-	return ExtractMP3List(s.Response.Data, ".")
+func (s *SongRequest) Prepare() ([]*provider.MP3, error) {
+	return prepare(s.Response.Data, ".")
 }
 
 type SingerResponse struct {
@@ -164,29 +165,29 @@ func (s *SingerRequest) Login() error {
 }
 
 func (s *SingerRequest) Do() error {
-	resp, err := common.Request("GET", ArtistAPI, s.Params, nil, common.TencentMusic)
+	resp, err := provider.Request("GET", ArtistAPI, s.Params, nil, provider.QQMusic)
 	if err != nil {
-		return err
+		return ecode.NewError(ecode.HTTPRequestException, "qq.SingerRequest.Do")
 	}
 	defer resp.Body.Close()
 
 	if err = json.NewDecoder(resp.Body).Decode(&s.Response); err != nil {
-		return err
+		return ecode.NewError(ecode.APIResponseException, "qq.SingerRequest.Do:json.Unmarshal")
 	}
 	if s.Response.Code != 0 {
-		return fmt.Errorf("%s %s error: %d", resp.Request.Method, resp.Request.URL.String(), s.Response.Code)
+		return ecode.NewError(ecode.APIResponseException, "qq.SingerRequest.Do")
 	}
 
 	return nil
 }
 
-func (s *SingerRequest) Extract() ([]*common.MP3, error) {
+func (s *SingerRequest) Prepare() ([]*provider.MP3, error) {
 	savePath := filepath.Join(".", utils.TrimInvalidFilePathChars(s.Response.Data.SingerName))
 	var songs []Song
 	for _, i := range s.Response.Data.List {
 		songs = append(songs, i.MusicData)
 	}
-	return ExtractMP3List(songs, savePath)
+	return prepare(songs, savePath)
 }
 
 type AlbumResponse struct {
@@ -221,25 +222,25 @@ func (a *AlbumRequest) Login() error {
 }
 
 func (a *AlbumRequest) Do() error {
-	resp, err := common.Request("GET", AlbumAPI, a.Params, nil, common.TencentMusic)
+	resp, err := provider.Request("GET", AlbumAPI, a.Params, nil, provider.QQMusic)
 	if err != nil {
-		return err
+		return ecode.NewError(ecode.HTTPRequestException, "qq.AlbumRequest.Do")
 	}
 	defer resp.Body.Close()
 
 	if err = json.NewDecoder(resp.Body).Decode(&a.Response); err != nil {
-		return err
+		return ecode.NewError(ecode.APIResponseException, "qq.AlbumRequest.Do:json.Unmarshal")
 	}
 	if a.Response.Code != 0 {
-		return fmt.Errorf("%s %s error: %d", resp.Request.Method, resp.Request.URL.String(), a.Response.Code)
+		return ecode.NewError(ecode.APIResponseException, "qq.AlbumRequest.Do")
 	}
 
 	return nil
 }
 
-func (a *AlbumRequest) Extract() ([]*common.MP3, error) {
+func (a *AlbumRequest) Prepare() ([]*provider.MP3, error) {
 	savePath := filepath.Join(".", utils.TrimInvalidFilePathChars(a.Response.Data.GetAlbumInfo.FAlbumName))
-	return ExtractMP3List(a.Response.Data.GetSongInfo, savePath)
+	return prepare(a.Response.Data.GetSongInfo, savePath)
 }
 
 type PlaylistResponse struct {
@@ -273,27 +274,27 @@ func (p *PlaylistRequest) Login() error {
 }
 
 func (p *PlaylistRequest) Do() error {
-	resp, err := common.Request("GET", PlaylistAPI, p.Params, nil, common.TencentMusic)
+	resp, err := provider.Request("GET", PlaylistAPI, p.Params, nil, provider.QQMusic)
 	if err != nil {
-		return err
+		return ecode.NewError(ecode.HTTPRequestException, "qq.PlaylistRequest.Do")
 	}
 	defer resp.Body.Close()
 
 	if err = json.NewDecoder(resp.Body).Decode(&p.Response); err != nil {
-		return err
+		return ecode.NewError(ecode.APIResponseException, "qq.PlaylistRequest.Do:json.Unmarshal")
 	}
 	if p.Response.Code != 0 {
-		return fmt.Errorf("%s %s error: %d", resp.Request.Method, resp.Request.URL.String(), p.Response.Code)
+		return ecode.NewError(ecode.APIResponseException, "qq.PlaylistRequest.Do")
 	}
 
 	return nil
 }
 
-func (p *PlaylistRequest) Extract() ([]*common.MP3, error) {
-	var res []*common.MP3
+func (p *PlaylistRequest) Prepare() ([]*provider.MP3, error) {
+	var res []*provider.MP3
 	for _, i := range p.Response.Data.CDList {
 		savePath := filepath.Join(".", utils.TrimInvalidFilePathChars(i.DissName))
-		mp3List, err := ExtractMP3List(i.SongList, savePath)
+		mp3List, err := prepare(i.SongList, savePath)
 		if err != nil {
 			continue
 		}

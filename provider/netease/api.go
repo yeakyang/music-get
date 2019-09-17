@@ -4,12 +4,15 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
-	"fmt"
 	"net/http"
+	urlpkg "net/url"
 	"path/filepath"
+	"strconv"
+	"strings"
 
-	"github.com/winterssy/music-get/common"
 	"github.com/winterssy/music-get/conf"
+	"github.com/winterssy/music-get/pkg/ecode"
+	"github.com/winterssy/music-get/provider"
 	"github.com/winterssy/music-get/utils"
 )
 
@@ -56,17 +59,17 @@ func NewSongURLRequest(ids ...int) *SongURLRequest {
 }
 
 func (s *SongURLRequest) Do() error {
-	resp, err := post(SongURLAPI, s.Params)
+	resp, err := request(SongURLAPI, s.Params)
 	if err != nil {
-		return err
+		return ecode.NewError(ecode.HTTPRequestException, "netease.SongURLRequest.Do")
 	}
 	defer resp.Body.Close()
 
 	if err = json.NewDecoder(resp.Body).Decode(&s.Response); err != nil {
-		return err
+		return ecode.NewError(ecode.APIResponseException, "netease.SongURLRequest.Do:json.Unmarshal")
 	}
 	if s.Response.Code != http.StatusOK {
-		return fmt.Errorf("%s %s error: %d %s", resp.Request.Method, resp.Request.URL.String(), s.Response.Code, s.Response.Msg)
+		return ecode.NewError(ecode.APIResponseException, "netease.SongURLRequest.Do")
 	}
 
 	return nil
@@ -106,24 +109,24 @@ func (s *SongRequest) Login() error {
 }
 
 func (s *SongRequest) Do() error {
-	resp, err := post(SongAPI, s.Params)
+	resp, err := request(SongAPI, s.Params)
 	if err != nil {
-		return err
+		return ecode.NewError(ecode.HTTPRequestException, "netease.SongRequest.Do")
 	}
 	defer resp.Body.Close()
 
 	if err = json.NewDecoder(resp.Body).Decode(&s.Response); err != nil {
-		return err
+		return ecode.NewError(ecode.APIResponseException, "netease.SongRequest.Do:json.Unmarshal")
 	}
 	if s.Response.Code != http.StatusOK {
-		return fmt.Errorf("%s %s error: %d %s", resp.Request.Method, resp.Request.URL.String(), s.Response.Code, s.Response.Msg)
+		return ecode.NewError(ecode.APIResponseException, "netease.SongRequest.Do")
 	}
 
 	return nil
 }
 
-func (s *SongRequest) Extract() ([]*common.MP3, error) {
-	return ExtractMP3List(s.Response.Songs, ".")
+func (s *SongRequest) Prepare() ([]*provider.MP3, error) {
+	return prepare(s.Response.Songs, ".")
 }
 
 type ArtistParams struct{}
@@ -154,23 +157,23 @@ func (a *ArtistRequest) Login() error {
 }
 
 func (a *ArtistRequest) Do() error {
-	resp, err := post(ArtistAPI+fmt.Sprintf("/%d", a.Id), a.Params)
+	resp, err := request(ArtistAPI+"/"+strconv.Itoa(a.Id), a.Params)
 	if err != nil {
-		return err
+		return ecode.NewError(ecode.HTTPRequestException, "netease.ArtistRequest.Do")
 	}
 	defer resp.Body.Close()
 
 	if err = json.NewDecoder(resp.Body).Decode(&a.Response); err != nil {
-		return err
+		return ecode.NewError(ecode.APIResponseException, "netease.ArtistRequest.Do:json.Unmarshal")
 	}
 	if a.Response.Code != http.StatusOK {
-		return fmt.Errorf("%s %s error: %d %s", resp.Request.Method, resp.Request.URL.String(), a.Response.Code, a.Response.Msg)
+		return ecode.NewError(ecode.APIResponseException, "netease.ArtistRequest.Do")
 	}
 
 	return nil
 }
 
-func (a *ArtistRequest) Extract() ([]*common.MP3, error) {
+func (a *ArtistRequest) Prepare() ([]*provider.MP3, error) {
 	ids := make([]int, 0, len(a.Response.HotSongs))
 	for _, i := range a.Response.HotSongs {
 		ids = append(ids, i.Id)
@@ -182,7 +185,7 @@ func (a *ArtistRequest) Extract() ([]*common.MP3, error) {
 	}
 
 	savePath := filepath.Join(".", utils.TrimInvalidFilePathChars(a.Response.Artist.Name))
-	return ExtractMP3List(req.Response.Songs, savePath)
+	return prepare(req.Response.Songs, savePath)
 }
 
 type AlbumParams struct{}
@@ -211,28 +214,28 @@ func (a *AlbumRequest) Login() error {
 }
 
 func (a *AlbumRequest) Do() error {
-	resp, err := post(AlbumAPI+fmt.Sprintf("/%d", a.Id), a.Params)
+	resp, err := request(AlbumAPI+"/"+strconv.Itoa(a.Id), a.Params)
 	if err != nil {
-		return err
+		return ecode.NewError(ecode.HTTPRequestException, "netease.AlbumRequest.Do")
 	}
 	defer resp.Body.Close()
 
 	if err = json.NewDecoder(resp.Body).Decode(&a.Response); err != nil {
-		return err
+		return ecode.NewError(ecode.APIResponseException, "netease.AlbumRequest.Do:json.Unmarshal")
 	}
 	if a.Response.Code != http.StatusOK {
-		return fmt.Errorf("%s %s error: %d %s", resp.Request.Method, resp.Request.URL.String(), a.Response.Code, a.Response.Msg)
+		return ecode.NewError(ecode.APIResponseException, "netease.AlbumRequest.Do")
 	}
 
 	return nil
 }
 
-func (a *AlbumRequest) Extract() ([]*common.MP3, error) {
+func (a *AlbumRequest) Prepare() ([]*provider.MP3, error) {
 	savePath := filepath.Join(".", utils.TrimInvalidFilePathChars(a.Response.Album.Name))
 	for i := range a.Response.Songs {
 		a.Response.Songs[i].PublishTime = a.Response.Album.PublishTime
 	}
-	return ExtractMP3List(a.Response.Songs, savePath)
+	return prepare(a.Response.Songs, savePath)
 }
 
 type PlaylistParams struct {
@@ -263,25 +266,25 @@ func (p *PlaylistRequest) Login() error {
 }
 
 func (p *PlaylistRequest) Do() error {
-	resp, err := post(PlaylistAPI, p.Params)
+	resp, err := request(PlaylistAPI, p.Params)
 	if err != nil {
-		return err
+		return ecode.NewError(ecode.HTTPRequestException, "netease.PlaylistRequest.Do")
 	}
 	defer resp.Body.Close()
 
 	if err = json.NewDecoder(resp.Body).Decode(&p.Response); err != nil {
-		return err
+		return ecode.NewError(ecode.APIResponseException, "netease.PlaylistRequest.Do:json.Unmarshal")
 	}
 	if p.Response.Code != http.StatusOK {
-		return fmt.Errorf("%s %s error: %d %s", resp.Request.Method, resp.Request.URL.String(), p.Response.Code, p.Response.Msg)
+		return ecode.NewError(ecode.APIResponseException, "netease.PlaylistRequest.Do")
 	}
 
 	return nil
 }
 
-func (p *PlaylistRequest) Extract() ([]*common.MP3, error) {
+func (p *PlaylistRequest) Prepare() ([]*provider.MP3, error) {
 	savePath := filepath.Join(".", utils.TrimInvalidFilePathChars(p.Response.Playlist.Name))
-	ids, mp3List := make([]int, 0), make([]*common.MP3, 0, len(p.Response.Playlist.TrackIds))
+	ids, songs := make([]int, 0), make([]*provider.MP3, 0, len(p.Response.Playlist.TrackIds))
 
 	count := 0
 	for _, i := range p.Response.Playlist.TrackIds {
@@ -294,11 +297,11 @@ func (p *PlaylistRequest) Extract() ([]*common.MP3, error) {
 				return nil, err
 			}
 
-			batch, err := ExtractMP3List(req.Response.Songs, savePath)
+			batch, err := prepare(req.Response.Songs, savePath)
 			if err != nil {
 				return nil, err
 			}
-			mp3List = append(mp3List, batch...)
+			songs = append(songs, batch...)
 		}
 		ids = append(ids, i.Id)
 	}
@@ -308,14 +311,14 @@ func (p *PlaylistRequest) Extract() ([]*common.MP3, error) {
 		if err := req.Do(); err != nil {
 			return nil, err
 		}
-		batch, err := ExtractMP3List(req.Response.Songs, savePath)
+		batch, err := prepare(req.Response.Songs, savePath)
 		if err != nil {
 			return nil, err
 		}
-		mp3List = append(mp3List, batch...)
+		songs = append(songs, batch...)
 	}
 
-	return mp3List, nil
+	return songs, nil
 }
 
 type LoginParams struct {
@@ -342,19 +345,32 @@ func NewLoginRequest(phone, password string) *LoginRequest {
 }
 
 func (l *LoginRequest) Do() error {
-	resp, err := post(LoginAPI, l.Params)
+	resp, err := request(LoginAPI, l.Params)
 	if err != nil {
-		return err
+		return ecode.NewError(ecode.HTTPRequestException, "netease.LoginRequest.Do")
 	}
 	defer resp.Body.Close()
 
 	if err = json.NewDecoder(resp.Body).Decode(&l.Response); err != nil {
-		return err
+		return ecode.NewError(ecode.APIResponseException, "netease.LoginRequest.Do:json.Unmarshal")
 	}
 	if l.Response.Code != http.StatusOK {
-		return fmt.Errorf("%s %s error: %d %s", resp.Request.Method, resp.Request.URL.String(), l.Response.Code, l.Response.Msg)
+		return ecode.NewError(ecode.APIResponseException, "netease.LoginRequest.Do")
 	}
 
 	conf.M.Cookies = resp.Cookies()
 	return nil
+}
+
+func request(url string, data interface{}) (*http.Response, error) {
+	enc, _ := json.Marshal(data)
+	params, encSecKey, err := Encrypt(enc)
+	if err != nil {
+		return nil, err
+	}
+
+	form := urlpkg.Values{}
+	form.Set("params", params)
+	form.Set("encSecKey", encSecKey)
+	return provider.Request("POST", url, nil, strings.NewReader(form.Encode()), provider.NetEaseMusic)
 }

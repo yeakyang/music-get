@@ -1,18 +1,18 @@
-package tencent
+package qq
 
 import (
 	"errors"
 	"fmt"
 	"regexp"
 
-	"github.com/winterssy/music-get/common"
+	"github.com/winterssy/music-get/provider"
 )
 
 const (
 	SongDownloadURL = "http://aqqmusic.tc.qq.com/amobile.music.tc.qq.com/M500%s.mp3?guid=%s&vkey=%s&uin=0&fromtag=8"
 )
 
-func ExtractMP3List(songs []Song, savePath string) ([]*common.MP3, error) {
+func prepare(songs []Song, savePath string) ([]*provider.MP3, error) {
 	n := len(songs)
 	// mids := make([]string, 0, n)
 	// for _, i := range songs {
@@ -44,7 +44,7 @@ func ExtractMP3List(songs []Song, savePath string) ([]*common.MP3, error) {
 	// 	}
 	// }
 
-	mp3List := make([]*common.MP3, 0, len(songs))
+	mp3List := make([]*provider.MP3, 0, len(songs))
 	for _, i := range songs {
 		mp3 := i.Extract()
 		// if urlMap[i.Mid] == "" {
