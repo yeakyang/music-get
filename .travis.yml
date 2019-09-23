@@ -3,7 +3,7 @@ dist: xenial
 language: go
 
 go:
-  - 1.12.x
+  - 1.13.x
 
 # Note: If you're working inside $GOPATH/src, go modules are disabled by default and can be enabled by setting GO111MODULE=on.
 env:

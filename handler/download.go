@@ -19,14 +19,11 @@ type DownloadError struct {
 func SingleDownload(mp3List []*provider.MP3) {
 	total, success, failure, ignore := len(mp3List), 0, 0, 0
 
-	wg := &sync.WaitGroup{}
 	var failureInfo []DownloadError
 	for _, m := range mp3List {
 		switch status := m.SingleDownload(); status {
 		case ecode.Success:
 			success++
-			wg.Add(1)
-			go m.UpdateTag(wg)
 		case ecode.NoCopyright, ecode.AlreadyDownloaded:
 			ignore++
 		default:
@@ -36,7 +33,6 @@ func SingleDownload(mp3List []*provider.MP3) {
 			os.Remove(filepath.Join(m.SavePath, m.FileName))
 		}
 	}
-	wg.Wait()
 
 	fmt.Printf("\nDownload report --> total: %d, success: %d, failure: %d, ignore: %d\n", total, success, failure, ignore)
 
@@ -67,8 +63,6 @@ func ConcurrentDownload(mp3List []*provider.MP3, n int) {
 		switch task.Status {
 		case ecode.Success:
 			success++
-			wg.Add(1)
-			go task.MP3.UpdateTag(wg)
 		case ecode.NoCopyright, ecode.AlreadyDownloaded:
 			ignore++
 		default:
@@ -78,7 +72,6 @@ func ConcurrentDownload(mp3List []*provider.MP3, n int) {
 			os.Remove(filepath.Join(task.MP3.SavePath, task.MP3.FileName))
 		}
 	}
-	wg.Wait()
 
 	fmt.Printf("\nDownload report --> total: %d, success: %d, failure: %d, ignore: %d\n", total, success, failure, ignore)
 

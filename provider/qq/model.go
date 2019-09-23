@@ -51,7 +51,7 @@ type CD struct {
 	SongList []Song `json:"songlist"`
 }
 
-func (s *Song) Extract() *provider.MP3 {
+func (s *Song) resolve() *provider.MP3 {
 	title, album := strings.TrimSpace(s.Title), strings.TrimSpace(s.Album.Name)
 	playable := s.Action.Switch != 65537
 	publishTime, _ := time.Parse("2006-01-02", s.TimePublic)

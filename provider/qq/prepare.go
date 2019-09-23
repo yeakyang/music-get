@@ -46,7 +46,7 @@ func prepare(songs []Song, savePath string) ([]*provider.MP3, error) {
 
 	mp3List := make([]*provider.MP3, 0, len(songs))
 	for _, i := range songs {
-		mp3 := i.Extract()
+		mp3 := i.resolve()
 		// if urlMap[i.Mid] == "" {
 		// 	easylog.Errorf("get vkey failed: %s", i.Mid)
 		// 	continue
