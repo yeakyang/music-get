@@ -29,7 +29,7 @@ var (
 	MP3ConcurrentDownloadTasksNumber int
 )
 
-func init() {
+func Init() {
 	Workspace, err := os.Getwd()
 	if err != nil {
 		easylog.Fatal(err)

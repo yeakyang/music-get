@@ -13,6 +13,7 @@ func main() {
 	// easylog.SetFlags(easylog.LstdFlags|easylog.Lshortfile)
 	// easylog.SetLevel(easylog.Ldebug)
 
+	conf.Init()
 	if len(flag.Args()) == 0 {
 		easylog.Fatal("Missing music address")
 	}
