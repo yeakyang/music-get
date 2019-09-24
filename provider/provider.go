@@ -72,14 +72,14 @@ func (m *MP3) SingleDownload() (status int) {
 		return
 	}
 
-	m.SavePath = filepath.Join(conf.MP3DownloadDir, m.SavePath)
+	m.SavePath = filepath.Join(conf.Conf.DownloadDir, m.SavePath)
 	if err := utils.BuildPathIfNotExist(m.SavePath); err != nil {
 		status = ecode.BuildPathException
 		return
 	}
 
 	fPath := filepath.Join(m.SavePath, m.FileName)
-	if !conf.DownloadOverwrite {
+	if !conf.Conf.DownloadOverwrite {
 		if downloaded, _ := utils.ExistsPath(fPath); downloaded {
 			status = ecode.AlreadyDownloaded
 			return
@@ -138,14 +138,14 @@ func (m *MP3) ConcurrentDownload(taskList chan DownloadTask, taskQueue chan stru
 		return
 	}
 
-	m.SavePath = filepath.Join(conf.MP3DownloadDir, m.SavePath)
+	m.SavePath = filepath.Join(conf.Conf.DownloadDir, m.SavePath)
 	if err := utils.BuildPathIfNotExist(m.SavePath); err != nil {
 		status = ecode.BuildPathException
 		return
 	}
 
 	fPath := filepath.Join(m.SavePath, m.FileName)
-	if !conf.DownloadOverwrite {
+	if !conf.Conf.DownloadOverwrite {
 		if downloaded, _ := utils.ExistsPath(fPath); downloaded {
 			status = ecode.AlreadyDownloaded
 			return

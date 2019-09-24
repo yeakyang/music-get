@@ -47,7 +47,7 @@ type SongURLRequest struct {
 }
 
 func NewSongURLRequest(ids ...int) *SongURLRequest {
-	br := conf.MP3DownloadBr
+	br := conf.DefaultDownloadBr
 	switch br {
 	case 128, 192, 320:
 		br *= 1000
@@ -358,7 +358,7 @@ func (l *LoginRequest) Do() error {
 		return ecode.NewError(ecode.APIResponseException, "netease.LoginRequest.Do")
 	}
 
-	conf.M.Cookies = resp.Cookies()
+	conf.Conf.Cookies = resp.Cookies()
 	return nil
 }
 

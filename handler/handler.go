@@ -27,7 +27,7 @@ func outputLog(errs []DownloadError) error {
 }
 
 func writeToFile(filename string, lines []string) error {
-	file, err := os.OpenFile(filepath.Join(conf.Workspace, filename), os.O_CREATE|os.O_WRONLY, 0644)
+	file, err := os.OpenFile(filepath.Join(conf.Conf.Workspace, filename), os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return err
 	}

@@ -13,7 +13,7 @@ import (
 )
 
 func isAuthenticated() bool {
-	for _, i := range conf.M.Cookies {
+	for _, i := range conf.Conf.Cookies {
 		if strings.ToUpper(i.Name) == "MUSIC_U" && i.Expires.After(time.Now()) {
 			return true
 		}

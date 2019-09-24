@@ -31,8 +31,8 @@ var (
 
 func loadCachedCookies(reqURL *urlpkg.URL, client *http.Client) {
 	f := func() {
-		if len(conf.M.Cookies) > 0 {
-			client.Jar.SetCookies(reqURL, conf.M.Cookies)
+		if len(conf.Conf.Cookies) > 0 {
+			client.Jar.SetCookies(reqURL, conf.Conf.Cookies)
 		}
 	}
 	loadCachedCookiesOnce.Do(f)
