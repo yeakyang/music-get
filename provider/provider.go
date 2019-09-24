@@ -5,14 +5,11 @@ import (
 	"os"
 	"path/filepath"
 	"sync"
-	"time"
 
-	"gopkg.in/cheggaaa/pb.v1"
-
-	"github.com/winterssy/music-get/pkg/ecode"
-
+	"github.com/cheggaaa/pb/v3"
 	"github.com/winterssy/easylog"
 	"github.com/winterssy/music-get/conf"
+	"github.com/winterssy/music-get/pkg/ecode"
 	"github.com/winterssy/music-get/utils"
 )
 
@@ -94,18 +91,17 @@ func (m *MP3) SingleDownload() (status int) {
 	}
 	defer resp.Body.Close()
 
-	f, err := os.Create(fPath)
+	f, err := os.OpenFile(fPath, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		status = ecode.BuildFileException
 		return
 	}
 	defer f.Close()
 
-	bar := pb.New(int(resp.ContentLength)).SetUnits(pb.U_BYTES).SetRefreshRate(100 * time.Millisecond)
-	bar.ShowSpeed = true
+	bar := pb.Full.Start64(resp.ContentLength)
 	bar.Start()
-	reader := bar.NewProxyReader(resp.Body)
-	n, err := io.Copy(f, reader)
+	barReader := bar.NewProxyReader(resp.Body)
+	n, err := io.Copy(f, barReader)
 	if err != nil || n != resp.ContentLength {
 		status = ecode.FileTransferException
 		return
