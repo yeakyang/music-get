@@ -9,16 +9,13 @@ import (
 )
 
 func main() {
-	// For debug
-	// easylog.SetFlags(easylog.LstdFlags|easylog.Lshortfile)
-	// easylog.SetLevel(easylog.Ldebug)
 	flag.Parse()
 	if len(flag.Args()) == 0 {
-		easylog.Panic("Missing music address")
+		easylog.Fatal("Missing music address")
 	}
 
 	if err := conf.Init(); err != nil {
-		easylog.Panic(err)
+		easylog.Fatal(err)
 	}
 
 	url := flag.Args()[0]
