@@ -52,7 +52,7 @@ func Init() error {
 	}
 
 	confPath = filepath.Join(pwd, "music-get.json")
-	if err = load(confPath); err == nil {
+	if err = load(confPath); err != nil {
 		easylog.Warn("Load config file failed, you may run for the first time")
 	}
 
