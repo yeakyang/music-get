@@ -1,54 +1,9 @@
 package provider
 
 import (
-	"fmt"
-	"io"
 	"math/rand"
-	"net/http"
-	"net/http/cookiejar"
-	urlpkg "net/url"
-	"strings"
-	"sync"
 	"time"
-
-	"github.com/winterssy/music-get/conf"
-	"golang.org/x/net/publicsuffix"
 )
-
-const (
-	NeteaseMusicOrigin  = "https://music.163.com"
-	NeteaseMusicReferer = "https://music.163.com"
-	TencentMusicOrigin  = "https://c.y.qq.com"
-	TencentMusicReferer = "https://c.y.qq.com"
-	RequestTimeout      = 60 * time.Second
-)
-
-var (
-	getHTTPClientOnce     sync.Once
-	loadCachedCookiesOnce sync.Once
-	DefaultHTTPClient     *http.Client
-)
-
-func loadCachedCookies(reqURL *urlpkg.URL, client *http.Client) {
-	f := func() {
-		if len(conf.Conf.Cookies) > 0 {
-			client.Jar.SetCookies(reqURL, conf.Conf.Cookies)
-		}
-	}
-	loadCachedCookiesOnce.Do(f)
-}
-
-func getHTTPClient() *http.Client {
-	f := func() {
-		jar, _ := cookiejar.New(&cookiejar.Options{PublicSuffixList: publicsuffix.List})
-		DefaultHTTPClient = &http.Client{
-			Timeout: RequestTimeout,
-			Jar:     jar,
-		}
-	}
-	getHTTPClientOnce.Do(f)
-	return DefaultHTTPClient
-}
 
 func chooseUserAgent() string {
 	var userAgentList = []string{
@@ -70,54 +25,4 @@ func chooseUserAgent() string {
 
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	return userAgentList[r.Intn(len(userAgentList))]
-}
-
-func Request(method, url string, query map[string]string, body io.Reader, origin int) (*http.Response, error) {
-	reqURL, err := urlpkg.Parse(url)
-	if err != nil {
-		return nil, err
-	}
-
-	client := getHTTPClient()
-	loadCachedCookies(reqURL, client)
-
-	method = strings.ToUpper(method)
-	req, err := http.NewRequest(method, url, body)
-	if err != nil {
-		return nil, err
-	}
-
-	if query != nil {
-		q := req.URL.Query()
-		for k, v := range query {
-			q.Set(k, v)
-		}
-		req.URL.RawQuery = q.Encode()
-	}
-
-	if method == "POST" {
-		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	}
-
-	switch origin {
-	case NetEaseMusic:
-		req.Header.Set("Origin", NeteaseMusicOrigin)
-		req.Header.Set("Referer", NeteaseMusicReferer)
-	case QQMusic:
-		req.Header.Set("Origin", TencentMusicOrigin)
-		req.Header.Set("Referer", TencentMusicReferer)
-	}
-	req.Header.Set("User-Agent", chooseUserAgent())
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-
-	if resp.StatusCode/100 != 2 {
-		return nil, fmt.Errorf("%s %s error: %s", method, url, resp.Status)
-	}
-
-	client.Jar.SetCookies(reqURL, resp.Cookies())
-	return resp, nil
 }

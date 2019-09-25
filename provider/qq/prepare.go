@@ -48,7 +48,7 @@ func prepare(songs []Song, savePath string) ([]*provider.MP3, error) {
 	for _, i := range songs {
 		mp3 := i.resolve()
 		// if urlMap[i.Mid] == "" {
-		// 	easylog.Errorf("get vkey failed: %s", i.Mid)
+		// 	easylog.Errorf("Get vkey failed: %s", i.Mid)
 		// 	continue
 		// }
 		mp3.DownloadURL = fmt.Sprintf(SongDownloadURL, i.Mid, guid, defaultVkey)

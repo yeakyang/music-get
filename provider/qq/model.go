@@ -3,7 +3,6 @@ package qq
 import (
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/winterssy/music-get/provider"
 
@@ -52,32 +51,18 @@ type CD struct {
 }
 
 func (s *Song) resolve() *provider.MP3 {
-	title, album := strings.TrimSpace(s.Title), strings.TrimSpace(s.Album.Name)
+	title := strings.TrimSpace(s.Title)
 	playable := s.Action.Switch != 65537
-	publishTime, _ := time.Parse("2006-01-02", s.TimePublic)
-	year, track := fmt.Sprintf("%d", publishTime.Year()), fmt.Sprintf("%d", s.IndexAlbum)
-	coverImage := fmt.Sprintf(AlbumPicURL, s.Album.Mid)
 
-	artistList := make([]string, 0, len(s.Singer))
+	artists := make([]string, 0, len(s.Singer))
 	for _, ar := range s.Singer {
-		artistList = append(artistList, strings.TrimSpace(ar.Name))
-	}
-	artist := strings.Join(artistList, "/")
-
-	fileName := utils.TrimInvalidFilePathChars(fmt.Sprintf("%s - %s.mp3", strings.Join(artistList, " "), title))
-	tag := provider.Tag{
-		Title:         title,
-		Artist:        artist,
-		Album:         album,
-		Year:          year,
-		Track:         track,
-		CoverImageURL: coverImage,
+		artists = append(artists, strings.TrimSpace(ar.Name))
 	}
 
+	fileName := utils.TrimInvalidFilePathChars(fmt.Sprintf("%s - %s.mp3", strings.Join(artists, " "), title))
 	return &provider.MP3{
 		FileName: fileName,
 		Playable: playable,
-		Tag:      tag,
 		Provider: provider.QQMusic,
 	}
 }

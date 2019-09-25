@@ -54,7 +54,7 @@ func TestParse(t *testing.T) {
 	for _, test := range tests {
 		req, _ := Parse(test.url)
 		if got := reflect.TypeOf(req); got != test.want {
-			t.Errorf("Parse %q got: %v, want: %v", test.url, got, test.want)
+			t.Errorf("Parse(%q) got: %v, want: %v", test.url, got, test.want)
 		}
 	}
 }

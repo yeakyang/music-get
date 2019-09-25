@@ -2,11 +2,13 @@ package qq
 
 import (
 	"encoding/json"
+	"net/http"
 	"path/filepath"
 
+	"github.com/winterssy/music-get/conf"
 	"github.com/winterssy/music-get/pkg/ecode"
+	"github.com/winterssy/music-get/pkg/requests"
 	"github.com/winterssy/music-get/provider"
-
 	"github.com/winterssy/music-get/utils"
 )
 
@@ -32,7 +34,7 @@ type SongURLResponse struct {
 }
 
 type SongURLRequest struct {
-	Params   map[string]string
+	Params   requests.Params
 	Response SongURLResponse
 }
 
@@ -54,7 +56,7 @@ func NewSongURLRequest(guid string, mids ...string) *SongURLRequest {
 	}
 
 	enc, _ := json.Marshal(data)
-	query := map[string]string{
+	query := requests.Params{
 		"data": string(enc),
 	}
 
@@ -62,7 +64,7 @@ func NewSongURLRequest(guid string, mids ...string) *SongURLRequest {
 }
 
 func (s *SongURLRequest) Do() error {
-	resp, err := provider.Request("GET", SongURLAPI, s.Params, nil, provider.QQMusic)
+	resp, err := request(SongURLAPI, s.Params)
 	if err != nil {
 		return ecode.NewError(ecode.HTTPRequestException, "qq.SongURLRequest.Do")
 	}
@@ -84,12 +86,12 @@ type SongResponse struct {
 }
 
 type SongRequest struct {
-	Params   map[string]string
+	Params   requests.Params
 	Response SongResponse
 }
 
 func NewSongRequest(mid string) *SongRequest {
-	query := map[string]string{
+	query := requests.Params{
 		"songmid":  mid,
 		"platform": "yqq",
 		"format":   "json",
@@ -106,7 +108,7 @@ func (s *SongRequest) Login() error {
 }
 
 func (s *SongRequest) Do() error {
-	resp, err := provider.Request("GET", SongAPI, s.Params, nil, provider.QQMusic)
+	resp, err := request(SongAPI, s.Params)
 	if err != nil {
 		return ecode.NewError(ecode.HTTPRequestException, "qq.SongRequest.Do")
 	}
@@ -140,12 +142,12 @@ type SingerResponse struct {
 }
 
 type SingerRequest struct {
-	Params   map[string]string
+	Params   requests.Params
 	Response SingerResponse
 }
 
 func NewSingerRequest(mid string) *SingerRequest {
-	query := map[string]string{
+	query := requests.Params{
 		"singermid": mid,
 		"begin":     "0",
 		"num":       "50",
@@ -165,7 +167,7 @@ func (s *SingerRequest) Login() error {
 }
 
 func (s *SingerRequest) Do() error {
-	resp, err := provider.Request("GET", ArtistAPI, s.Params, nil, provider.QQMusic)
+	resp, err := request(ArtistAPI, s.Params)
 	if err != nil {
 		return ecode.NewError(ecode.HTTPRequestException, "qq.SingerRequest.Do")
 	}
@@ -199,12 +201,12 @@ type AlbumResponse struct {
 }
 
 type AlbumRequest struct {
-	Params   map[string]string
+	Params   requests.Params
 	Response AlbumResponse
 }
 
 func NewAlbumRequest(mid string) *AlbumRequest {
-	query := map[string]string{
+	query := requests.Params{
 		"albummid": mid,
 		"newsong":  "1",
 		"platform": "yqq",
@@ -222,7 +224,7 @@ func (a *AlbumRequest) Login() error {
 }
 
 func (a *AlbumRequest) Do() error {
-	resp, err := provider.Request("GET", AlbumAPI, a.Params, nil, provider.QQMusic)
+	resp, err := request(AlbumAPI, a.Params)
 	if err != nil {
 		return ecode.NewError(ecode.HTTPRequestException, "qq.AlbumRequest.Do")
 	}
@@ -251,12 +253,12 @@ type PlaylistResponse struct {
 }
 
 type PlaylistRequest struct {
-	Params   map[string]string
+	Params   requests.Params
 	Response PlaylistResponse
 }
 
 func NewPlaylistRequest(id string) *PlaylistRequest {
-	query := map[string]string{
+	query := requests.Params{
 		"id":       id,
 		"newsong":  "1",
 		"platform": "yqq",
@@ -274,7 +276,7 @@ func (p *PlaylistRequest) Login() error {
 }
 
 func (p *PlaylistRequest) Do() error {
-	resp, err := provider.Request("GET", PlaylistAPI, p.Params, nil, provider.QQMusic)
+	resp, err := request(PlaylistAPI, p.Params)
 	if err != nil {
 		return ecode.NewError(ecode.HTTPRequestException, "qq.PlaylistRequest.Do")
 	}
@@ -302,4 +304,13 @@ func (p *PlaylistRequest) Prepare() ([]*provider.MP3, error) {
 	}
 
 	return res, nil
+}
+
+func request(url string, params requests.Params) (*http.Response, error) {
+	return requests.Get(url).
+		Params(params).
+		Headers(provider.RequestHeader[provider.QQMusic]).
+		Cookies(conf.Conf.Cookies).
+		Send().
+		Resolve()
 }

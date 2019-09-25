@@ -3,7 +3,6 @@ package conf
 import (
 	"encoding/json"
 	"flag"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -20,7 +19,7 @@ const (
 
 var (
 	confPath string
-	Conf     *Config
+	Conf     = &Config{}
 )
 
 type Config struct {
@@ -43,7 +42,8 @@ func init() {
 
 func Init() error {
 	if concurrentDownloadTasksCount < 1 || concurrentDownloadTasksCount > MaxConcurrentDownloadTasksCount {
-		return fmt.Errorf("n parameter must be at least 1, but no more than %d, got: %d", MaxConcurrentDownloadTasksCount, concurrentDownloadTasksCount)
+		easylog.Warn("Invalid n parameter, use default value")
+		concurrentDownloadTasksCount = 1
 	}
 
 	pwd, err := os.Getwd()
@@ -52,8 +52,8 @@ func Init() error {
 	}
 
 	confPath = filepath.Join(pwd, "music-get.json")
-	if err = load(confPath); err != nil {
-		easylog.Warnf("Load Config file failed: %s", err.Error())
+	if err = load(confPath); err == nil {
+		easylog.Warn("Load config file failed, you may run for the first time")
 	}
 
 	downloadDir := filepath.Join(pwd, "downloads")

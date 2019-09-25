@@ -10,12 +10,29 @@ import (
 	"github.com/winterssy/easylog"
 	"github.com/winterssy/music-get/conf"
 	"github.com/winterssy/music-get/pkg/ecode"
+	"github.com/winterssy/music-get/pkg/requests"
 	"github.com/winterssy/music-get/utils"
 )
 
 const (
 	NetEaseMusic = iota
 	QQMusic
+)
+
+var (
+	userAgent     = chooseUserAgent()
+	RequestHeader = map[int]requests.Header{
+		NetEaseMusic: requests.Header{
+			"Origin":     "https://music.163.com",
+			"Referer":    "https://music.163.com",
+			"User-Agent": userAgent,
+		},
+		QQMusic: requests.Header{
+			"Origin":     "https://c.y.qq.com",
+			"Referer":    "https://c.y.qq.com",
+			"User-Agent": userAgent,
+		},
+	}
 )
 
 type MusicRequest interface {
@@ -34,17 +51,7 @@ type MP3 struct {
 	SavePath    string
 	Playable    bool
 	DownloadURL string
-	Tag         Tag
 	Provider    int
-}
-
-type Tag struct {
-	Title         string
-	Artist        string
-	Album         string
-	Year          string
-	Track         string
-	CoverImageURL string
 }
 
 type DownloadTask struct {
@@ -84,7 +91,7 @@ func (m *MP3) SingleDownload() (status int) {
 	}
 
 	easylog.Infof("Downloading: %s", m.FileName)
-	resp, err := Request("GET", m.DownloadURL, nil, nil, m.Provider)
+	resp, err := requests.Get(m.DownloadURL).Headers(RequestHeader[m.Provider]).Cookies(conf.Conf.Cookies).Send().Resolve()
 	if err != nil {
 		status = ecode.HTTPRequestException
 		return
@@ -149,7 +156,7 @@ func (m *MP3) ConcurrentDownload(taskList chan DownloadTask, taskQueue chan stru
 	}
 
 	easylog.Infof("Downloading: %s", m.FileName)
-	resp, err := Request("GET", m.DownloadURL, nil, nil, m.Provider)
+	resp, err := requests.Get(m.DownloadURL).Headers(RequestHeader[m.Provider]).Cookies(conf.Conf.Cookies).Send().Resolve()
 	if err != nil {
 		status = ecode.HTTPRequestException
 		return

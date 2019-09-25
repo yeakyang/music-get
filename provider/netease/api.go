@@ -5,13 +5,12 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"net/http"
-	urlpkg "net/url"
 	"path/filepath"
 	"strconv"
-	"strings"
 
 	"github.com/winterssy/music-get/conf"
 	"github.com/winterssy/music-get/pkg/ecode"
+	"github.com/winterssy/music-get/pkg/requests"
 	"github.com/winterssy/music-get/provider"
 	"github.com/winterssy/music-get/utils"
 )
@@ -369,8 +368,10 @@ func request(url string, data interface{}) (*http.Response, error) {
 		return nil, err
 	}
 
-	form := urlpkg.Values{}
-	form.Set("params", params)
-	form.Set("encSecKey", encSecKey)
-	return provider.Request("POST", url, nil, strings.NewReader(form.Encode()), provider.NetEaseMusic)
+	return requests.Post(url).
+		Params(requests.Params{"params": params, "encSecKey": encSecKey}).
+		Headers(provider.RequestHeader[provider.NetEaseMusic]).
+		Cookies(conf.Conf.Cookies).
+		Send().
+		Resolve()
 }
