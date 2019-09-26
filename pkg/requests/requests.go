@@ -62,7 +62,6 @@ type Request struct {
 	headers  Values
 	cookies  Cookies
 	files    []File
-	isClone  bool
 	mux      *sync.Mutex
 	withLock bool
 }
