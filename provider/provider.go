@@ -91,7 +91,7 @@ func (m *MP3) SingleDownload() (status int) {
 	}
 
 	easylog.Infof("Downloading: %s", m.FileName)
-	resp, err := GetRequest().Get(m.DownloadURL).
+	resp, err := Request().Get(m.DownloadURL).
 		Headers(RequestHeader[m.Provider]).
 		Send().
 		Resolve()
@@ -159,7 +159,7 @@ func (m *MP3) ConcurrentDownload(taskList chan DownloadTask, taskQueue chan stru
 	}
 
 	easylog.Infof("Downloading: %s", m.FileName)
-	resp, err := GetRequest().
+	resp, err := Request().
 		Acquire().
 		Get(m.DownloadURL).
 		Headers(RequestHeader[m.Provider]).

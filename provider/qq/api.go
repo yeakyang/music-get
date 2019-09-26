@@ -306,7 +306,7 @@ func (p *PlaylistRequest) Prepare() ([]*provider.MP3, error) {
 }
 
 func request(url string, params requests.Values) (*http.Response, error) {
-	return provider.GetRequest().Get(url).
+	return provider.Request().Get(url).
 		Params(params).
 		Headers(provider.RequestHeader[provider.QQMusic]).
 		Send().

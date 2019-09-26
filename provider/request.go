@@ -18,7 +18,7 @@ var (
 	once    sync.Once
 )
 
-func GetRequest() *requests.Request {
+func Request() *requests.Request {
 	once.Do(func() {
 		request = requests.New(requests.WithTimeout(RequestTimeout)).Cookies(conf.Conf.Cookies)
 	})

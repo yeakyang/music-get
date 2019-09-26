@@ -37,38 +37,37 @@ const (
 var std = New()
 
 type (
+	Option func(*Request)
+
 	Values  map[string]string
 	JSON    map[string]interface{}
 	Cookies []*http.Cookie
+
+	File struct {
+		FieldName string
+		FileName  string
+		FilePath  string
+	}
+
+	Request struct {
+		client  *http.Client
+		method  string
+		url     string
+		params  Values
+		form    Values
+		json    JSON
+		headers Values
+		cookies Cookies
+		file    *File
+		mux     *sync.Mutex
+		locked  bool
+	}
+
+	Result struct {
+		Resp *http.Response
+		Err  error
+	}
 )
-
-type File struct {
-	FieldName string
-	FileName  string
-	FilePath  string
-}
-
-type Request struct {
-	client         *http.Client
-	method         string
-	url            string
-	params         Values
-	form           Values
-	json           JSON
-	headers        Values
-	cookies        Cookies
-	file           *File
-	disableSession bool
-	mux            *sync.Mutex
-	locked         bool
-}
-
-type Option func(*Request)
-
-type Result struct {
-	Resp *http.Response
-	Err  error
-}
 
 func (v Values) Get(key string) string {
 	return v[key]
@@ -185,7 +184,6 @@ func ProxyFromEnvironment() Option {
 func DisableSession() Option {
 	return func(req *Request) {
 		req.client.Jar = nil
-		req.disableSession = true
 	}
 }
 
@@ -233,11 +231,8 @@ func (req *Request) Reset() {
 	req.form = make(Values)
 	req.json = make(JSON)
 	req.headers = make(Values)
+	req.cookies = make(Cookies, 0)
 	req.file = nil
-
-	if req.disableSession {
-		req.cookies = make([]*http.Cookie, 0)
-	}
 
 	if req.locked {
 		req.locked = false
@@ -245,8 +240,100 @@ func (req *Request) Reset() {
 	}
 }
 
+func Get(url string) *Request {
+	return std.Get(url)
+}
+
+func (req *Request) Get(url string) *Request {
+	req.method = http.MethodGet
+	req.url = url
+	return req
+}
+
+func Head(url string) *Request {
+	return std.Head(url)
+}
+
+func (req *Request) Head(url string) *Request {
+	req.method = http.MethodHead
+	req.url = url
+	return req
+}
+
+func Post(url string) *Request {
+	return std.Post(url)
+}
+
+func (req *Request) Post(url string) *Request {
+	req.method = http.MethodPost
+	req.url = url
+	return req
+}
+
+func Put(url string) *Request {
+	return std.Put(url)
+}
+
+func (req *Request) Put(url string) *Request {
+	req.method = http.MethodPut
+	req.url = url
+	return req
+}
+
+func Patch(url string) *Request {
+	return std.Get(url)
+}
+
+func (req *Request) Patch(url string) *Request {
+	req.method = http.MethodPatch
+	req.url = url
+	return req
+}
+
+func Delete(url string) *Request {
+	return std.Delete(url)
+}
+
+func (req *Request) Delete(url string) *Request {
+	req.method = http.MethodDelete
+	req.url = url
+	return req
+}
+
+func Connect(url string) *Request {
+	return std.Connect(url)
+}
+
+func (req *Request) Connect(url string) *Request {
+	req.method = http.MethodConnect
+	req.url = url
+	return req
+}
+
+func Options(url string) *Request {
+	return std.Options(url)
+}
+
+func (req *Request) Options(url string) *Request {
+	req.method = http.MethodOptions
+	req.url = url
+	return req
+}
+
+func Trace(url string) *Request {
+	return std.Trace(url)
+}
+
+func (req *Request) Trace(url string) *Request {
+	req.method = http.MethodTrace
+	req.url = url
+	return req
+}
+
 func (req *Request) Params(params Values) *Request {
-	req.params = params
+	for k, v := range params {
+		req.params.Set(k, v)
+	}
 	return req
 }
 
@@ -284,6 +371,11 @@ func (req *Request) Cookies(cookies Cookies) *Request {
 func (req *Request) BasicAuth(username, password string) *Request {
 	req.headers.Set("Authorization", "Basic "+basicAuth(username, password))
 	return req
+}
+
+func basicAuth(username, password string) string {
+	auth := username + ":" + password
+	return base64.StdEncoding.EncodeToString([]byte(auth))
 }
 
 func (req *Request) BearerToken(token string) *Request {
@@ -360,7 +452,7 @@ func (req *Request) buildFileUploadRequest() (*http.Request, error) {
 		fileName = "file"
 	}
 	if fileName == "" {
-		fileName = filepath.Base(fileName)
+		fileName = filepath.Base(filePath)
 	}
 
 	r, w := io.Pipe()
@@ -406,139 +498,17 @@ func (req *Request) addCookies(httpReq *http.Request) {
 	}
 }
 
-func (req *Request) Get(url string) *Request {
-	req.Reset()
-	req.method = http.MethodGet
-	req.url = url
-	return req
+func (res *Result) Resolve() (*http.Response, error) {
+	return res.Resp, res.Err
 }
 
-func (req *Request) Head(url string) *Request {
-	req.Reset()
-	req.method = http.MethodHead
-	req.url = url
-	return req
-}
-
-func (req *Request) Post(url string) *Request {
-	req.Reset()
-	req.method = http.MethodPost
-	req.url = url
-	return req
-}
-
-func (req *Request) Put(url string) *Request {
-	req.Reset()
-	req.method = http.MethodPut
-	req.url = url
-	return req
-}
-
-func (req *Request) Patch(url string) *Request {
-	req.Reset()
-	req.method = http.MethodPatch
-	req.url = url
-	return req
-}
-
-func (req *Request) Delete(url string) *Request {
-	req.Reset()
-	req.method = http.MethodDelete
-	req.url = url
-	return req
-}
-
-func (req *Request) Connect(url string) *Request {
-	req.Reset()
-	req.method = http.MethodConnect
-	req.url = url
-	return req
-}
-
-func (req *Request) Options(url string) *Request {
-	req.Reset()
-	req.method = http.MethodOptions
-	req.url = url
-	return req
-}
-
-func (req *Request) Trace(url string) *Request {
-	req.method = http.MethodTrace
-	req.url = url
-	return req
-}
-
-func Get(url string) *Request {
-	return std.Get(url)
-}
-
-func Head(url string) *Request {
-	return std.Head(url)
-}
-
-func Post(url string) *Request {
-	return std.Post(url)
-}
-
-func Put(url string) *Request {
-	return std.Put(url)
-}
-
-func Patch(url string) *Request {
-	return std.Get(url)
-}
-
-func Delete(url string) *Request {
-	return std.Delete(url)
-}
-
-func Connect(url string) *Request {
-	return std.Connect(url)
-}
-
-func Options(url string) *Request {
-	return std.Options(url)
-}
-
-func Trace(url string) *Request {
-	return std.Trace(url)
-}
-
-func (r *Result) EnsureStatusOk() *Result {
-	if r.Err != nil {
-		return r
+func (res *Result) Raw() ([]byte, error) {
+	if res.Err != nil {
+		return nil, res.Err
 	}
-	if r.Resp.StatusCode != http.StatusOK {
-		r.Err = fmt.Errorf("status code requires 200 but got: %d", r.Resp.StatusCode)
-		return r
-	}
+	defer res.Resp.Body.Close()
 
-	return r
-}
-
-func (r *Result) EnsureStatus2xx() *Result {
-	if r.Err != nil {
-		return r
-	}
-	if r.Resp.StatusCode/100 == 2 {
-		r.Err = fmt.Errorf("status code requires 2xx but got: %d", r.Resp.StatusCode)
-		return r
-	}
-
-	return r
-}
-
-func (r *Result) Resolve() (*http.Response, error) {
-	return r.Resp, r.Err
-}
-
-func (r *Result) Raw() ([]byte, error) {
-	if r.Err != nil {
-		return nil, r.Err
-	}
-	defer r.Resp.Body.Close()
-
-	b, err := ioutil.ReadAll(r.Resp.Body)
+	b, err := ioutil.ReadAll(res.Resp.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -546,8 +516,8 @@ func (r *Result) Raw() ([]byte, error) {
 	return b, nil
 }
 
-func (r *Result) Text() (string, error) {
-	b, err := r.Raw()
+func (res *Result) Text() (string, error) {
+	b, err := res.Raw()
 	if err != nil {
 		return "", err
 	}
@@ -555,8 +525,8 @@ func (r *Result) Text() (string, error) {
 	return string(b), nil
 }
 
-func (r *Result) Json(v interface{}) error {
-	b, err := r.Raw()
+func (res *Result) JSON(v interface{}) error {
+	b, err := res.Raw()
 	if err != nil {
 		return err
 	}
@@ -564,7 +534,26 @@ func (r *Result) Json(v interface{}) error {
 	return json.Unmarshal(b, v)
 }
 
-func basicAuth(username, password string) string {
-	auth := username + ":" + password
-	return base64.StdEncoding.EncodeToString([]byte(auth))
+func (res *Result) EnsureStatusOk() *Result {
+	if res.Err != nil {
+		return res
+	}
+	if res.Resp.StatusCode != http.StatusOK {
+		res.Err = fmt.Errorf("status code requires 200 but got: %d", res.Resp.StatusCode)
+		return res
+	}
+
+	return res
+}
+
+func (res *Result) EnsureStatus2xx() *Result {
+	if res.Err != nil {
+		return res
+	}
+	if res.Resp.StatusCode/100 == 2 {
+		res.Err = fmt.Errorf("status code requires 2xx but got: %d", res.Resp.StatusCode)
+		return res
+	}
+
+	return res
 }
