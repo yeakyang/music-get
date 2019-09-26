@@ -240,7 +240,7 @@ func InsecureSkipVerify() Option {
 }
 
 // for concurrent reuse
-func (req *Request) Acquire() *Request {
+func (req *Request) AcquireLock() *Request {
 	req.mux.Lock()
 	req.withLock = true
 	return req
@@ -418,7 +418,7 @@ func (req *Request) Send() *Result {
 	var err error
 	contentType := req.headers.Get(ContentType)
 	if req.files != nil {
-		httpReq, err = req.buildFileUploadRequest()
+		httpReq, err = req.buildMultipartRequest()
 	} else if strings.HasPrefix(contentType, TypeForm) {
 		httpReq, err = req.buildFormRequest()
 	} else if strings.HasPrefix(contentType, TypeJSON) {
@@ -469,7 +469,7 @@ func (req *Request) buildJSONRequest() (*http.Request, error) {
 	return http.NewRequest(req.method, req.url, bytes.NewReader(b))
 }
 
-func (req *Request) buildFileUploadRequest() (*http.Request, error) {
+func (req *Request) buildMultipartRequest() (*http.Request, error) {
 	r, w := io.Pipe()
 	mw := multipart.NewWriter(w)
 	go func() {

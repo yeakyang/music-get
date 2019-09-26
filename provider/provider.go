@@ -160,7 +160,7 @@ func (m *MP3) ConcurrentDownload(taskList chan DownloadTask, taskQueue chan stru
 
 	easylog.Infof("Downloading: %s", m.FileName)
 	resp, err := Request().
-		Acquire().
+		AcquireLock().
 		Get(m.DownloadURL).
 		Headers(RequestHeader[m.Provider]).
 		Send().
