@@ -417,7 +417,7 @@ func (req *Request) Send() *Result {
 	var httpReq *http.Request
 	var err error
 	contentType := req.headers.Get(ContentType)
-	if req.files != nil {
+	if len(req.files) != 0 {
 		httpReq, err = req.buildMultipartRequest()
 	} else if strings.HasPrefix(contentType, TypeForm) {
 		httpReq, err = req.buildFormRequest()
