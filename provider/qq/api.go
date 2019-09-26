@@ -34,7 +34,7 @@ type SongURLResponse struct {
 }
 
 type SongURLRequest struct {
-	Params   requests.Params
+	Params   requests.Values
 	Response SongURLResponse
 }
 
@@ -56,7 +56,7 @@ func NewSongURLRequest(guid string, mids ...string) *SongURLRequest {
 	}
 
 	enc, _ := json.Marshal(data)
-	query := requests.Params{
+	query := requests.Values{
 		"data": string(enc),
 	}
 
@@ -86,12 +86,12 @@ type SongResponse struct {
 }
 
 type SongRequest struct {
-	Params   requests.Params
+	Params   requests.Values
 	Response SongResponse
 }
 
 func NewSongRequest(mid string) *SongRequest {
-	query := requests.Params{
+	query := requests.Values{
 		"songmid":  mid,
 		"platform": "yqq",
 		"format":   "json",
@@ -142,12 +142,12 @@ type SingerResponse struct {
 }
 
 type SingerRequest struct {
-	Params   requests.Params
+	Params   requests.Values
 	Response SingerResponse
 }
 
 func NewSingerRequest(mid string) *SingerRequest {
-	query := requests.Params{
+	query := requests.Values{
 		"singermid": mid,
 		"begin":     "0",
 		"num":       "50",
@@ -201,12 +201,12 @@ type AlbumResponse struct {
 }
 
 type AlbumRequest struct {
-	Params   requests.Params
+	Params   requests.Values
 	Response AlbumResponse
 }
 
 func NewAlbumRequest(mid string) *AlbumRequest {
-	query := requests.Params{
+	query := requests.Values{
 		"albummid": mid,
 		"newsong":  "1",
 		"platform": "yqq",
@@ -253,12 +253,12 @@ type PlaylistResponse struct {
 }
 
 type PlaylistRequest struct {
-	Params   requests.Params
+	Params   requests.Values
 	Response PlaylistResponse
 }
 
 func NewPlaylistRequest(id string) *PlaylistRequest {
-	query := requests.Params{
+	query := requests.Values{
 		"id":       id,
 		"newsong":  "1",
 		"platform": "yqq",
@@ -306,8 +306,8 @@ func (p *PlaylistRequest) Prepare() ([]*provider.MP3, error) {
 	return res, nil
 }
 
-func request(url string, params requests.Params) (*http.Response, error) {
-	return requests.Get(url).
+func request(url string, params requests.Values) (*http.Response, error) {
+	return provider.Request.Get(url).
 		Params(params).
 		Headers(provider.RequestHeader[provider.QQMusic]).
 		Cookies(conf.Conf.Cookies).

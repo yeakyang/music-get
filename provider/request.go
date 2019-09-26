@@ -3,7 +3,24 @@ package provider
 import (
 	"math/rand"
 	"time"
+
+	"github.com/winterssy/music-get/pkg/requests"
 )
+
+const (
+	RequestTimeout = 120 * time.Second
+)
+
+var (
+	Request *requests.Request
+)
+
+func init() {
+	Request = requests.New(
+		requests.WithTimeout(RequestTimeout),
+		requests.EnableSession(),
+	)
+}
 
 func chooseUserAgent() string {
 	var userAgentList = []string{

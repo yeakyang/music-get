@@ -21,13 +21,13 @@ const (
 
 var (
 	userAgent     = chooseUserAgent()
-	RequestHeader = map[int]requests.Header{
-		NetEaseMusic: requests.Header{
+	RequestHeader = map[int]requests.Values{
+		NetEaseMusic: requests.Values{
 			"Origin":     "https://music.163.com",
 			"Referer":    "https://music.163.com",
 			"User-Agent": userAgent,
 		},
-		QQMusic: requests.Header{
+		QQMusic: requests.Values{
 			"Origin":     "https://c.y.qq.com",
 			"Referer":    "https://c.y.qq.com",
 			"User-Agent": userAgent,
@@ -91,7 +91,11 @@ func (m *MP3) SingleDownload() (status int) {
 	}
 
 	easylog.Infof("Downloading: %s", m.FileName)
-	resp, err := requests.Get(m.DownloadURL).Headers(RequestHeader[m.Provider]).Cookies(conf.Conf.Cookies).Send().Resolve()
+	resp, err := Request.Get(m.DownloadURL).
+		Headers(RequestHeader[m.Provider]).
+		Cookies(conf.Conf.Cookies).
+		Send().
+		Resolve()
 	if err != nil {
 		status = ecode.HTTPRequestException
 		return
@@ -156,7 +160,13 @@ func (m *MP3) ConcurrentDownload(taskList chan DownloadTask, taskQueue chan stru
 	}
 
 	easylog.Infof("Downloading: %s", m.FileName)
-	resp, err := requests.Get(m.DownloadURL).Headers(RequestHeader[m.Provider]).Cookies(conf.Conf.Cookies).Send().Resolve()
+	resp, err := Request.
+		Acquire().
+		Get(m.DownloadURL).
+		Headers(RequestHeader[m.Provider]).
+		Cookies(conf.Conf.Cookies).
+		Send().
+		Resolve()
 	if err != nil {
 		status = ecode.HTTPRequestException
 		return

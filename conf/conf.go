@@ -18,8 +18,10 @@ const (
 )
 
 var (
-	confPath string
-	Conf     = &Config{}
+	confPath                     string
+	Conf                         = &Config{}
+	downloadOverwrite            bool
+	concurrentDownloadTasksCount int
 )
 
 type Config struct {
@@ -29,11 +31,6 @@ type Config struct {
 	DownloadOverwrite            bool           `json:"-"`
 	ConcurrentDownloadTasksCount int            `json:"-"`
 }
-
-var (
-	downloadOverwrite            bool
-	concurrentDownloadTasksCount int
-)
 
 func init() {
 	flag.BoolVar(&downloadOverwrite, "f", false, "overwrite already downloaded music")
