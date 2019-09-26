@@ -10,9 +10,12 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"mime/multipart"
 	"net/http"
 	"net/http/cookiejar"
 	urlpkg "net/url"
+	"os"
+	"path/filepath"
 	"strings"
 	"sync"
 	"time"
@@ -25,46 +28,42 @@ const (
 )
 
 const (
-	ContentType = "Content-Type"
-	TypeForm    = "application/x-www-form-urlencoded"
-	TypeJSON    = "application/json"
+	DefaultTimeout = 120 * time.Second
+	ContentType    = "Content-Type"
+	TypeForm       = "application/x-www-form-urlencoded"
+	TypeJSON       = "application/json"
 )
 
 var std = New()
 
 type (
 	Values  map[string]string
-	Object  map[string]interface{}
+	JSON    map[string]interface{}
 	Cookies []*http.Cookie
 )
 
 type File struct {
-	FiledName string
+	FieldName string
 	FileName  string
-	File      io.Reader
+	FilePath  string
 }
 
-type SSL struct {
-	Cert       string
-	ClientCert string
-	ClientKey  string
+type Request struct {
+	client         *http.Client
+	method         string
+	url            string
+	params         Values
+	form           Values
+	json           JSON
+	headers        Values
+	cookies        Cookies
+	file           *File
+	disableSession bool
+	mux            *sync.Mutex
+	locked         bool
 }
 
 type Option func(*Request)
-
-type Request struct {
-	client   *http.Client
-	method   string
-	url      string
-	params   Values
-	formData Values
-	json     Object
-	headers  Values
-	cookies  Cookies
-	files    []File
-	mux      *sync.Mutex
-	withLock bool
-}
 
 type Result struct {
 	Resp *http.Response
@@ -85,13 +84,20 @@ func (v Values) Del(key string) {
 
 func New(options ...Option) *Request {
 	req := &Request{
-		client:   http.DefaultClient,
-		params:   make(Values),
-		formData: make(Values),
-		json:     make(Object),
-		headers:  make(Values),
-		mux:      new(sync.Mutex),
+		client:  http.DefaultClient,
+		params:  make(Values),
+		form:    make(Values),
+		json:    make(JSON),
+		headers: make(Values),
+		mux:     new(sync.Mutex),
 	}
+
+	jar, _ := cookiejar.New(&cookiejar.Options{
+		PublicSuffixList: publicsuffix.List,
+	})
+	req.client.Jar = jar
+	req.client.Transport = http.DefaultTransport
+	req.client.Timeout = DefaultTimeout
 
 	for _, opt := range options {
 		opt(req)
@@ -119,23 +125,67 @@ func WithTimeout(timeout time.Duration) Option {
 	}
 }
 
-func WithProxy(url string) Option {
+func WithClientCertificates(certs ...tls.Certificate) Option {
 	return func(req *Request) {
-		transport, _ := req.client.Transport.(*http.Transport)
+		transport, ok := req.client.Transport.(*http.Transport)
+		if !ok {
+			return
+		}
+		if transport.TLSClientConfig == nil {
+			transport.TLSClientConfig = &tls.Config{}
+		}
+		transport.TLSClientConfig.Certificates = append(transport.TLSClientConfig.Certificates, certs...)
+	}
+}
+
+func WithRootCAs(pemFilePath string) Option {
+	return func(req *Request) {
+		pemCert, err := ioutil.ReadFile(pemFilePath)
+		if err != nil {
+			return
+		}
+		transport, ok := req.client.Transport.(*http.Transport)
+		if !ok {
+			return
+		}
+		if transport.TLSClientConfig == nil {
+			transport.TLSClientConfig = &tls.Config{}
+		}
+		if transport.TLSClientConfig.RootCAs == nil {
+			transport.TLSClientConfig.RootCAs = x509.NewCertPool()
+		}
+		transport.TLSClientConfig.RootCAs.AppendCertsFromPEM(pemCert)
+	}
+}
+
+func ProxyFromURL(url string) Option {
+	return func(req *Request) {
 		proxyURL, err := urlpkg.Parse(url)
 		if err != nil {
-			transport.Proxy = http.ProxyFromEnvironment
+			return
+		}
+		transport, ok := req.client.Transport.(*http.Transport)
+		if !ok {
+			return
 		}
 		transport.Proxy = http.ProxyURL(proxyURL)
 	}
 }
 
-func EnableSession() Option {
+func ProxyFromEnvironment() Option {
 	return func(req *Request) {
-		jar, _ := cookiejar.New(&cookiejar.Options{
-			PublicSuffixList: publicsuffix.List,
-		})
-		req.client.Jar = jar
+		transport, ok := req.client.Transport.(*http.Transport)
+		if !ok {
+			return
+		}
+		transport.Proxy = http.ProxyFromEnvironment
+	}
+}
+
+func DisableSession() Option {
+	return func(req *Request) {
+		req.client.Jar = nil
+		req.disableSession = true
 	}
 }
 
@@ -149,21 +199,30 @@ func DisableRedirect() Option {
 
 func DisableKeepAlives() Option {
 	return func(req *Request) {
-		transport, _ := req.client.Transport.(*http.Transport)
+		transport, ok := req.client.Transport.(*http.Transport)
+		if !ok {
+			return
+		}
 		transport.DisableKeepAlives = true
 	}
 }
 
 func InsecureSkipVerify() Option {
 	return func(req *Request) {
-		transport, _ := req.client.Transport.(*http.Transport)
-		transport.TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
+		transport, ok := req.client.Transport.(*http.Transport)
+		if !ok {
+			return
+		}
+		if transport.TLSClientConfig == nil {
+			transport.TLSClientConfig = &tls.Config{}
+		}
+		transport.TLSClientConfig.InsecureSkipVerify = true
 	}
 }
 
 func (req *Request) Acquire() *Request {
 	req.mux.Lock()
-	req.withLock = true
+	req.locked = true
 	return req
 }
 
@@ -171,14 +230,17 @@ func (req *Request) Reset() {
 	req.method = ""
 	req.url = ""
 	req.params = make(Values)
-	req.formData = make(Values)
-	req.json = make(Object)
+	req.form = make(Values)
+	req.json = make(JSON)
 	req.headers = make(Values)
-	req.cookies = make([]*http.Cookie, 0)
-	req.files = make([]File, 0)
+	req.file = nil
 
-	if req.withLock {
-		req.withLock = false
+	if req.disableSession {
+		req.cookies = make([]*http.Cookie, 0)
+	}
+
+	if req.locked {
+		req.locked = false
 		req.mux.Unlock()
 	}
 }
@@ -188,17 +250,22 @@ func (req *Request) Params(params Values) *Request {
 	return req
 }
 
-func (req *Request) FormData(formData Values) *Request {
+func (req *Request) Form(form Values) *Request {
 	req.headers.Set(ContentType, TypeForm)
-	for k, v := range formData {
-		req.formData.Set(k, v)
+	for k, v := range form {
+		req.form.Set(k, v)
 	}
 	return req
 }
 
-func (req *Request) Json(object Object) *Request {
+func (req *Request) JSON(json JSON) *Request {
 	req.headers.Set(ContentType, TypeJSON)
-	req.json = object
+	req.json = json
+	return req
+}
+
+func (req *Request) File(file File) *Request {
+	req.file = &file
 	return req
 }
 
@@ -219,37 +286,9 @@ func (req *Request) BasicAuth(username, password string) *Request {
 	return req
 }
 
-func basicAuth(username, password string) string {
-	auth := username + ":" + password
-	return base64.StdEncoding.EncodeToString([]byte(auth))
-}
-
-func (req *Request) AcquireCertificate(ssl SSL) error {
-	var err error
-	var pool *x509.CertPool
-	if ssl.Cert != "" {
-		caCert, err := ioutil.ReadFile(ssl.Cert)
-		if err != nil {
-			return err
-		}
-		pool = x509.NewCertPool()
-		pool.AppendCertsFromPEM(caCert)
-	}
-
-	var clientCert tls.Certificate
-	if ssl.ClientCert != "" && ssl.ClientKey != "" {
-		clientCert, err = tls.LoadX509KeyPair(ssl.ClientCert, ssl.ClientKey)
-		if err != nil {
-			return err
-		}
-	}
-
-	transport, _ := req.client.Transport.(*http.Transport)
-	transport.TLSClientConfig = &tls.Config{
-		RootCAs:      pool,
-		Certificates: []tls.Certificate{clientCert},
-	}
-	return nil
+func (req *Request) BearerToken(token string) *Request {
+	req.headers.Set("Authorization", "Bearer "+token)
+	return req
 }
 
 func (req *Request) Send() *Result {
@@ -263,12 +302,14 @@ func (req *Request) Send() *Result {
 	var httpReq *http.Request
 	var err error
 	contentType := req.headers.Get(ContentType)
-	if strings.HasPrefix(contentType, TypeForm) {
+	if req.file != nil {
+		httpReq, err = req.buildFileUploadRequest()
+	} else if strings.HasPrefix(contentType, TypeForm) {
 		httpReq, err = req.buildFormRequest()
 	} else if strings.HasPrefix(contentType, TypeJSON) {
 		httpReq, err = req.buildJSONRequest()
 	} else {
-		httpReq, err = req.buildEmptyRequest()
+		httpReq, err = req.buildStdRequest()
 	}
 	if err != nil {
 		result.Err = err
@@ -292,9 +333,13 @@ func (req *Request) Send() *Result {
 	return result
 }
 
+func (req *Request) buildStdRequest() (*http.Request, error) {
+	return http.NewRequest(req.method, req.url, nil)
+}
+
 func (req *Request) buildFormRequest() (*http.Request, error) {
 	form := urlpkg.Values{}
-	for k, v := range req.formData {
+	for k, v := range req.form {
 		form.Set(k, v)
 	}
 	return http.NewRequest(req.method, req.url, strings.NewReader(form.Encode()))
@@ -309,8 +354,36 @@ func (req *Request) buildJSONRequest() (*http.Request, error) {
 	return http.NewRequest(req.method, req.url, bytes.NewReader(b))
 }
 
-func (req *Request) buildEmptyRequest() (*http.Request, error) {
-	return http.NewRequest(req.method, req.url, nil)
+func (req *Request) buildFileUploadRequest() (*http.Request, error) {
+	fieldName, fileName, filePath := req.file.FieldName, req.file.FileName, req.file.FilePath
+	if fieldName == "" {
+		fileName = "file"
+	}
+	if fileName == "" {
+		fileName = filepath.Base(fileName)
+	}
+
+	r, w := io.Pipe()
+	mw := multipart.NewWriter(w)
+	go func() {
+		defer w.Close()
+		defer mw.Close()
+		part, err := mw.CreateFormFile(fieldName, fileName)
+		if err != nil {
+			return
+		}
+		file, err := os.Open(filePath)
+		if err != nil {
+			return
+		}
+		defer file.Close()
+		if _, err = io.Copy(part, file); err != nil {
+			return
+		}
+	}()
+
+	req.headers.Set(ContentType, mw.FormDataContentType())
+	return http.NewRequest(req.method, req.url, r)
 }
 
 func (req *Request) addParams(httpReq *http.Request) {
@@ -489,4 +562,9 @@ func (r *Result) Json(v interface{}) error {
 	}
 
 	return json.Unmarshal(b, v)
+}
+
+func basicAuth(username, password string) string {
+	auth := username + ":" + password
+	return base64.StdEncoding.EncodeToString([]byte(auth))
 }

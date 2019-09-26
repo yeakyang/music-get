@@ -2,8 +2,10 @@ package provider
 
 import (
 	"math/rand"
+	"sync"
 	"time"
 
+	"github.com/winterssy/music-get/conf"
 	"github.com/winterssy/music-get/pkg/requests"
 )
 
@@ -12,14 +14,15 @@ const (
 )
 
 var (
-	Request *requests.Request
+	request *requests.Request
+	once    sync.Once
 )
 
-func init() {
-	Request = requests.New(
-		requests.WithTimeout(RequestTimeout),
-		requests.EnableSession(),
-	)
+func GetRequest() *requests.Request {
+	once.Do(func() {
+		request = requests.New(requests.WithTimeout(RequestTimeout)).Cookies(conf.Conf.Cookies)
+	})
+	return request
 }
 
 func chooseUserAgent() string {

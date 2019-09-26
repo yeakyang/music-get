@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/winterssy/music-get/conf"
 	"github.com/winterssy/music-get/pkg/ecode"
 	"github.com/winterssy/music-get/pkg/requests"
 	"github.com/winterssy/music-get/provider"
@@ -307,10 +306,9 @@ func (p *PlaylistRequest) Prepare() ([]*provider.MP3, error) {
 }
 
 func request(url string, params requests.Values) (*http.Response, error) {
-	return provider.Request.Get(url).
+	return provider.GetRequest().Get(url).
 		Params(params).
 		Headers(provider.RequestHeader[provider.QQMusic]).
-		Cookies(conf.Conf.Cookies).
 		Send().
 		Resolve()
 }
