@@ -20,7 +20,7 @@ var (
 
 func Request() *requests.Request {
 	once.Do(func() {
-		request = requests.New(requests.WithTimeout(RequestTimeout)).Cookies(conf.Conf.Cookies)
+		request = requests.New(requests.WithTimeout(RequestTimeout)).Cookies(conf.Conf.Cookies...)
 	})
 	return request
 }

@@ -369,7 +369,7 @@ func request(url string, data interface{}) (*http.Response, error) {
 	}
 
 	return provider.Request().Post(url).
-		Form(requests.Values{"params": params, "encSecKey": encSecKey}).
+		Data(requests.Values{"params": params, "encSecKey": encSecKey}).
 		Headers(provider.RequestHeader[provider.NetEaseMusic]).
 		Send().
 		Resolve()

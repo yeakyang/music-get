@@ -25,23 +25,32 @@ import (
 
 const (
 	Ver = "0.1"
-)
 
-const (
 	DefaultTimeout = 120 * time.Second
 	ContentType    = "Content-Type"
 	TypeForm       = "application/x-www-form-urlencoded"
 	TypeJSON       = "application/json"
+
+	MethodGet     = "GET"
+	MethodHead    = "HEAD"
+	MethodPost    = "POST"
+	MethodPut     = "PUT"
+	MethodPatch   = "PATCH" // RFC 5789
+	MethodDelete  = "DELETE"
+	MethodConnect = "CONNECT"
+	MethodOptions = "OPTIONS"
+	MethodTrace   = "TRACE"
 )
 
-var std = New()
+var (
+	std = New()
+)
 
 type (
 	Option func(*Request)
 
-	Values  map[string]string
-	JSON    map[string]interface{}
-	Cookies []*http.Cookie
+	Values map[string]string
+	Object map[string]interface{}
 
 	File struct {
 		FieldName string
@@ -54,11 +63,11 @@ type (
 		method   string
 		url      string
 		params   Values
-		form     Values
-		json     JSON
+		data     Values
+		json     Object
 		headers  Values
-		cookies  Cookies
-		file     *File
+		cookies  []*http.Cookie
+		files    []*File
 		mux      *sync.Mutex
 		withLock bool
 	}
@@ -81,12 +90,24 @@ func (v Values) Del(key string) {
 	delete(v, key)
 }
 
+func (obj Object) Get(key string) interface{} {
+	return obj[key]
+}
+
+func (obj Object) Set(key string, value interface{}) {
+	obj[key] = value
+}
+
+func (obj Object) Del(key string) {
+	delete(obj, key)
+}
+
 func New(options ...Option) *Request {
 	req := &Request{
 		client:  http.DefaultClient,
 		params:  make(Values),
-		form:    make(Values),
-		json:    make(JSON),
+		data:    make(Values),
+		json:    make(Object),
 		headers: make(Values),
 		mux:     new(sync.Mutex),
 	}
@@ -229,11 +250,11 @@ func (req *Request) Reset() {
 	req.method = ""
 	req.url = ""
 	req.params = make(Values)
-	req.form = make(Values)
-	req.json = make(JSON)
+	req.data = make(Values)
+	req.json = make(Object)
 	req.headers = make(Values)
-	req.cookies = make(Cookies, 0)
-	req.file = nil
+	req.cookies = nil
+	req.files = nil
 
 	if req.withLock {
 		req.mux.Unlock()
@@ -245,7 +266,7 @@ func Get(url string) *Request {
 }
 
 func (req *Request) Get(url string) *Request {
-	req.method = http.MethodGet
+	req.method = MethodGet
 	req.url = url
 	return req
 }
@@ -255,7 +276,7 @@ func Head(url string) *Request {
 }
 
 func (req *Request) Head(url string) *Request {
-	req.method = http.MethodHead
+	req.method = MethodHead
 	req.url = url
 	return req
 }
@@ -265,7 +286,7 @@ func Post(url string) *Request {
 }
 
 func (req *Request) Post(url string) *Request {
-	req.method = http.MethodPost
+	req.method = MethodPost
 	req.url = url
 	return req
 }
@@ -275,7 +296,7 @@ func Put(url string) *Request {
 }
 
 func (req *Request) Put(url string) *Request {
-	req.method = http.MethodPut
+	req.method = MethodPut
 	req.url = url
 	return req
 }
@@ -285,7 +306,7 @@ func Patch(url string) *Request {
 }
 
 func (req *Request) Patch(url string) *Request {
-	req.method = http.MethodPatch
+	req.method = MethodPatch
 	req.url = url
 	return req
 }
@@ -295,7 +316,7 @@ func Delete(url string) *Request {
 }
 
 func (req *Request) Delete(url string) *Request {
-	req.method = http.MethodDelete
+	req.method = MethodDelete
 	req.url = url
 	return req
 }
@@ -305,7 +326,7 @@ func Connect(url string) *Request {
 }
 
 func (req *Request) Connect(url string) *Request {
-	req.method = http.MethodConnect
+	req.method = MethodConnect
 	req.url = url
 	return req
 }
@@ -315,7 +336,7 @@ func Options(url string) *Request {
 }
 
 func (req *Request) Options(url string) *Request {
-	req.method = http.MethodOptions
+	req.method = MethodOptions
 	req.url = url
 	return req
 }
@@ -325,7 +346,7 @@ func Trace(url string) *Request {
 }
 
 func (req *Request) Trace(url string) *Request {
-	req.method = http.MethodTrace
+	req.method = MethodTrace
 	req.url = url
 	return req
 }
@@ -337,22 +358,24 @@ func (req *Request) Params(params Values) *Request {
 	return req
 }
 
-func (req *Request) Form(form Values) *Request {
+func (req *Request) Data(data Values) *Request {
 	req.headers.Set(ContentType, TypeForm)
-	for k, v := range form {
-		req.form.Set(k, v)
+	for k, v := range data {
+		req.data.Set(k, v)
 	}
 	return req
 }
 
-func (req *Request) JSON(json JSON) *Request {
+func (req *Request) JSON(obj Object) *Request {
 	req.headers.Set(ContentType, TypeJSON)
-	req.json = json
+	for k, v := range obj {
+		req.json.Set(k, v)
+	}
 	return req
 }
 
-func (req *Request) File(file File) *Request {
-	req.file = &file
+func (req *Request) Files(files ...*File) *Request {
+	req.files = append(req.files, files...)
 	return req
 }
 
@@ -363,8 +386,8 @@ func (req *Request) Headers(headers Values) *Request {
 	return req
 }
 
-func (req *Request) Cookies(cookies Cookies) *Request {
-	req.cookies = cookies
+func (req *Request) Cookies(cookies ...*http.Cookie) *Request {
+	req.cookies = append(req.cookies, cookies...)
 	return req
 }
 
@@ -394,7 +417,7 @@ func (req *Request) Send() *Result {
 	var httpReq *http.Request
 	var err error
 	contentType := req.headers.Get(ContentType)
-	if req.file != nil {
+	if req.files != nil {
 		httpReq, err = req.buildFileUploadRequest()
 	} else if strings.HasPrefix(contentType, TypeForm) {
 		httpReq, err = req.buildFormRequest()
@@ -431,7 +454,7 @@ func (req *Request) buildStdRequest() (*http.Request, error) {
 
 func (req *Request) buildFormRequest() (*http.Request, error) {
 	form := urlpkg.Values{}
-	for k, v := range req.form {
+	for k, v := range req.data {
 		form.Set(k, v)
 	}
 	return http.NewRequest(req.method, req.url, strings.NewReader(form.Encode()))
@@ -447,30 +470,34 @@ func (req *Request) buildJSONRequest() (*http.Request, error) {
 }
 
 func (req *Request) buildFileUploadRequest() (*http.Request, error) {
-	fieldName, fileName, filePath := req.file.FieldName, req.file.FileName, req.file.FilePath
-	if fieldName == "" {
-		fileName = "file"
-	}
-	if fileName == "" {
-		fileName = filepath.Base(filePath)
-	}
-
 	r, w := io.Pipe()
 	mw := multipart.NewWriter(w)
 	go func() {
 		defer w.Close()
 		defer mw.Close()
-		part, err := mw.CreateFormFile(fieldName, fileName)
-		if err != nil {
-			return
-		}
-		file, err := os.Open(filePath)
-		if err != nil {
-			return
-		}
-		defer file.Close()
-		if _, err = io.Copy(part, file); err != nil {
-			return
+
+		for _, i := range req.files {
+			fieldName, fileName, filePath := i.FieldName, i.FileName, i.FilePath
+			if fieldName == "" {
+				fileName = "data"
+			}
+			if fileName == "" {
+				fileName = filepath.Base(filePath)
+			}
+
+			part, err := mw.CreateFormFile(fieldName, fileName)
+			if err != nil {
+				return
+			}
+			file, err := os.Open(filePath)
+			if err != nil {
+				return
+			}
+			if _, err = io.Copy(part, file); err != nil {
+				return
+			}
+
+			file.Close()
 		}
 	}()
 
@@ -498,17 +525,17 @@ func (req *Request) addCookies(httpReq *http.Request) {
 	}
 }
 
-func (res *Result) Resolve() (*http.Response, error) {
-	return res.Resp, res.Err
+func (r *Result) Resolve() (*http.Response, error) {
+	return r.Resp, r.Err
 }
 
-func (res *Result) Raw() ([]byte, error) {
-	if res.Err != nil {
-		return nil, res.Err
+func (r *Result) Raw() ([]byte, error) {
+	if r.Err != nil {
+		return nil, r.Err
 	}
-	defer res.Resp.Body.Close()
+	defer r.Resp.Body.Close()
 
-	b, err := ioutil.ReadAll(res.Resp.Body)
+	b, err := ioutil.ReadAll(r.Resp.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -516,8 +543,8 @@ func (res *Result) Raw() ([]byte, error) {
 	return b, nil
 }
 
-func (res *Result) Text() (string, error) {
-	b, err := res.Raw()
+func (r *Result) Text() (string, error) {
+	b, err := r.Raw()
 	if err != nil {
 		return "", err
 	}
@@ -525,8 +552,8 @@ func (res *Result) Text() (string, error) {
 	return string(b), nil
 }
 
-func (res *Result) JSON(v interface{}) error {
-	b, err := res.Raw()
+func (r *Result) JSON(v interface{}) error {
+	b, err := r.Raw()
 	if err != nil {
 		return err
 	}
@@ -534,26 +561,26 @@ func (res *Result) JSON(v interface{}) error {
 	return json.Unmarshal(b, v)
 }
 
-func (res *Result) EnsureStatusOk() *Result {
-	if res.Err != nil {
-		return res
+func (r *Result) EnsureStatusOk() *Result {
+	if r.Err != nil {
+		return r
 	}
-	if res.Resp.StatusCode != http.StatusOK {
-		res.Err = fmt.Errorf("status code requires 200 but got: %d", res.Resp.StatusCode)
-		return res
+	if r.Resp.StatusCode != http.StatusOK {
+		r.Err = fmt.Errorf("status code 200 expected but got: %d", r.Resp.StatusCode)
+		return r
 	}
 
-	return res
+	return r
 }
 
-func (res *Result) EnsureStatus2xx() *Result {
-	if res.Err != nil {
-		return res
+func (r *Result) EnsureStatus2xx() *Result {
+	if r.Err != nil {
+		return r
 	}
-	if res.Resp.StatusCode/100 == 2 {
-		res.Err = fmt.Errorf("status code requires 2xx but got: %d", res.Resp.StatusCode)
-		return res
+	if r.Resp.StatusCode/100 == 2 {
+		r.Err = fmt.Errorf("status code 2xx expected but got: %d", r.Resp.StatusCode)
+		return r
 	}
 
-	return res
+	return r
 }
