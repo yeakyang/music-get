@@ -50,17 +50,17 @@ type (
 	}
 
 	Request struct {
-		client  *http.Client
-		method  string
-		url     string
-		params  Values
-		form    Values
-		json    JSON
-		headers Values
-		cookies Cookies
-		file    *File
-		mux     *sync.Mutex
-		locked  bool
+		client   *http.Client
+		method   string
+		url      string
+		params   Values
+		form     Values
+		json     JSON
+		headers  Values
+		cookies  Cookies
+		file     *File
+		mux      *sync.Mutex
+		withLock bool
 	}
 
 	Result struct {
@@ -171,13 +171,13 @@ func ProxyFromURL(url string) Option {
 	}
 }
 
-func ProxyFromEnvironment() Option {
+func DisableProxyFromEnvironment() Option {
 	return func(req *Request) {
 		transport, ok := req.client.Transport.(*http.Transport)
 		if !ok {
 			return
 		}
-		transport.Proxy = http.ProxyFromEnvironment
+		transport.Proxy = nil
 	}
 }
 
@@ -218,9 +218,10 @@ func InsecureSkipVerify() Option {
 	}
 }
 
+// for concurrent reuse
 func (req *Request) Acquire() *Request {
 	req.mux.Lock()
-	req.locked = true
+	req.withLock = true
 	return req
 }
 
@@ -234,8 +235,7 @@ func (req *Request) Reset() {
 	req.cookies = make(Cookies, 0)
 	req.file = nil
 
-	if req.locked {
-		req.locked = false
+	if req.withLock {
 		req.mux.Unlock()
 	}
 }
