@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/winterssy/grequests"
+	"github.com/winterssy/reqwest"
 	"github.com/winterssy/music-get/pkg/ecode"
 	"github.com/winterssy/music-get/provider"
 	"github.com/winterssy/music-get/utils"
@@ -33,7 +33,7 @@ type SongURLResponse struct {
 }
 
 type SongURLRequest struct {
-	Params   grequests.Value
+	Params   reqwest.Value
 	Response SongURLResponse
 }
 
@@ -55,7 +55,7 @@ func NewSongURLRequest(guid string, mids ...string) *SongURLRequest {
 	}
 
 	enc, _ := json.Marshal(data)
-	query := grequests.Value{
+	query := reqwest.Value{
 		"data": string(enc),
 	}
 
@@ -85,12 +85,12 @@ type SongResponse struct {
 }
 
 type SongRequest struct {
-	Params   grequests.Value
+	Params   reqwest.Value
 	Response SongResponse
 }
 
 func NewSongRequest(mid string) *SongRequest {
-	query := grequests.Value{
+	query := reqwest.Value{
 		"songmid":  mid,
 		"platform": "yqq",
 		"format":   "json",
@@ -141,12 +141,12 @@ type SingerResponse struct {
 }
 
 type SingerRequest struct {
-	Params   grequests.Value
+	Params   reqwest.Value
 	Response SingerResponse
 }
 
 func NewSingerRequest(mid string) *SingerRequest {
-	query := grequests.Value{
+	query := reqwest.Value{
 		"singermid": mid,
 		"begin":     "0",
 		"num":       "50",
@@ -200,12 +200,12 @@ type AlbumResponse struct {
 }
 
 type AlbumRequest struct {
-	Params   grequests.Value
+	Params   reqwest.Value
 	Response AlbumResponse
 }
 
 func NewAlbumRequest(mid string) *AlbumRequest {
-	query := grequests.Value{
+	query := reqwest.Value{
 		"albummid": mid,
 		"newsong":  "1",
 		"platform": "yqq",
@@ -252,12 +252,12 @@ type PlaylistResponse struct {
 }
 
 type PlaylistRequest struct {
-	Params   grequests.Value
+	Params   reqwest.Value
 	Response PlaylistResponse
 }
 
 func NewPlaylistRequest(id string) *PlaylistRequest {
-	query := grequests.Value{
+	query := reqwest.Value{
 		"id":       id,
 		"newsong":  "1",
 		"platform": "yqq",
@@ -305,7 +305,7 @@ func (p *PlaylistRequest) Prepare() ([]*provider.MP3, error) {
 	return res, nil
 }
 
-func request(url string, params grequests.Value) (*http.Response, error) {
+func request(url string, params reqwest.Value) (*http.Response, error) {
 	return provider.Client().Get(url).
 		Params(params).
 		Headers(provider.RequestHeader[provider.QQMusic]).

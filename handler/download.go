@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"sync"
 
+	"github.com/winterssy/music-get/pkg/concurrency"
 	"github.com/winterssy/music-get/pkg/ecode"
 	"github.com/winterssy/music-get/provider"
 )
@@ -47,15 +47,13 @@ func SingleDownload(mp3List []*provider.MP3) {
 func ConcurrentDownload(mp3List []*provider.MP3, n int) {
 	total, success, failure, ignore := len(mp3List), 0, 0, 0
 
+	c := concurrency.New(n)
 	taskList := make(chan provider.DownloadTask, total)
-	taskQueue := make(chan struct{}, n)
-	wg := &sync.WaitGroup{}
-	wg.Add(total)
 	for _, i := range mp3List {
-		taskQueue <- struct{}{}
-		go i.ConcurrentDownload(taskList, taskQueue, wg)
+		c.Add(1)
+		go i.ConcurrentDownload(taskList, c)
 	}
-	wg.Wait()
+	c.Wait()
 
 	var failureInfo []DownloadError
 	for range mp3List {

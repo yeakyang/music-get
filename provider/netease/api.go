@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strconv"
 
-	"github.com/winterssy/grequests"
+	"github.com/winterssy/reqwest"
 	"github.com/winterssy/music-get/conf"
 	"github.com/winterssy/music-get/pkg/ecode"
 	"github.com/winterssy/music-get/provider"
@@ -369,7 +369,7 @@ func request(url string, data interface{}) (*http.Response, error) {
 	}
 
 	return provider.Client().Post(url).
-		Form(grequests.Value{"params": params, "encSecKey": encSecKey}).
+		Form(reqwest.Value{"params": params, "encSecKey": encSecKey}).
 		Headers(provider.RequestHeader[provider.NetEaseMusic]).
 		Send().
 		Resolve()

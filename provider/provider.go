@@ -4,13 +4,12 @@ import (
 	"io"
 	"os"
 	"path/filepath"
-	"sync"
-
-	"github.com/winterssy/grequests"
 
 	"github.com/cheggaaa/pb/v3"
 	"github.com/winterssy/easylog"
+	"github.com/winterssy/reqwest"
 	"github.com/winterssy/music-get/conf"
+	"github.com/winterssy/music-get/pkg/concurrency"
 	"github.com/winterssy/music-get/pkg/ecode"
 	"github.com/winterssy/music-get/utils"
 )
@@ -22,13 +21,13 @@ const (
 
 var (
 	userAgent     = chooseUserAgent()
-	RequestHeader = map[int]grequests.Value{
-		NetEaseMusic: grequests.Value{
+	RequestHeader = map[int]reqwest.Value{
+		NetEaseMusic: reqwest.Value{
 			"Origin":     "https://music.163.com",
 			"Referer":    "https://music.163.com",
 			"User-Agent": userAgent,
 		},
-		QQMusic: grequests.Value{
+		QQMusic: reqwest.Value{
 			"Origin":     "https://c.y.qq.com",
 			"Referer":    "https://c.y.qq.com",
 			"User-Agent": userAgent,
@@ -123,7 +122,7 @@ func (m *MP3) SingleDownload() (status int) {
 	return
 }
 
-func (m *MP3) ConcurrentDownload(taskList chan DownloadTask, taskQueue chan struct{}, wg *sync.WaitGroup) {
+func (m *MP3) ConcurrentDownload(taskList chan DownloadTask, c *concurrency.C) {
 	var status int
 
 	defer func() {
@@ -135,9 +134,8 @@ func (m *MP3) ConcurrentDownload(taskList chan DownloadTask, taskQueue chan stru
 		default:
 			easylog.Errorf("Download error: %s: %s", m.FileName, ecode.Message(status))
 		}
-		wg.Done()
+		c.Done()
 		taskList <- DownloadTask{m, status}
-		<-taskQueue
 	}()
 
 	if !m.Playable {
