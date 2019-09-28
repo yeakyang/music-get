@@ -6,11 +6,12 @@ import (
 	"path/filepath"
 	"sync"
 
+	"github.com/winterssy/grequests"
+
 	"github.com/cheggaaa/pb/v3"
 	"github.com/winterssy/easylog"
 	"github.com/winterssy/music-get/conf"
 	"github.com/winterssy/music-get/pkg/ecode"
-	"github.com/winterssy/music-get/pkg/requests"
 	"github.com/winterssy/music-get/utils"
 )
 
@@ -21,13 +22,13 @@ const (
 
 var (
 	userAgent     = chooseUserAgent()
-	RequestHeader = map[int]requests.Values{
-		NetEaseMusic: requests.Values{
+	RequestHeader = map[int]grequests.Value{
+		NetEaseMusic: grequests.Value{
 			"Origin":     "https://music.163.com",
 			"Referer":    "https://music.163.com",
 			"User-Agent": userAgent,
 		},
-		QQMusic: requests.Values{
+		QQMusic: grequests.Value{
 			"Origin":     "https://c.y.qq.com",
 			"Referer":    "https://c.y.qq.com",
 			"User-Agent": userAgent,
@@ -91,7 +92,7 @@ func (m *MP3) SingleDownload() (status int) {
 	}
 
 	easylog.Infof("Downloading: %s", m.FileName)
-	resp, err := Request().Get(m.DownloadURL).
+	resp, err := Client().Get(m.DownloadURL).
 		Headers(RequestHeader[m.Provider]).
 		Send().
 		Resolve()
@@ -159,7 +160,7 @@ func (m *MP3) ConcurrentDownload(taskList chan DownloadTask, taskQueue chan stru
 	}
 
 	easylog.Infof("Downloading: %s", m.FileName)
-	resp, err := Request().
+	resp, err := Client().
 		AcquireLock().
 		Get(m.DownloadURL).
 		Headers(RequestHeader[m.Provider]).

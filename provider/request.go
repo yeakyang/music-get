@@ -5,24 +5,20 @@ import (
 	"sync"
 	"time"
 
+	"github.com/winterssy/grequests"
 	"github.com/winterssy/music-get/conf"
-	"github.com/winterssy/music-get/pkg/requests"
-)
-
-const (
-	RequestTimeout = 120 * time.Second
 )
 
 var (
-	request *requests.Request
-	once    sync.Once
+	client *grequests.Client
+	once   sync.Once
 )
 
-func Request() *requests.Request {
+func Client() *grequests.Client {
 	once.Do(func() {
-		request = requests.New(requests.WithTimeout(RequestTimeout)).Cookies(conf.Conf.Cookies...)
+		client = grequests.Cookies(conf.Conf.Cookies...)
 	})
-	return request
+	return client
 }
 
 func chooseUserAgent() string {

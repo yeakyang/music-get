@@ -8,9 +8,9 @@ import (
 	"path/filepath"
 	"strconv"
 
+	"github.com/winterssy/grequests"
 	"github.com/winterssy/music-get/conf"
 	"github.com/winterssy/music-get/pkg/ecode"
-	"github.com/winterssy/music-get/pkg/requests"
 	"github.com/winterssy/music-get/provider"
 	"github.com/winterssy/music-get/utils"
 )
@@ -368,8 +368,8 @@ func request(url string, data interface{}) (*http.Response, error) {
 		return nil, err
 	}
 
-	return provider.Request().Post(url).
-		Data(requests.Values{"params": params, "encSecKey": encSecKey}).
+	return provider.Client().Post(url).
+		Form(grequests.Value{"params": params, "encSecKey": encSecKey}).
 		Headers(provider.RequestHeader[provider.NetEaseMusic]).
 		Send().
 		Resolve()
