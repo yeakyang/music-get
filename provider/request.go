@@ -5,18 +5,18 @@ import (
 	"sync"
 	"time"
 
-	"github.com/winterssy/reqwest"
+	"github.com/winterssy/sreq"
 	"github.com/winterssy/music-get/conf"
 )
 
 var (
-	client *reqwest.Client
+	client *sreq.Client
 	once   sync.Once
 )
 
-func Client() *reqwest.Client {
+func Client() *sreq.Client {
 	once.Do(func() {
-		client = reqwest.Cookies(conf.Conf.Cookies...)
+		client = sreq.Cookies(conf.Conf.Cookies...)
 	})
 	return client
 }

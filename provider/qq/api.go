@@ -5,10 +5,10 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/winterssy/reqwest"
 	"github.com/winterssy/music-get/pkg/ecode"
 	"github.com/winterssy/music-get/provider"
 	"github.com/winterssy/music-get/utils"
+	"github.com/winterssy/sreq"
 )
 
 const (
@@ -24,8 +24,9 @@ type SongURLResponse struct {
 	Req0 struct {
 		Data struct {
 			MidURLInfo []struct {
-				SongMid string `json:"songmid"`
-				Vkey    string `json:"vkey"`
+				FileName string `json:"filename"`
+				SongMid  string `json:"songmid"`
+				Vkey     string `json:"vkey"`
 			} `json:"midurlinfo"`
 			TestFile2g string `json:"testfile2g"`
 		} `json:"data"`
@@ -33,7 +34,7 @@ type SongURLResponse struct {
 }
 
 type SongURLRequest struct {
-	Params   reqwest.Value
+	Params   sreq.Value
 	Response SongURLResponse
 }
 
@@ -55,7 +56,7 @@ func NewSongURLRequest(guid string, mids ...string) *SongURLRequest {
 	}
 
 	enc, _ := json.Marshal(data)
-	query := reqwest.Value{
+	query := sreq.Value{
 		"data": string(enc),
 	}
 
@@ -85,12 +86,12 @@ type SongResponse struct {
 }
 
 type SongRequest struct {
-	Params   reqwest.Value
+	Params   sreq.Value
 	Response SongResponse
 }
 
 func NewSongRequest(mid string) *SongRequest {
-	query := reqwest.Value{
+	query := sreq.Value{
 		"songmid":  mid,
 		"platform": "yqq",
 		"format":   "json",
@@ -141,12 +142,12 @@ type SingerResponse struct {
 }
 
 type SingerRequest struct {
-	Params   reqwest.Value
+	Params   sreq.Value
 	Response SingerResponse
 }
 
 func NewSingerRequest(mid string) *SingerRequest {
-	query := reqwest.Value{
+	query := sreq.Value{
 		"singermid": mid,
 		"begin":     "0",
 		"num":       "50",
@@ -200,12 +201,12 @@ type AlbumResponse struct {
 }
 
 type AlbumRequest struct {
-	Params   reqwest.Value
+	Params   sreq.Value
 	Response AlbumResponse
 }
 
 func NewAlbumRequest(mid string) *AlbumRequest {
-	query := reqwest.Value{
+	query := sreq.Value{
 		"albummid": mid,
 		"newsong":  "1",
 		"platform": "yqq",
@@ -252,12 +253,12 @@ type PlaylistResponse struct {
 }
 
 type PlaylistRequest struct {
-	Params   reqwest.Value
+	Params   sreq.Value
 	Response PlaylistResponse
 }
 
 func NewPlaylistRequest(id string) *PlaylistRequest {
-	query := reqwest.Value{
+	query := sreq.Value{
 		"id":       id,
 		"newsong":  "1",
 		"platform": "yqq",
@@ -305,7 +306,7 @@ func (p *PlaylistRequest) Prepare() ([]*provider.MP3, error) {
 	return res, nil
 }
 
-func request(url string, params reqwest.Value) (*http.Response, error) {
+func request(url string, params sreq.Value) (*http.Response, error) {
 	return provider.Client().Get(url).
 		Params(params).
 		Headers(provider.RequestHeader[provider.QQMusic]).

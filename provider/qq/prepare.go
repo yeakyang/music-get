@@ -1,57 +1,96 @@
 package qq
 
 import (
-	"errors"
 	"fmt"
+	"path/filepath"
 	"regexp"
+
+	"github.com/winterssy/easylog"
 
 	"github.com/winterssy/music-get/provider"
 )
 
 const (
 	SongDownloadURL = "http://aqqmusic.tc.qq.com/amobile.music.tc.qq.com/M500%s.mp3?guid=%s&vkey=%s&uin=0&fromtag=8"
+	MaxSongsCount   = 10
 )
 
 func prepare(songs []Song, savePath string) ([]*provider.MP3, error) {
 	n := len(songs)
-	// mids := make([]string, 0, n)
-	// for _, i := range songs {
-	// 	mids = append(mids, i.Mid)
-	// }
-	if n == 0 {
-		return nil, errors.New("empty song list")
-	}
+	mids := make([]string, 0)
+	midMap := make(map[string]string, n)
+	vkeyMap := make(map[string]string, n)
 
 	guid := "7332953645"
-	req := NewSongURLRequest(guid, songs[0].Mid)
-	if err := req.Do(); err != nil {
-		return nil, err
-	}
-
+	count := 0
 	re := regexp.MustCompile("vkey=(\\w+)")
-	matched, ok := re.FindStringSubmatch(req.Response.Req0.Data.TestFile2g), re.MatchString(req.Response.Req0.Data.TestFile2g)
-	if !ok {
-		return nil, errors.New("get vkey failed")
-	}
-	defaultVkey := matched[1]
+	var defaultKey string
+	for _, i := range songs {
+		count++
+		if count > MaxSongsCount {
+			req := NewSongURLRequest(guid, mids...)
+			mids = make([]string, 0)
+			if err := req.Do(); err != nil {
+				return nil, err
+			}
 
-	// urlMap := make(map[string]string, n)
-	// for _, i := range req.Response.Req0.Data.MidURLInfo {
-	// 	if i.Vkey == "" {
-	// 		urlMap[i.SongMid] = defaultVkey
-	// 	} else {
-	// 		urlMap[i.SongMid] = i.Vkey
-	// 	}
-	// }
+			if defaultKey == "" {
+				matched, ok := re.FindStringSubmatch(req.Response.Req0.Data.TestFile2g), re.MatchString(req.Response.Req0.Data.TestFile2g)
+				if ok {
+					defaultKey = matched[1]
+				}
+			}
+
+			for _, i := range req.Response.Req0.Data.MidURLInfo {
+				if len(i.FileName) > 4 {
+					midMap[i.SongMid] = i.FileName[4 : len(i.FileName)-len(filepath.Ext(i.FileName))]
+				} else {
+					midMap[i.SongMid] = i.SongMid
+				}
+				vkeyMap[i.SongMid] = i.Vkey
+			}
+		}
+		mids = append(mids, i.Mid)
+	}
+
+	if len(mids) > 0 {
+		req := NewSongURLRequest(guid, mids...)
+		mids = make([]string, 0)
+		if err := req.Do(); err != nil {
+			return nil, err
+		}
+
+		if defaultKey == "" {
+			matched, ok := re.FindStringSubmatch(req.Response.Req0.Data.TestFile2g), re.MatchString(req.Response.Req0.Data.TestFile2g)
+			if ok {
+				defaultKey = matched[1]
+			}
+		}
+
+		for _, i := range req.Response.Req0.Data.MidURLInfo {
+			if len(i.FileName) > 4 {
+				midMap[i.SongMid] = i.FileName[4 : len(i.FileName)-len(filepath.Ext(i.FileName))]
+			} else {
+				midMap[i.SongMid] = i.SongMid
+			}
+			vkeyMap[i.SongMid] = i.Vkey
+		}
+	}
+
+	for k, v := range vkeyMap {
+		if v == "" {
+			vkeyMap[k] = defaultKey
+		}
+	}
 
 	mp3List := make([]*provider.MP3, 0, len(songs))
 	for _, i := range songs {
 		mp3 := i.resolve()
-		// if urlMap[i.Mid] == "" {
-		// 	easylog.Errorf("Get vkey failed: %s", i.Mid)
-		// 	continue
-		// }
-		mp3.DownloadURL = fmt.Sprintf(SongDownloadURL, i.Mid, guid, defaultVkey)
+		if vkeyMap[i.Mid] == "" {
+			easylog.Errorf("get vkey failed: %s", i.Mid)
+			continue
+		}
+		mp3.DownloadURL = fmt.Sprintf(SongDownloadURL, midMap[i.Mid], guid, vkeyMap[i.Mid])
 		mp3.SavePath = savePath
 		mp3List = append(mp3List, mp3)
 	}

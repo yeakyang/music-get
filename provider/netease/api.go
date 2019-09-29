@@ -8,11 +8,11 @@ import (
 	"path/filepath"
 	"strconv"
 
-	"github.com/winterssy/reqwest"
 	"github.com/winterssy/music-get/conf"
 	"github.com/winterssy/music-get/pkg/ecode"
 	"github.com/winterssy/music-get/provider"
 	"github.com/winterssy/music-get/utils"
+	"github.com/winterssy/sreq"
 )
 
 const (
@@ -283,7 +283,8 @@ func (p *PlaylistRequest) Do() error {
 
 func (p *PlaylistRequest) Prepare() ([]*provider.MP3, error) {
 	savePath := filepath.Join(".", utils.TrimInvalidFilePathChars(p.Response.Playlist.Name))
-	ids, songs := make([]int, 0), make([]*provider.MP3, 0, len(p.Response.Playlist.TrackIds))
+	ids := make([]int, 0)
+	songs := make([]*provider.MP3, 0, len(p.Response.Playlist.TrackIds))
 
 	count := 0
 	for _, i := range p.Response.Playlist.TrackIds {
@@ -369,7 +370,7 @@ func request(url string, data interface{}) (*http.Response, error) {
 	}
 
 	return provider.Client().Post(url).
-		Form(reqwest.Value{"params": params, "encSecKey": encSecKey}).
+		Form(sreq.Value{"params": params, "encSecKey": encSecKey}).
 		Headers(provider.RequestHeader[provider.NetEaseMusic]).
 		Send().
 		Resolve()
