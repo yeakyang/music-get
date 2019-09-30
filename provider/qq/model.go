@@ -52,7 +52,8 @@ type CD struct {
 
 func (s *Song) resolve() *provider.MP3 {
 	title := strings.TrimSpace(s.Title)
-	playable := s.Action.Switch != 65537
+	// playable := s.Action.Switch != 65537
+	playable := true
 
 	artists := make([]string, 0, len(s.Singer))
 	for _, ar := range s.Singer {

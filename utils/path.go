@@ -27,6 +27,6 @@ func BuildPathIfNotExist(path string) error {
 
 func TrimInvalidFilePathChars(path string) string {
 	path = strings.TrimSpace(path)
-	re := regexp.MustCompile("[\\\\/:*?\"<>|]")
+	re := regexp.MustCompile(Pattern)
 	return re.ReplaceAllString(path, "")
 }

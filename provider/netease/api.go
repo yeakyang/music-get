@@ -9,7 +9,7 @@ import (
 	"strconv"
 
 	"github.com/winterssy/music-get/conf"
-	"github.com/winterssy/music-get/pkg/ecode"
+	"github.com/winterssy/music-get/internal/ecode"
 	"github.com/winterssy/music-get/provider"
 	"github.com/winterssy/music-get/utils"
 	"github.com/winterssy/sreq"
@@ -26,7 +26,7 @@ const (
 )
 
 const (
-	MaxSongsCount = 1000
+	BatchSongsCount = 1000
 )
 
 type SongURLParams struct {
@@ -283,42 +283,33 @@ func (p *PlaylistRequest) Do() error {
 
 func (p *PlaylistRequest) Prepare() ([]*provider.MP3, error) {
 	savePath := filepath.Join(".", utils.TrimInvalidFilePathChars(p.Response.Playlist.Name))
-	ids := make([]int, 0)
-	songs := make([]*provider.MP3, 0, len(p.Response.Playlist.TrackIds))
+	n := len(p.Response.Playlist.TrackIds)
+	mp3List := make([]*provider.MP3, 0, n)
 
-	count := 0
-	for _, i := range p.Response.Playlist.TrackIds {
-		count++
-		if count > MaxSongsCount {
-			req := NewSongRequest(ids...)
-			ids = make([]int, 0)
-			count = 0
-			if err := req.Do(); err != nil {
-				return nil, err
-			}
-
-			batch, err := prepare(req.Response.Songs, savePath)
-			if err != nil {
-				return nil, err
-			}
-			songs = append(songs, batch...)
+	for i := 0; i < n; i += BatchSongsCount {
+		j := i + BatchSongsCount
+		if j > n {
+			j = n
 		}
-		ids = append(ids, i.Id)
-	}
 
-	if len(ids) > 0 {
+		ids := make([]int, 0, j-i)
+		for k := i; i < j; k++ {
+			ids = append(ids, p.Response.Playlist.TrackIds[k].Id)
+		}
+
 		req := NewSongRequest(ids...)
 		if err := req.Do(); err != nil {
 			return nil, err
 		}
+
 		batch, err := prepare(req.Response.Songs, savePath)
 		if err != nil {
 			return nil, err
 		}
-		songs = append(songs, batch...)
+		mp3List = append(mp3List, batch...)
 	}
 
-	return songs, nil
+	return mp3List, nil
 }
 
 type LoginParams struct {
@@ -369,9 +360,9 @@ func request(url string, data interface{}) (*http.Response, error) {
 		return nil, err
 	}
 
-	return provider.Client().Post(url).
+	return provider.Client(provider.NetEaseMusic).Post(url).
 		Form(sreq.Value{"params": params, "encSecKey": encSecKey}).
-		Headers(provider.RequestHeader[provider.NetEaseMusic]).
+		Headers(provider.Headers).
 		Send().
 		Resolve()
 }

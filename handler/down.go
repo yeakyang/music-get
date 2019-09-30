@@ -5,8 +5,8 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/winterssy/music-get/internal/ecode"
 	"github.com/winterssy/music-get/pkg/concurrency"
-	"github.com/winterssy/music-get/pkg/ecode"
 	"github.com/winterssy/music-get/provider"
 )
 

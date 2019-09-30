@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"strconv"
 
-	"github.com/winterssy/music-get/pkg/ecode"
+	"github.com/winterssy/music-get/internal/ecode"
 	"github.com/winterssy/music-get/provider"
 	"github.com/winterssy/music-get/provider/netease"
 	"github.com/winterssy/music-get/provider/qq"

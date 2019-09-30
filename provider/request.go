@@ -5,18 +5,30 @@ import (
 	"sync"
 	"time"
 
-	"github.com/winterssy/sreq"
 	"github.com/winterssy/music-get/conf"
+	"github.com/winterssy/sreq"
 )
 
 var (
-	client *sreq.Client
-	once   sync.Once
+	client  *sreq.Client
+	Headers sreq.Value
+	once    sync.Once
 )
 
-func Client() *sreq.Client {
+func Client(platform int) *sreq.Client {
 	once.Do(func() {
-		client = sreq.Cookies(conf.Conf.Cookies...)
+		client = sreq.New()
+		Headers = make(sreq.Value)
+		switch platform {
+		case NetEaseMusic:
+			client = client.Cookies(conf.Conf.Cookies...)
+			Headers.Set("Origin", "https://music.163.com")
+			Headers.Set("Referer", "https://music.163.com")
+		case QQMusic:
+			Headers.Set("Origin", "https://c.y.qq.com")
+			Headers.Set("Referer", "https://c.y.qq.com")
+		}
+		Headers.Set("User-Agent", chooseUserAgent())
 	})
 	return client
 }
