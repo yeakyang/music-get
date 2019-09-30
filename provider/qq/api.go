@@ -2,10 +2,10 @@ package qq
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"path/filepath"
 
-	"github.com/winterssy/music-get/internal/ecode"
 	"github.com/winterssy/music-get/provider"
 	"github.com/winterssy/music-get/utils"
 	"github.com/winterssy/sreq"
@@ -14,7 +14,7 @@ import (
 const (
 	SongURLAPI  = "https://u.y.qq.com/cgi-bin/musicu.fcg"
 	SongAPI     = "https://c.y.qq.com/v8/fcg-bin/fcg_play_single_song.fcg"
-	ArtistAPI   = "https://c.y.qq.com/v8/fcg-bin/fcg_v8_singer_track_cp.fcg"
+	SingerAPI   = "https://c.y.qq.com/v8/fcg-bin/fcg_v8_singer_track_cp.fcg"
 	AlbumAPI    = "https://c.y.qq.com/v8/fcg-bin/fcg_v8_album_detail_cp.fcg"
 	PlaylistAPI = "https://c.y.qq.com/v8/fcg-bin/fcg_v8_playlist_cp.fcg"
 )
@@ -66,15 +66,15 @@ func NewSongURLRequest(guid string, mids ...string) *SongURLRequest {
 func (s *SongURLRequest) Do() error {
 	resp, err := request(SongURLAPI, s.Params)
 	if err != nil {
-		return ecode.NewError(ecode.HTTPRequestException, "qq.SongURLRequest.Do")
+		return fmt.Errorf("song url api request error: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if err = json.NewDecoder(resp.Body).Decode(&s.Response); err != nil {
-		return ecode.NewError(ecode.APIResponseException, "qq.SongURLRequest.Do:json.Unmarshal")
+		return fmt.Errorf("song url api response error: %w", err)
 	}
 	if s.Response.Code != 0 {
-		return ecode.NewError(ecode.APIResponseException, "qq.SongURLRequest.Do")
+		return fmt.Errorf("song url api status error: %d", s.Response.Code)
 	}
 
 	return nil
@@ -110,15 +110,15 @@ func (s *SongRequest) Login() error {
 func (s *SongRequest) Do() error {
 	resp, err := request(SongAPI, s.Params)
 	if err != nil {
-		return ecode.NewError(ecode.HTTPRequestException, "qq.SongRequest.Do")
+		return fmt.Errorf("song api request error: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if err = json.NewDecoder(resp.Body).Decode(&s.Response); err != nil {
-		return ecode.NewError(ecode.APIResponseException, "qq.SongRequest.Do:json.Unmarshal")
+		return fmt.Errorf("song api response error: %w", err)
 	}
 	if s.Response.Code != 0 {
-		return ecode.NewError(ecode.APIResponseException, "qq.SongRequest.Do")
+		return fmt.Errorf("song api status error: %d", s.Response.Code)
 	}
 
 	return nil
@@ -167,17 +167,17 @@ func (s *SingerRequest) Login() error {
 }
 
 func (s *SingerRequest) Do() error {
-	resp, err := request(ArtistAPI, s.Params)
+	resp, err := request(SingerAPI, s.Params)
 	if err != nil {
-		return ecode.NewError(ecode.HTTPRequestException, "qq.SingerRequest.Do")
+		return fmt.Errorf("singer api request error: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if err = json.NewDecoder(resp.Body).Decode(&s.Response); err != nil {
-		return ecode.NewError(ecode.APIResponseException, "qq.SingerRequest.Do:json.Unmarshal")
+		return fmt.Errorf("singer api response error: %w", err)
 	}
 	if s.Response.Code != 0 {
-		return ecode.NewError(ecode.APIResponseException, "qq.SingerRequest.Do")
+		return fmt.Errorf("singer api status error: %d", s.Response.Code)
 	}
 
 	return nil
@@ -226,15 +226,15 @@ func (a *AlbumRequest) Login() error {
 func (a *AlbumRequest) Do() error {
 	resp, err := request(AlbumAPI, a.Params)
 	if err != nil {
-		return ecode.NewError(ecode.HTTPRequestException, "qq.AlbumRequest.Do")
+		return fmt.Errorf("album api request error: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if err = json.NewDecoder(resp.Body).Decode(&a.Response); err != nil {
-		return ecode.NewError(ecode.APIResponseException, "qq.AlbumRequest.Do:json.Unmarshal")
+		return fmt.Errorf("album api response error: %w", err)
 	}
 	if a.Response.Code != 0 {
-		return ecode.NewError(ecode.APIResponseException, "qq.AlbumRequest.Do")
+		return fmt.Errorf("album api status error: %d", a.Response.Code)
 	}
 
 	return nil
@@ -278,15 +278,15 @@ func (p *PlaylistRequest) Login() error {
 func (p *PlaylistRequest) Do() error {
 	resp, err := request(PlaylistAPI, p.Params)
 	if err != nil {
-		return ecode.NewError(ecode.HTTPRequestException, "qq.PlaylistRequest.Do")
+		return fmt.Errorf("playlist api request error: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if err = json.NewDecoder(resp.Body).Decode(&p.Response); err != nil {
-		return ecode.NewError(ecode.APIResponseException, "qq.PlaylistRequest.Do:json.Unmarshal")
+		return fmt.Errorf("playlist api response error: %w", err)
 	}
 	if p.Response.Code != 0 {
-		return ecode.NewError(ecode.APIResponseException, "qq.PlaylistRequest.Do")
+		return fmt.Errorf("playlist api status error: %d", p.Response.Code)
 	}
 
 	return nil

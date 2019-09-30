@@ -4,12 +4,12 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"path/filepath"
 	"strconv"
 
 	"github.com/winterssy/music-get/conf"
-	"github.com/winterssy/music-get/internal/ecode"
 	"github.com/winterssy/music-get/provider"
 	"github.com/winterssy/music-get/utils"
 	"github.com/winterssy/sreq"
@@ -60,15 +60,15 @@ func NewSongURLRequest(ids ...int) *SongURLRequest {
 func (s *SongURLRequest) Do() error {
 	resp, err := request(SongURLAPI, s.Params)
 	if err != nil {
-		return ecode.NewError(ecode.HTTPRequestException, "netease.SongURLRequest.Do")
+		return fmt.Errorf("song url api request error: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if err = json.NewDecoder(resp.Body).Decode(&s.Response); err != nil {
-		return ecode.NewError(ecode.APIResponseException, "netease.SongURLRequest.Do:json.Unmarshal")
+		return fmt.Errorf("song url api response error: %w", err)
 	}
 	if s.Response.Code != http.StatusOK {
-		return ecode.NewError(ecode.APIResponseException, "netease.SongURLRequest.Do")
+		return fmt.Errorf("song url api status error: %d", s.Response.Code)
 	}
 
 	return nil
@@ -110,15 +110,15 @@ func (s *SongRequest) Login() error {
 func (s *SongRequest) Do() error {
 	resp, err := request(SongAPI, s.Params)
 	if err != nil {
-		return ecode.NewError(ecode.HTTPRequestException, "netease.SongRequest.Do")
+		return fmt.Errorf("song api request error: %")
 	}
 	defer resp.Body.Close()
 
 	if err = json.NewDecoder(resp.Body).Decode(&s.Response); err != nil {
-		return ecode.NewError(ecode.APIResponseException, "netease.SongRequest.Do:json.Unmarshal")
+		return fmt.Errorf("song api response error: %w", err)
 	}
 	if s.Response.Code != http.StatusOK {
-		return ecode.NewError(ecode.APIResponseException, "netease.SongRequest.Do")
+		return fmt.Errorf("song api response status got: %d", s.Response.Code)
 	}
 
 	return nil
@@ -158,15 +158,15 @@ func (a *ArtistRequest) Login() error {
 func (a *ArtistRequest) Do() error {
 	resp, err := request(ArtistAPI+"/"+strconv.Itoa(a.Id), a.Params)
 	if err != nil {
-		return ecode.NewError(ecode.HTTPRequestException, "netease.ArtistRequest.Do")
+		return fmt.Errorf("artist api request error: %")
 	}
 	defer resp.Body.Close()
 
 	if err = json.NewDecoder(resp.Body).Decode(&a.Response); err != nil {
-		return ecode.NewError(ecode.APIResponseException, "netease.ArtistRequest.Do:json.Unmarshal")
+		return fmt.Errorf("artist api response error: %w", err)
 	}
 	if a.Response.Code != http.StatusOK {
-		return ecode.NewError(ecode.APIResponseException, "netease.ArtistRequest.Do")
+		return fmt.Errorf("artist api status error: %d", a.Response.Code)
 	}
 
 	return nil
@@ -215,15 +215,15 @@ func (a *AlbumRequest) Login() error {
 func (a *AlbumRequest) Do() error {
 	resp, err := request(AlbumAPI+"/"+strconv.Itoa(a.Id), a.Params)
 	if err != nil {
-		return ecode.NewError(ecode.HTTPRequestException, "netease.AlbumRequest.Do")
+		return fmt.Errorf("album api request error: %")
 	}
 	defer resp.Body.Close()
 
 	if err = json.NewDecoder(resp.Body).Decode(&a.Response); err != nil {
-		return ecode.NewError(ecode.APIResponseException, "netease.AlbumRequest.Do:json.Unmarshal")
+		return fmt.Errorf("album api response error: %w", err)
 	}
 	if a.Response.Code != http.StatusOK {
-		return ecode.NewError(ecode.APIResponseException, "netease.AlbumRequest.Do")
+		return fmt.Errorf("album api status error: %d", a.Response.Code)
 	}
 
 	return nil
@@ -267,15 +267,15 @@ func (p *PlaylistRequest) Login() error {
 func (p *PlaylistRequest) Do() error {
 	resp, err := request(PlaylistAPI, p.Params)
 	if err != nil {
-		return ecode.NewError(ecode.HTTPRequestException, "netease.PlaylistRequest.Do")
+		return fmt.Errorf("playlist api request error: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if err = json.NewDecoder(resp.Body).Decode(&p.Response); err != nil {
-		return ecode.NewError(ecode.APIResponseException, "netease.PlaylistRequest.Do:json.Unmarshal")
+		return fmt.Errorf("playlist api response error: %w", err)
 	}
 	if p.Response.Code != http.StatusOK {
-		return ecode.NewError(ecode.APIResponseException, "netease.PlaylistRequest.Do")
+		return fmt.Errorf("playlist api status error: %d", p.Response.Code)
 	}
 
 	return nil
@@ -338,15 +338,15 @@ func NewLoginRequest(phone, password string) *LoginRequest {
 func (l *LoginRequest) Do() error {
 	resp, err := request(LoginAPI, l.Params)
 	if err != nil {
-		return ecode.NewError(ecode.HTTPRequestException, "netease.LoginRequest.Do")
+		return fmt.Errorf("login api request error: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if err = json.NewDecoder(resp.Body).Decode(&l.Response); err != nil {
-		return ecode.NewError(ecode.APIResponseException, "netease.LoginRequest.Do:json.Unmarshal")
+		return fmt.Errorf("login api response error: %w", err)
 	}
 	if l.Response.Code != http.StatusOK {
-		return ecode.NewError(ecode.APIResponseException, "netease.LoginRequest.Do")
+		return fmt.Errorf("login api status error: %d", l.Response.Code)
 	}
 
 	conf.Conf.Cookies = resp.Cookies()
@@ -360,7 +360,8 @@ func request(url string, data interface{}) (*http.Response, error) {
 		return nil, err
 	}
 
-	return provider.Client(provider.NetEaseMusic).Post(url).
+	return provider.Client(provider.NetEaseMusic).
+		Post(url).
 		Form(sreq.Value{"params": params, "encSecKey": encSecKey}).
 		Headers(provider.Headers).
 		Send().

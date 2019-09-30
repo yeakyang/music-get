@@ -47,7 +47,7 @@ func (m *MP3) SingleDownload() (status int) {
 		switch status {
 		case ecode.Success:
 			easylog.Infof("Download complete")
-		case ecode.NoCopyright, ecode.AlreadyDownloaded:
+		case ecode.SongUnavailable, ecode.AlreadyDownloaded:
 			easylog.Warnf("Download interrupt: %s", ecode.Message(status))
 		default:
 			easylog.Errorf("Download error: %s", ecode.Message(status))
@@ -55,7 +55,7 @@ func (m *MP3) SingleDownload() (status int) {
 	}()
 
 	if !m.Playable {
-		status = ecode.NoCopyright
+		status = ecode.SongUnavailable
 		return
 	}
 
@@ -112,7 +112,7 @@ func (m *MP3) ConcurrentDownload(taskList chan DownloadTask, c *concurrency.C) {
 		switch status {
 		case ecode.Success:
 			easylog.Infof("Download complete: %s", m.FileName)
-		case ecode.NoCopyright, ecode.AlreadyDownloaded:
+		case ecode.SongUnavailable, ecode.AlreadyDownloaded:
 			easylog.Warnf("Download interrupt: %s: %s", m.FileName, ecode.Message(status))
 		default:
 			easylog.Errorf("Download error: %s: %s", m.FileName, ecode.Message(status))
@@ -122,7 +122,7 @@ func (m *MP3) ConcurrentDownload(taskList chan DownloadTask, c *concurrency.C) {
 	}()
 
 	if !m.Playable {
-		status = ecode.NoCopyright
+		status = ecode.SongUnavailable
 		return
 	}
 

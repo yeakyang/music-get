@@ -24,7 +24,7 @@ func SingleDownload(mp3List []*provider.MP3) {
 		switch status := m.SingleDownload(); status {
 		case ecode.Success:
 			success++
-		case ecode.NoCopyright, ecode.AlreadyDownloaded:
+		case ecode.SongUnavailable, ecode.AlreadyDownloaded:
 			ignore++
 		default:
 			failure++
@@ -61,7 +61,7 @@ func ConcurrentDownload(mp3List []*provider.MP3, n int) {
 		switch task.Status {
 		case ecode.Success:
 			success++
-		case ecode.NoCopyright, ecode.AlreadyDownloaded:
+		case ecode.SongUnavailable, ecode.AlreadyDownloaded:
 			ignore++
 		default:
 			failure++
