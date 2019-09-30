@@ -54,7 +54,7 @@ func (m *MP3) SingleDownload() (status int) {
 		}
 	}()
 
-	if !m.Playable {
+	if !m.Playable || m.DownloadURL == "" {
 		status = ecode.SongUnavailable
 		return
 	}
@@ -74,7 +74,9 @@ func (m *MP3) SingleDownload() (status int) {
 	}
 
 	easylog.Infof("Downloading: %s", m.FileName)
-	resp, err := Client(m.Provider).Get(m.DownloadURL).
+	easylog.Debug(m.DownloadURL)
+	resp, err := Client(m.Provider).
+		Get(m.DownloadURL).
 		Headers(Headers).
 		Send().
 		Resolve()
@@ -121,7 +123,7 @@ func (m *MP3) ConcurrentDownload(taskList chan DownloadTask, c *concurrency.C) {
 		taskList <- DownloadTask{m, status}
 	}()
 
-	if !m.Playable {
+	if !m.Playable || m.DownloadURL == "" {
 		status = ecode.SongUnavailable
 		return
 	}
@@ -141,6 +143,7 @@ func (m *MP3) ConcurrentDownload(taskList chan DownloadTask, c *concurrency.C) {
 	}
 
 	easylog.Infof("Downloading: %s", m.FileName)
+	easylog.Debug(m.DownloadURL)
 	resp, err := Client(m.Provider).
 		AcquireLock().
 		Get(m.DownloadURL).

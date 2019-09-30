@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"path/filepath"
 
+	"github.com/winterssy/easylog"
+
 	"github.com/winterssy/music-get/provider"
 	"github.com/winterssy/music-get/utils"
 	"github.com/winterssy/sreq"
@@ -64,6 +66,7 @@ func NewSongURLRequest(guid string, mids ...string) *SongURLRequest {
 }
 
 func (s *SongURLRequest) Do() error {
+	easylog.Debug("Send song url api request")
 	resp, err := request(SongURLAPI, s.Params)
 	if err != nil {
 		return fmt.Errorf("song url api request error: %w", err)
@@ -108,6 +111,7 @@ func (s *SongRequest) Login() error {
 }
 
 func (s *SongRequest) Do() error {
+	easylog.Debug("Send song api request")
 	resp, err := request(SongAPI, s.Params)
 	if err != nil {
 		return fmt.Errorf("song api request error: %w", err)
@@ -167,6 +171,7 @@ func (s *SingerRequest) Login() error {
 }
 
 func (s *SingerRequest) Do() error {
+	easylog.Debug("Send singer api request")
 	resp, err := request(SingerAPI, s.Params)
 	if err != nil {
 		return fmt.Errorf("singer api request error: %w", err)
@@ -224,6 +229,7 @@ func (a *AlbumRequest) Login() error {
 }
 
 func (a *AlbumRequest) Do() error {
+	easylog.Debug("Send album api request")
 	resp, err := request(AlbumAPI, a.Params)
 	if err != nil {
 		return fmt.Errorf("album api request error: %w", err)
@@ -276,6 +282,7 @@ func (p *PlaylistRequest) Login() error {
 }
 
 func (p *PlaylistRequest) Do() error {
+	easylog.Debug("Send playlist api request")
 	resp, err := request(PlaylistAPI, p.Params)
 	if err != nil {
 		return fmt.Errorf("playlist api request error: %w", err)

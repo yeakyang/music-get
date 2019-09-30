@@ -22,6 +22,7 @@ var (
 	Conf                         = &Config{}
 	downloadOverwrite            bool
 	concurrentDownloadTasksCount int
+	Debug                        bool
 )
 
 type Config struct {
@@ -33,11 +34,15 @@ type Config struct {
 }
 
 func init() {
+	flag.BoolVar(&Debug, "v", false, "debug mode")
 	flag.BoolVar(&downloadOverwrite, "f", false, "overwrite already downloaded music")
 	flag.IntVar(&concurrentDownloadTasksCount, "n", 1, "concurrent download tasks count, max 16")
 }
 
 func Init() error {
+	if Debug {
+		easylog.SetLevel(easylog.Ldebug)
+	}
 	if concurrentDownloadTasksCount < 1 || concurrentDownloadTasksCount > MaxConcurrentDownloadTasksCount {
 		easylog.Warn("Invalid n parameter, use default value")
 		concurrentDownloadTasksCount = 1

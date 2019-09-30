@@ -5,6 +5,8 @@ import (
 	"regexp"
 	"strconv"
 
+	"github.com/winterssy/easylog"
+
 	"github.com/winterssy/music-get/provider"
 	"github.com/winterssy/music-get/provider/netease"
 	"github.com/winterssy/music-get/provider/qq"
@@ -35,6 +37,7 @@ func Parse(url string) (req provider.MusicRequest, err error) {
 }
 
 func parseNetEase(url string) (req provider.MusicRequest, err error) {
+	easylog.Debug("Use netease music parser")
 	re := regexp.MustCompile(NetEasePattern)
 	matched, ok := re.FindStringSubmatch(url), re.MatchString(url)
 	if !ok {
@@ -62,6 +65,7 @@ func parseNetEase(url string) (req provider.MusicRequest, err error) {
 }
 
 func parseQQ(url string) (req provider.MusicRequest, err error) {
+	easylog.Debug("Use qq music parser")
 	re := regexp.MustCompile(QQPattern)
 	matched, ok := re.FindStringSubmatch(url), re.MatchString(url)
 	if !ok || len(matched) < 3 {

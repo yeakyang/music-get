@@ -57,6 +57,7 @@ func prepare(songs []Song, savePath string) ([]*provider.MP3, error) {
 
 	for k, v := range vkeyMap {
 		if v == "" {
+			easylog.Debugf("Vkey not found, use default value: %s", k)
 			vkeyMap[k] = defaultKey
 		}
 	}
@@ -65,11 +66,10 @@ func prepare(songs []Song, savePath string) ([]*provider.MP3, error) {
 	for _, i := range songs {
 		mp3 := i.resolve()
 		if vkeyMap[i.Mid] == "" {
-			easylog.Errorf("get vkey failed: %s, %s", mp3.FileName, i.Mid)
+			easylog.Errorf("get vkey failed: %s [%s]", mp3.FileName, i.Mid)
 			continue
 		}
 		mp3.DownloadURL = fmt.Sprintf(SongDownloadURL, midMap[i.Mid], guid, vkeyMap[i.Mid])
-		easylog.Info(mp3.DownloadURL)
 		mp3.SavePath = savePath
 		mp3List = append(mp3List, mp3)
 	}

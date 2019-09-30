@@ -10,15 +10,17 @@ import (
 
 func main() {
 	flag.Parse()
-	if len(flag.Args()) == 0 {
-		easylog.Fatal("Missing music address")
-	}
 
 	if err := conf.Init(); err != nil {
 		easylog.Fatal(err)
 	}
 
+	if len(flag.Args()) == 0 {
+		easylog.Fatal("Missing music address")
+	}
+
 	url := flag.Args()[0]
+	easylog.Debug("Parse music address")
 	req, err := handler.Parse(url)
 	if err != nil {
 		easylog.Fatal(err)

@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 	"strconv"
 
+	"github.com/winterssy/easylog"
+
 	"github.com/winterssy/music-get/conf"
 	"github.com/winterssy/music-get/provider"
 	"github.com/winterssy/music-get/utils"
@@ -58,6 +60,7 @@ func NewSongURLRequest(ids ...int) *SongURLRequest {
 }
 
 func (s *SongURLRequest) Do() error {
+	easylog.Debug("Send song url api request")
 	resp, err := request(SongURLAPI, s.Params)
 	if err != nil {
 		return fmt.Errorf("song url api request error: %w", err)
@@ -108,9 +111,10 @@ func (s *SongRequest) Login() error {
 }
 
 func (s *SongRequest) Do() error {
+	easylog.Debug("Send song api request")
 	resp, err := request(SongAPI, s.Params)
 	if err != nil {
-		return fmt.Errorf("song api request error: %")
+		return fmt.Errorf("song api request error: %w", err)
 	}
 	defer resp.Body.Close()
 
@@ -156,9 +160,10 @@ func (a *ArtistRequest) Login() error {
 }
 
 func (a *ArtistRequest) Do() error {
+	easylog.Debugf("Send artist api request: %d", a.Id)
 	resp, err := request(ArtistAPI+"/"+strconv.Itoa(a.Id), a.Params)
 	if err != nil {
-		return fmt.Errorf("artist api request error: %")
+		return fmt.Errorf("artist api request error: %w", err)
 	}
 	defer resp.Body.Close()
 
@@ -213,9 +218,10 @@ func (a *AlbumRequest) Login() error {
 }
 
 func (a *AlbumRequest) Do() error {
+	easylog.Debugf("Send album api request: %d", a.Id)
 	resp, err := request(AlbumAPI+"/"+strconv.Itoa(a.Id), a.Params)
 	if err != nil {
-		return fmt.Errorf("album api request error: %")
+		return fmt.Errorf("album api request error: %w", err)
 	}
 	defer resp.Body.Close()
 
@@ -265,6 +271,7 @@ func (p *PlaylistRequest) Login() error {
 }
 
 func (p *PlaylistRequest) Do() error {
+	easylog.Debugf("Send playlist api request: %d", p.Params.Id)
 	resp, err := request(PlaylistAPI, p.Params)
 	if err != nil {
 		return fmt.Errorf("playlist api request error: %w", err)
@@ -293,7 +300,7 @@ func (p *PlaylistRequest) Prepare() ([]*provider.MP3, error) {
 		}
 
 		ids := make([]int, 0, j-i)
-		for k := i; i < j; k++ {
+		for k := i; k < j; k++ {
 			ids = append(ids, p.Response.Playlist.TrackIds[k].Id)
 		}
 
@@ -336,6 +343,7 @@ func NewLoginRequest(phone, password string) *LoginRequest {
 }
 
 func (l *LoginRequest) Do() error {
+	easylog.Debug("Send login api request")
 	resp, err := request(LoginAPI, l.Params)
 	if err != nil {
 		return fmt.Errorf("login api request error: %w", err)

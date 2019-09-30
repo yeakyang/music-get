@@ -35,13 +35,7 @@ func SingleDownload(mp3List []*provider.MP3) {
 	}
 
 	fmt.Printf("\nDownload report --> total: %d, success: %d, failure: %d, ignore: %d\n", total, success, failure, ignore)
-
-	if len(failureInfo) == 0 {
-		return
-	}
-	if err := outputLog(failureInfo); err == nil {
-		fmt.Printf("\nSee more info in %q\n", LogFileName)
-	}
+	outputLog(failureInfo)
 }
 
 func ConcurrentDownload(mp3List []*provider.MP3, n int) {
@@ -61,7 +55,7 @@ func ConcurrentDownload(mp3List []*provider.MP3, n int) {
 		switch task.Status {
 		case ecode.Success:
 			success++
-		case ecode.SongUnavailable, ecode.AlreadyDownloaded:
+		case ecode.AlreadyDownloaded:
 			ignore++
 		default:
 			failure++
@@ -72,11 +66,5 @@ func ConcurrentDownload(mp3List []*provider.MP3, n int) {
 	}
 
 	fmt.Printf("\nDownload report --> total: %d, success: %d, failure: %d, ignore: %d\n", total, success, failure, ignore)
-
-	if len(failureInfo) == 0 {
-		return
-	}
-	if err := outputLog(failureInfo); err == nil {
-		fmt.Printf("\nSee more info in %q\n", LogFileName)
-	}
+	outputLog(failureInfo)
 }

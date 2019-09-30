@@ -2,6 +2,7 @@ package handler
 
 import (
 	"bufio"
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -14,16 +15,27 @@ const (
 	LogFileName = "music-get.log"
 )
 
-func outputLog(errs []DownloadError) error {
-	lines := make([]string, 0, len(errs))
+func outputLog(errs []DownloadError) {
+	n := len(errs)
+	if n == 0 {
+		return
+	}
+
+	lines := make([]string, 0, n)
 	for _, i := range errs {
-		line, err := json.MarshalIndent(i, "", "    ")
-		if err != nil {
+		buf := &bytes.Buffer{}
+		enc := json.NewEncoder(buf)
+		enc.SetEscapeHTML(false)
+		enc.SetIndent("", "    ")
+		if enc.Encode(i) != nil {
 			continue
 		}
-		lines = append(lines, string(line))
+		lines = append(lines, buf.String())
 	}
-	return writeToFile(LogFileName, lines)
+
+	if writeToFile(LogFileName, lines) == nil {
+		fmt.Printf("\nSee more info in %q\n", LogFileName)
+	}
 }
 
 func writeToFile(filename string, lines []string) error {
