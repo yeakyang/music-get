@@ -3,7 +3,7 @@ module github.com/winterssy/music-get
 require (
 	github.com/cheggaaa/pb/v3 v3.0.1
 	github.com/winterssy/easylog v0.0.0-20190928052554-22bd12c9a1a1
-	github.com/winterssy/sreq v0.0.0-20191002042708-00f240927fcc
+	github.com/winterssy/sreq v0.0.0-20191002153645-d8b7127ab775
 	golang.org/x/crypto v0.0.0-20190829043050-9756ffdc2472
 	golang.org/x/net v0.0.0-20191002035440-2ec189313ef0 // indirect
 	golang.org/x/sys v0.0.0-20190904154756-749cb33beabd // indirect
