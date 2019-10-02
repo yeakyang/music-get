@@ -10,7 +10,6 @@ import (
 	"strconv"
 
 	"github.com/winterssy/easylog"
-
 	"github.com/winterssy/music-get/conf"
 	"github.com/winterssy/music-get/provider"
 	"github.com/winterssy/music-get/utils"
@@ -369,9 +368,9 @@ func request(url string, data interface{}) (*http.Response, error) {
 	}
 
 	return provider.Client(provider.NetEaseMusic).
-		Post(url).
-		Form(sreq.Value{"params": params, "encSecKey": encSecKey}).
-		Headers(provider.Headers).
-		Send().
+		Post(url,
+			sreq.WithHeaders(provider.Headers),
+			sreq.WithForm(sreq.Value{"params": params, "encSecKey": encSecKey}),
+		).
 		Resolve()
 }

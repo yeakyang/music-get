@@ -17,16 +17,18 @@ var (
 
 func Client(platform int) *sreq.Client {
 	once.Do(func() {
-		client = sreq.New()
 		Headers = make(sreq.Value)
 		switch platform {
 		case NetEaseMusic:
-			client = client.Cookies(conf.Conf.Cookies...)
+			client = sreq.New(nil, sreq.WithCookies(conf.Conf.Cookies...))
 			Headers.Set("Origin", "https://music.163.com")
 			Headers.Set("Referer", "https://music.163.com")
 		case QQMusic:
+			client = sreq.New(nil)
 			Headers.Set("Origin", "https://c.y.qq.com")
 			Headers.Set("Referer", "https://c.y.qq.com")
+		default:
+			client = sreq.New(nil)
 		}
 		Headers.Set("User-Agent", chooseUserAgent())
 	})

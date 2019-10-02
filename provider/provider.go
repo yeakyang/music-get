@@ -11,6 +11,7 @@ import (
 	"github.com/winterssy/music-get/internal/ecode"
 	"github.com/winterssy/music-get/pkg/concurrency"
 	"github.com/winterssy/music-get/utils"
+	"github.com/winterssy/sreq"
 )
 
 const (
@@ -76,9 +77,7 @@ func (m *MP3) SingleDownload() (status int) {
 	easylog.Infof("Downloading: %s", m.FileName)
 	easylog.Debug(m.DownloadURL)
 	resp, err := Client(m.Provider).
-		Get(m.DownloadURL).
-		Headers(Headers).
-		Send().
+		Get(m.DownloadURL, sreq.WithHeaders(Headers)).
 		Resolve()
 	if err != nil {
 		status = ecode.HTTPRequestException
@@ -145,10 +144,7 @@ func (m *MP3) ConcurrentDownload(taskList chan DownloadTask, c *concurrency.C) {
 	easylog.Infof("Downloading: %s", m.FileName)
 	easylog.Debug(m.DownloadURL)
 	resp, err := Client(m.Provider).
-		AcquireLock().
-		Get(m.DownloadURL).
-		Headers(Headers).
-		Send().
+		Get(m.DownloadURL, sreq.WithHeaders(Headers)).
 		Resolve()
 	if err != nil {
 		status = ecode.HTTPRequestException
