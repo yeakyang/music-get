@@ -1,6 +1,6 @@
 # Music-Get
 
-[![Build Status](https://travis-ci.org/winterssy/music-get.svg?branch=master)](https://travis-ci.org/winterssy/music-get)
+[![Build Status](https://www.travis-ci.com/winterssy/music-get.svg?branch=master)](https://www.travis-ci.com/winterssy/music-get)
 [![Latest Release](https://img.shields.io/github/release/winterssy/music-get.svg)](https://github.com/winterssy/music-get/releases)
 [![License GPL-3.0](https://img.shields.io/github/license/winterssy/music-get.svg)](/LICENSE)
 
