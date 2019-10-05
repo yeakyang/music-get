@@ -20,6 +20,8 @@ github.com/winterssy/sreq v0.0.0-20191004083904-f61fa5b7ff9a h1:zrZ2gxsbbxchUO/J
 github.com/winterssy/sreq v0.0.0-20191004083904-f61fa5b7ff9a/go.mod h1:rwSqmUa9RlrQqnkcrO4IMBY2HvsrHniAAmtRfMS+Ep4=
 github.com/winterssy/sreq v0.0.0-20191005014320-ec4822583258 h1:mWxEDLmEgHbfS/NpbIwUFTnxJJFM94iNWY7oDdc9rc0=
 github.com/winterssy/sreq v0.0.0-20191005014320-ec4822583258/go.mod h1:rwSqmUa9RlrQqnkcrO4IMBY2HvsrHniAAmtRfMS+Ep4=
+github.com/winterssy/sreq v0.0.0-20191005023203-72d462cb2d61 h1:Eojbwa/mbj6F0ijLWg3X68TraqIYnh0rPTBMsKk3Wmg=
+github.com/winterssy/sreq v0.0.0-20191005023203-72d462cb2d61/go.mod h1:rwSqmUa9RlrQqnkcrO4IMBY2HvsrHniAAmtRfMS+Ep4=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
 golang.org/x/crypto v0.0.0-20190829043050-9756ffdc2472 h1:Gv7RPwsi3eZ2Fgewe3CBsuOebPwO27PoXzRpJPsvSSM=
 golang.org/x/crypto v0.0.0-20190829043050-9756ffdc2472/go.mod h1:yigFU9vqHzYiE8UmvKecakEJjdnWj3jj499lnFckfCI=
