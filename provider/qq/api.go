@@ -314,6 +314,6 @@ func (p *PlaylistRequest) Prepare() ([]*provider.MP3, error) {
 
 func request(url string, params sreq.Value) (*http.Response, error) {
 	return provider.Client(provider.QQMusic).
-		Get(url, sreq.WithHeaders(provider.Headers)).
+		Get(url).
 		Resolve()
 }

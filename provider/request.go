@@ -1,36 +1,44 @@
 package provider
 
 import (
+	"github.com/winterssy/music-get/conf"
 	"math/rand"
 	"sync"
 	"time"
 
-	"github.com/winterssy/music-get/conf"
 	"github.com/winterssy/sreq"
 )
 
 var (
-	client  *sreq.Client
-	Headers sreq.Value
-	once    sync.Once
+	client *sreq.Client
+	once   sync.Once
 )
 
 func Client(platform int) *sreq.Client {
 	once.Do(func() {
-		Headers = make(sreq.Value)
+		client = sreq.New(nil)
 		switch platform {
 		case NetEaseMusic:
-			client = sreq.New(nil, sreq.WithCookies(conf.Conf.Cookies...))
-			Headers.Set("Origin", "https://music.163.com")
-			Headers.Set("Referer", "https://music.163.com")
+			client.SetDefaultRequestOpts(
+				sreq.WithHeaders(sreq.Value{
+					"Origin":  "https://music.163.com",
+					"Referer": "https://music.163.com",
+				}),
+				sreq.WithCookies(conf.Conf.Cookies...),
+			)
 		case QQMusic:
-			client = sreq.New(nil)
-			Headers.Set("Origin", "https://c.y.qq.com")
-			Headers.Set("Referer", "https://c.y.qq.com")
-		default:
-			client = sreq.New(nil)
+			client.SetDefaultRequestOpts(
+				sreq.WithHeaders(sreq.Value{
+					"Origin":  "https://c.y.qq.com",
+					"Referer": "https://c.y.qq.com",
+				}),
+			)
 		}
-		Headers.Set("User-Agent", chooseUserAgent())
+		client.AddDefaultRequestOpts(
+			sreq.WithHeaders(sreq.Value{
+				"User-Agent": chooseUserAgent(),
+			}),
+		)
 	})
 	return client
 }
