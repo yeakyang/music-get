@@ -1,10 +1,10 @@
 # Music-Get
 
-[![Build Status](https://www.travis-ci.com/winterssy/music-get.svg?branch=master)](https://www.travis-ci.com/winterssy/music-get)
+[网易云音乐](https://music.163.com) | [QQ音乐](https://y.qq.com) 下载助手，支持一键下载单曲/专辑/歌单以及歌手热门歌曲。
+
+[![Build Status](https://github.com/winterssy/music-get/workflows/Go/badge.svg)](https://github.com/winterssy/music-get/actions)
 [![Latest Release](https://img.shields.io/github/release/winterssy/music-get.svg)](https://github.com/winterssy/music-get/releases)
 [![License GPL-3.0](https://img.shields.io/github/license/winterssy/music-get.svg)](/LICENSE)
-
-[网易云音乐](https://music.163.com) | [QQ音乐](https://y.qq.com) 下载助手，支持一键下载单曲/专辑/歌单以及歌手热门歌曲。
 
 ![preview](/docs/preview.gif)
 
@@ -73,7 +73,6 @@ $ music-get https://y.qq.com/n/yqq/singer/000Sp0Bz4JXH0o.html
 - [Binaryify/NeteaseCloudMusicApi](https://github.com/Binaryify/NeteaseCloudMusicApi)
 - [nondanee/UnblockNeteaseMusic](https://github.com/nondanee/UnblockNeteaseMusic)
 
-
 ## License
 
-GPLv3.
+GPLv3。
