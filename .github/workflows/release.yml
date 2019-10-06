@@ -9,24 +9,14 @@ jobs:
     name: Release
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code into the Go module directory
+        uses: actions/checkout@master
 
       - name: Set up Go
-        uses: actions/setup-go@v1
-        with:
-          go-version: 1.13.x
-        id: go
-
-      - name: Checkout code into the Go module directory
-        uses: actions/checkout@v1
-
-      - name: Validate GoReleaser config
-        uses: docker://goreleaser/goreleaser:latest
-        with:
-          args: check
+        uses: actions/setup-go@master
 
       - name: Run GoReleaser
-        uses: docker://goreleaser/goreleaser:latest
+        uses: goreleaser/goreleaser-action@master
         with:
+          version: latest
           args: release
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}

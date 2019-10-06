@@ -12,14 +12,6 @@ github.com/mattn/go-runewidth v0.0.4 h1:2BvfKmzob6Bmd4YsL0zygOqfdFnK7GR4QL06Do4/
 github.com/mattn/go-runewidth v0.0.4/go.mod h1:LwmH8dsx7+W8Uxz3IHJYH5QSwggIsqBzpuz5H//U1FU=
 github.com/winterssy/easylog v0.0.0-20190928052554-22bd12c9a1a1 h1:cQnSMmZI93jC8hYaxG+qhNnb+g3v9VgBMdWcA4s+/v8=
 github.com/winterssy/easylog v0.0.0-20190928052554-22bd12c9a1a1/go.mod h1:fT72gAFhtFiyAEEmIL3lR1tGCKLWAxVbG7tu9MV386Y=
-github.com/winterssy/sreq v0.0.0-20191002153645-d8b7127ab775 h1:/R4P7aCA5CocHDcXe5qGUygV3cHvonN6wfNB1MH71Do=
-github.com/winterssy/sreq v0.0.0-20191002153645-d8b7127ab775/go.mod h1:rwSqmUa9RlrQqnkcrO4IMBY2HvsrHniAAmtRfMS+Ep4=
-github.com/winterssy/sreq v0.0.0-20191003041142-ba160d7c76be h1:bIZGIhqA0/BnglbVmhifwbWS/pmuwIEN/Mn6DjlgXHM=
-github.com/winterssy/sreq v0.0.0-20191003041142-ba160d7c76be/go.mod h1:rwSqmUa9RlrQqnkcrO4IMBY2HvsrHniAAmtRfMS+Ep4=
-github.com/winterssy/sreq v0.0.0-20191004083904-f61fa5b7ff9a h1:zrZ2gxsbbxchUO/JNkwBjqtKoT+eCBL7Hh9a5hF99Y8=
-github.com/winterssy/sreq v0.0.0-20191004083904-f61fa5b7ff9a/go.mod h1:rwSqmUa9RlrQqnkcrO4IMBY2HvsrHniAAmtRfMS+Ep4=
-github.com/winterssy/sreq v0.0.0-20191005014320-ec4822583258 h1:mWxEDLmEgHbfS/NpbIwUFTnxJJFM94iNWY7oDdc9rc0=
-github.com/winterssy/sreq v0.0.0-20191005014320-ec4822583258/go.mod h1:rwSqmUa9RlrQqnkcrO4IMBY2HvsrHniAAmtRfMS+Ep4=
 github.com/winterssy/sreq v0.0.0-20191005023203-72d462cb2d61 h1:Eojbwa/mbj6F0ijLWg3X68TraqIYnh0rPTBMsKk3Wmg=
 github.com/winterssy/sreq v0.0.0-20191005023203-72d462cb2d61/go.mod h1:rwSqmUa9RlrQqnkcrO4IMBY2HvsrHniAAmtRfMS+Ep4=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
@@ -28,8 +20,6 @@ golang.org/x/crypto v0.0.0-20190829043050-9756ffdc2472/go.mod h1:yigFU9vqHzYiE8U
 golang.org/x/net v0.0.0-20190404232315-eb5bcb51f2a3/go.mod h1:t9HGtf8HONx5eT2rtn7q6eTqICYqUVnKs3thJo3Qplg=
 golang.org/x/net v0.0.0-20190926025831-c00fd9afed17 h1:qPnAdmjNA41t3QBTx2mFGf/SD1IoslhYu7AmdsVzCcs=
 golang.org/x/net v0.0.0-20190926025831-c00fd9afed17/go.mod h1:z5CRVTTTmAJ677TzLLGU+0bjPO0LkuOLi4/5GtJWs/s=
-golang.org/x/net v0.0.0-20191002035440-2ec189313ef0 h1:2mqDk8w/o6UmeUCu5Qiq2y7iMf6anbx+YA8d1JFoFrs=
-golang.org/x/net v0.0.0-20191002035440-2ec189313ef0/go.mod h1:z5CRVTTTmAJ677TzLLGU+0bjPO0LkuOLi4/5GtJWs/s=
 golang.org/x/net v0.0.0-20191003171128-d98b1b443823 h1:Ypyv6BNJh07T1pUSrehkLemqPKXhus2MkfktJ91kRh4=
 golang.org/x/net v0.0.0-20191003171128-d98b1b443823/go.mod h1:z5CRVTTTmAJ677TzLLGU+0bjPO0LkuOLi4/5GtJWs/s=
 golang.org/x/sys v0.0.0-20190215142949-d0b11bdaac8a/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
