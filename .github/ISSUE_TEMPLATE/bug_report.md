@@ -1,10 +1,6 @@
 ---
 name: BUG反馈
 about: 提交一个music-get的问题报告
-title: ''
-labels: ''
-assignees: ''
-
 ---
 
 提交Issue之前请确保你使用的是程序的最新版本，对历史版本出现的问题，开发者不提供支持。请务必按照以下模板描述你遇到的问题，否则你的issue将被关闭。
