@@ -15,7 +15,7 @@ const (
 	LogFileName = "music-get.log"
 )
 
-func outputLog(errs []DownloadError) {
+func outputLog(errs []*DownloadError) {
 	n := len(errs)
 	if n == 0 {
 		return

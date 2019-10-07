@@ -160,7 +160,7 @@ func (m *MP3) ConcurrentDownload(taskList chan DownloadTask, c *concurrency.C) {
 
 	n, err := io.Copy(f, resp.Body)
 	if err != nil || n != resp.ContentLength {
-		status = ecode.BuildFileException
+		status = ecode.FileTransferException
 		return
 	}
 
