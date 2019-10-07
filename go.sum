@@ -12,8 +12,12 @@ github.com/mattn/go-runewidth v0.0.4 h1:2BvfKmzob6Bmd4YsL0zygOqfdFnK7GR4QL06Do4/
 github.com/mattn/go-runewidth v0.0.4/go.mod h1:LwmH8dsx7+W8Uxz3IHJYH5QSwggIsqBzpuz5H//U1FU=
 github.com/winterssy/easylog v0.0.0-20191006120735-2e63b2ab4747 h1:5L7MUgQb8uTZBmLOqgmz3SfGaQmfIeMrRh/rxpGowqE=
 github.com/winterssy/easylog v0.0.0-20191006120735-2e63b2ab4747/go.mod h1:fT72gAFhtFiyAEEmIL3lR1tGCKLWAxVbG7tu9MV386Y=
+github.com/winterssy/easylog v0.0.0-20191007042753-83a0eb9bd4be h1:aQUWH/9dVXeZz+99unLfil94zaWdrFWc/iL55Haltyw=
+github.com/winterssy/easylog v0.0.0-20191007042753-83a0eb9bd4be/go.mod h1:fT72gAFhtFiyAEEmIL3lR1tGCKLWAxVbG7tu9MV386Y=
 github.com/winterssy/sreq v0.0.0-20191006075344-ae88fa3e6089 h1:CdhxJHGkoGFRMq8oDqgK67u+jnS6gnBs8dCrWI2GWRo=
 github.com/winterssy/sreq v0.0.0-20191006075344-ae88fa3e6089/go.mod h1:rwSqmUa9RlrQqnkcrO4IMBY2HvsrHniAAmtRfMS+Ep4=
+github.com/winterssy/sreq v0.0.0-20191007042550-5be549b8ed18 h1:5ICrqtfzN0PZLalgByOxVpOzSpiF7XpMNlyfuHFmI/Q=
+github.com/winterssy/sreq v0.0.0-20191007042550-5be549b8ed18/go.mod h1:rwSqmUa9RlrQqnkcrO4IMBY2HvsrHniAAmtRfMS+Ep4=
 golang.org/x/crypto v0.0.0-20190308221718-c2843e01d9a2/go.mod h1:djNgcEr1/C05ACkg1iLfiJU5Ep61QUkGW8qpdssI0+w=
 golang.org/x/crypto v0.0.0-20190829043050-9756ffdc2472 h1:Gv7RPwsi3eZ2Fgewe3CBsuOebPwO27PoXzRpJPsvSSM=
 golang.org/x/crypto v0.0.0-20190829043050-9756ffdc2472/go.mod h1:yigFU9vqHzYiE8UmvKecakEJjdnWj3jj499lnFckfCI=
