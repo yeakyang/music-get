@@ -1,6 +1,6 @@
 # Music-Get
 
-[网易云音乐](https://music.163.com) | [QQ音乐](https://y.qq.com) 下载助手，支持一键下载单曲/专辑/歌单以及歌手热门歌曲。
+[网易云音乐](https://music.163.com) | [QQ音乐](https://y.qq.com)  | [咪咕音乐](http://music.migu.cn/v3) 下载助手，支持一键下载单曲/专辑/歌单以及歌手热门歌曲。
 
 [![Build Status](https://github.com/winterssy/music-get/workflows/CI/badge.svg)](https://github.com/winterssy/music-get/actions)
 [![Latest Release](https://img.shields.io/github/release/winterssy/music-get.svg)](https://github.com/winterssy/music-get/releases)
@@ -19,27 +19,31 @@
 直接将音乐地址作为命令行参数传入即可，如：
 
 - 下载单曲：
-```
+```sh
 $ music-get https://music.163.com/#/song?id=553310243
 $ music-get https://y.qq.com/n/yqq/song/002Zkt5S2z8JZx.html
+$ music-get http://music.migu.cn/v3/music/song/63273402938
 ```
 
 - 下载专辑：
-```
+```sh
 $ music-get https://music.163.com/#/album?id=38373053
 $ music-get https://y.qq.com/n/yqq/album/002fRO0N4FftzY.html
+$ music-get http://music.migu.cn/v3/music/album/1121438701
 ```
 
 - 下载歌单：
-```
+```sh
 $ music-get https://music.163.com/#/playlist?id=156934569
 $ music-get https://y.qq.com/n/yqq/playsquare/5474239760.html
+$ music-get http://music.migu.cn/v3/music/playlist/159248239
 ```
 
 - 下载歌手热门歌曲：
-```
+```sh
 $ music-get https://music.163.com/#/artist?id=13193
 $ music-get https://y.qq.com/n/yqq/singer/000Sp0Bz4JXH0o.html
+$ music-get http://music.migu.cn/v3/music/artist/112
 ```
 
 命令选项：
@@ -60,13 +64,19 @@ $ music-get https://y.qq.com/n/yqq/singer/000Sp0Bz4JXH0o.html
 
   > 支持。它本质上是一个歌单。
 
-- 是否有支持其它音乐平台的计划？
+- 支持其它音乐平台？
 
-  > 目前暂无，但开发者可以fork本项目的源码自行实现，只须实现 `MusicRequest` 接口即可。同时，欢迎PR。
+  > 如果你发现了其它音乐平台比较全的API，请提交Issue，开发者验证可行的话将会在后续版本实现。同时你也可以fork本项目的源码二次开发（须遵循GPL协议），只须实现 `MusicRequest` 接口即可，欢迎PR。
 
 - 下载中断/失败的原因？
 
   > 网络状态不佳导致响应超时；触发了服务端的反爬机制（下调并发下载任务数/隔一段时间再试）；音乐提供商变更了API（这种情况下请提issue反馈）。网易云音乐不支持下载需要付费/VIP才能试听的歌曲。
+
+## 开发者捐赠
+
+说明：无论是否捐赠，你都可以自由的使用本程序，无任何限制。捐赠仅用于支持项目的开发。
+
+![donate](/docs/wechat_reward_qrcode.png)
 
 ## 致谢
 
