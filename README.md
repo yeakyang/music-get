@@ -1,6 +1,6 @@
 # Music-Get
 
-[网易云音乐](https://music.163.com) | [QQ音乐](https://y.qq.com)  | [咪咕音乐](http://music.migu.cn/v3) 下载助手，支持一键下载单曲/专辑/歌单以及歌手热门歌曲。
+`music-get` 是一款音乐下载程序，只须一步即可将你喜欢的单曲/专辑/歌单/歌手热门歌曲下载到本地。
 
 [![Build Status](https://github.com/winterssy/music-get/workflows/CI/badge.svg)](https://github.com/winterssy/music-get/actions)
 [![Latest Release](https://img.shields.io/github/release/winterssy/music-get.svg)](https://github.com/winterssy/music-get/releases)
@@ -9,6 +9,13 @@
 ![preview](/docs/preview.gif)
 
 >本项目仅供学习研究使用。如侵犯你的权益，请联系作者删除。
+
+## 支持的音乐平台
+
+- [x] 网易云音乐
+- [x] QQ音乐
+- [x] 咪咕音乐
+- [x] 酷狗音乐 
 
 ## 下载安装
 
