@@ -12,13 +12,13 @@ import (
 )
 
 const (
-	GetSongURL          = "https://app.c.nf.migu.cn/MIGUM2.0/v2.0/content/listen-url"
-	GetSongId           = "http://music.migu.cn/v3/api/music/audioPlayer/songs"
-	GetSong             = "https://app.c.nf.migu.cn/MIGUM2.0/v2.0/content/querySongBySongId.do"
+	GetSongURL          = "https://app.c.nf.migu.cn/MIGUM2.0/v2.0/content/listen-url?netType=01&toneFlag=HQ"
+	GetSongId           = "http://music.migu.cn/v3/api/music/audioPlayer/songs?type=1"
+	GetSong             = "https://app.c.nf.migu.cn/MIGUM2.0/v2.0/content/querySongBySongId.do?contentId=0"
 	GetArtistResource   = "https://app.c.nf.migu.cn/MIGUM2.0/v1.0/content/resourceinfo.do?needSimple=01&resourceType=2002"
 	GetAlbumResource    = "https://app.c.nf.migu.cn/MIGUM2.0/v1.0/content/resourceinfo.do?needSimple=01&resourceType=2003"
 	GetPlaylistResource = "https://app.c.nf.migu.cn/MIGUM2.0/v1.0/content/resourceinfo.do?needSimple=01&resourceType=2021"
-	GetArtistSongs      = "https://app.c.nf.migu.cn/MIGUM3.0/v1.0/template/singerSongs/release"
+	GetArtistSongs      = "https://app.c.nf.migu.cn/MIGUM3.0/v1.0/template/singerSongs/release?pageNo=1&pageSize=50&templateVersion=2"
 )
 
 type (
@@ -94,9 +94,7 @@ func NewSongURLRequest(albumId, contentId, copyrightId, resourceType string) *So
 		"contentId":             contentId,
 		"copyrightId":           copyrightId,
 		"lowerQualityContentId": contentId,
-		"netType":               "01",
 		"resourceType":          resourceType,
-		"toneFlag":              "HQ",
 	}
 	return &SongURLRequest{Params: params}
 }
@@ -123,7 +121,6 @@ func (s *SongURLRequest) Do() error {
 
 func NewSongRequest(copyrightId string) *SongRequest {
 	params := sreq.Value{
-		"type":        "1",
 		"copyrightId": copyrightId,
 	}
 	return &SongRequest{Params: params}
@@ -169,8 +166,7 @@ func (s *SongRequest) Do() error {
 	easylog.Debug("SongRequest: send GetSong api request")
 	err = request(GetSong,
 		sreq.WithParams(sreq.Value{
-			"songId":    data.Items[0].SongId,
-			"contentId": "0",
+			"songId": data.Items[0].SongId,
 		}),
 	).JSON(&s.Response)
 	if err != nil {
@@ -191,10 +187,7 @@ func (s *SongRequest) Prepare() ([]*provider.MP3, error) {
 
 func NewArtistRequest(singerId string) *ArtistRequest {
 	params := sreq.Value{
-		"pageNo":          "1",
-		"pageSize":        "50",
-		"singerId":        singerId,
-		"templateVersion": "2",
+		"singerId": singerId,
 	}
 	return &ArtistRequest{
 		SingerId: singerId,
