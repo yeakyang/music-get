@@ -2,8 +2,8 @@ package qq
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
-	"net/http"
 	"path/filepath"
 
 	"github.com/winterssy/easylog"
@@ -13,31 +13,86 @@ import (
 )
 
 const (
-	SongURLAPI  = "https://u.y.qq.com/cgi-bin/musicu.fcg"
-	SongAPI     = "https://c.y.qq.com/v8/fcg-bin/fcg_play_single_song.fcg"
-	SingerAPI   = "https://c.y.qq.com/v8/fcg-bin/fcg_v8_singer_track_cp.fcg"
-	AlbumAPI    = "https://c.y.qq.com/v8/fcg-bin/fcg_v8_album_detail_cp.fcg"
-	PlaylistAPI = "https://c.y.qq.com/v8/fcg-bin/fcg_v8_playlist_cp.fcg"
+	GetSongURL  = "https://u.y.qq.com/cgi-bin/musicu.fcg"
+	GetSong     = "https://c.y.qq.com/v8/fcg-bin/fcg_play_single_song.fcg"
+	GetArtist   = "https://c.y.qq.com/v8/fcg-bin/fcg_v8_singer_track_cp.fcg"
+	GetAlbum    = "https://c.y.qq.com/v8/fcg-bin/fcg_v8_album_detail_cp.fcg"
+	GetPlaylist = "https://c.y.qq.com/v8/fcg-bin/fcg_v8_playlist_cp.fcg"
 )
 
-type SongURLResponse struct {
-	Code int `json:"code"`
-	Req0 struct {
-		Data struct {
-			MidURLInfo []struct {
-				FileName string `json:"filename"`
-				SongMid  string `json:"songmid"`
-				Vkey     string `json:"vkey"`
-			} `json:"midurlinfo"`
-			TestFile2g string `json:"testfile2g"`
-		} `json:"data"`
-	} `json:"req0"`
-}
+type (
+	SongURLResponse struct {
+		Code int `json:"code"`
+		Req0 struct {
+			Data struct {
+				MidURLInfo []struct {
+					FileName string `json:"filename"`
+					SongMid  string `json:"songmid"`
+					Vkey     string `json:"vkey"`
+				} `json:"midurlinfo"`
+				TestFile2g string `json:"testfile2g"`
+			} `json:"data"`
+		} `json:"req0"`
+	}
 
-type SongURLRequest struct {
-	Params   sreq.Value
-	Response SongURLResponse
-}
+	SongURLRequest struct {
+		Params   sreq.Value
+		Response SongURLResponse
+	}
+
+	SongResponse struct {
+		Code int     `json:"code"`
+		Data []*Song `json:"data"`
+	}
+
+	SongRequest struct {
+		Params   sreq.Value
+		Response SongResponse
+	}
+
+	SingerResponse struct {
+		Code int `json:"code"`
+		Data struct {
+			List []struct {
+				MusicData *Song `json:"musicData"`
+			} `json:"list"`
+			SingerId   string `json:"singer_id"`
+			SingerMid  string `json:"singer_mid"`
+			SingerName string `json:"singer_name"`
+			Total      int    `json:"total"`
+		} `json:"data"`
+	}
+
+	ArtistRequest struct {
+		Params   sreq.Value
+		Response SingerResponse
+	}
+
+	AlbumResponse struct {
+		Code int
+		Data struct {
+			GetAlbumInfo GetAlbumInfo `json:"getAlbumInfo"`
+			GetSongInfo  []*Song      `json:"getSongInfo"`
+		} `json:"data"`
+	}
+
+	AlbumRequest struct {
+		Params   sreq.Value
+		Response AlbumResponse
+	}
+
+	PlaylistResponse struct {
+		Code int `json:"code"`
+		Data struct {
+			CDList []CD `json:"cdlist"`
+		} `json:"data"`
+	}
+
+	PlaylistRequest struct {
+		Params   sreq.Value
+		Response PlaylistResponse
+	}
+)
 
 func NewSongURLRequest(guid string, mids ...string) *SongURLRequest {
 	param := map[string]interface{}{
@@ -57,39 +112,27 @@ func NewSongURLRequest(guid string, mids ...string) *SongURLRequest {
 	}
 
 	enc, _ := json.Marshal(data)
-	query := sreq.Value{
+	params := sreq.Value{
 		"data": string(enc),
 	}
 
-	return &SongURLRequest{Params: query}
+	return &SongURLRequest{Params: params}
 }
 
 func (s *SongURLRequest) Do() error {
-	easylog.Debug("Send song url api request")
-	resp, err := request(SongURLAPI, s.Params)
+	easylog.Debug("SongURLRequest: send GetSongURL api request")
+	err := request(GetSongURL,
+		sreq.WithParams(s.Params),
+	).JSON(&s.Response)
 	if err != nil {
-		return fmt.Errorf("song url api request error: %w", err)
+		return fmt.Errorf("SongURLRequest: GetSongURL api request error: %w", err)
 	}
-	defer resp.Body.Close()
 
-	if err = json.NewDecoder(resp.Body).Decode(&s.Response); err != nil {
-		return fmt.Errorf("song url api response error: %w", err)
-	}
 	if s.Response.Code != 0 {
-		return fmt.Errorf("song url api status error: %d", s.Response.Code)
+		return fmt.Errorf("SongURLRequest: GetSongURL api status error: %d", s.Response.Code)
 	}
 
 	return nil
-}
-
-type SongResponse struct {
-	Code int    `json:"code"`
-	Data []Song `json:"data"`
-}
-
-type SongRequest struct {
-	Params   sreq.Value
-	Response SongResponse
 }
 
 func NewSongRequest(mid string) *SongRequest {
@@ -110,18 +153,16 @@ func (s *SongRequest) Login() error {
 }
 
 func (s *SongRequest) Do() error {
-	easylog.Debug("Send song api request")
-	resp, err := request(SongAPI, s.Params)
+	easylog.Debug("SongRequest: send GetSong api request")
+	err := request(GetSong,
+		sreq.WithParams(s.Params),
+	).JSON(&s.Response)
 	if err != nil {
-		return fmt.Errorf("song api request error: %w", err)
+		return fmt.Errorf("SongRequest: GetSong api request error: %w", err)
 	}
-	defer resp.Body.Close()
 
-	if err = json.NewDecoder(resp.Body).Decode(&s.Response); err != nil {
-		return fmt.Errorf("song api response error: %w", err)
-	}
 	if s.Response.Code != 0 {
-		return fmt.Errorf("song api status error: %d", s.Response.Code)
+		return fmt.Errorf("SongRequest: GetSong api status error: %d", s.Response.Code)
 	}
 
 	return nil
@@ -131,25 +172,7 @@ func (s *SongRequest) Prepare() ([]*provider.MP3, error) {
 	return prepare(s.Response.Data, ".")
 }
 
-type SingerResponse struct {
-	Code int `json:"code"`
-	Data struct {
-		List []struct {
-			MusicData Song `json:"musicData"`
-		} `json:"list"`
-		SingerId   string `json:"singer_id"`
-		SingerMid  string `json:"singer_mid"`
-		SingerName string `json:"singer_name"`
-		Total      int    `json:"total"`
-	} `json:"data"`
-}
-
-type SingerRequest struct {
-	Params   sreq.Value
-	Response SingerResponse
-}
-
-func NewSingerRequest(mid string) *SingerRequest {
+func NewSingerRequest(mid string) *ArtistRequest {
 	query := sreq.Value{
 		"singermid": mid,
 		"begin":     "0",
@@ -158,55 +181,44 @@ func NewSingerRequest(mid string) *SingerRequest {
 		"newsong":   "1",
 		"platform":  "yqq",
 	}
-	return &SingerRequest{Params: query}
+	return &ArtistRequest{Params: query}
 }
 
-func (s *SingerRequest) RequireLogin() bool {
+func (a *ArtistRequest) RequireLogin() bool {
 	return false
 }
 
-func (s *SingerRequest) Login() error {
+func (a *ArtistRequest) Login() error {
 	panic("implement me")
 }
 
-func (s *SingerRequest) Do() error {
-	easylog.Debug("Send singer api request")
-	resp, err := request(SingerAPI, s.Params)
+func (a *ArtistRequest) Do() error {
+	easylog.Debug("ArtistRequest: send GetArtist api request")
+	err := request(GetArtist,
+		sreq.WithParams(a.Params),
+	).JSON(&a.Response)
 	if err != nil {
-		return fmt.Errorf("singer api request error: %w", err)
+		return fmt.Errorf("ArtistRequest: GetArtist api request error: %w", err)
 	}
-	defer resp.Body.Close()
 
-	if err = json.NewDecoder(resp.Body).Decode(&s.Response); err != nil {
-		return fmt.Errorf("singer api response error: %w", err)
+	if a.Response.Code != 0 {
+		return fmt.Errorf("ArtistRequest: GetArtist api status error: %d", a.Response.Code)
 	}
-	if s.Response.Code != 0 {
-		return fmt.Errorf("singer api status error: %d", s.Response.Code)
+
+	if len(a.Response.Data.List) == 0 {
+		return errors.New("ArtistRequest: empty artist data")
 	}
 
 	return nil
 }
 
-func (s *SingerRequest) Prepare() ([]*provider.MP3, error) {
-	savePath := filepath.Join(".", utils.TrimInvalidFilePathChars(s.Response.Data.SingerName))
-	var songs []Song
-	for _, i := range s.Response.Data.List {
-		songs = append(songs, i.MusicData)
+func (a *ArtistRequest) Prepare() ([]*provider.MP3, error) {
+	savePath := filepath.Join(".", utils.TrimInvalidFilePathChars(a.Response.Data.SingerName))
+	songs := make([]*Song, len(a.Response.Data.List))
+	for i, s := range a.Response.Data.List {
+		songs[i] = s.MusicData
 	}
 	return prepare(songs, savePath)
-}
-
-type AlbumResponse struct {
-	Code int
-	Data struct {
-		GetAlbumInfo GetAlbumInfo `json:"getAlbumInfo"`
-		GetSongInfo  []Song       `json:"getSongInfo"`
-	} `json:"data"`
-}
-
-type AlbumRequest struct {
-	Params   sreq.Value
-	Response AlbumResponse
 }
 
 func NewAlbumRequest(mid string) *AlbumRequest {
@@ -228,18 +240,20 @@ func (a *AlbumRequest) Login() error {
 }
 
 func (a *AlbumRequest) Do() error {
-	easylog.Debug("Send album api request")
-	resp, err := request(AlbumAPI, a.Params)
+	easylog.Debug("AlbumRequest: send album api request")
+	err := request(GetAlbum,
+		sreq.WithParams(a.Params),
+	).JSON(&a.Response)
 	if err != nil {
-		return fmt.Errorf("album api request error: %w", err)
+		return fmt.Errorf("AlbumRequest: GetAlbum api request error: %w", err)
 	}
-	defer resp.Body.Close()
 
-	if err = json.NewDecoder(resp.Body).Decode(&a.Response); err != nil {
-		return fmt.Errorf("album api response error: %w", err)
-	}
 	if a.Response.Code != 0 {
-		return fmt.Errorf("album api status error: %d", a.Response.Code)
+		return fmt.Errorf("AlbumRequest: GetAlbum api status error: %d", a.Response.Code)
+	}
+
+	if len(a.Response.Data.GetSongInfo) == 0 {
+		return errors.New("AlbumRequest: empty album data")
 	}
 
 	return nil
@@ -248,18 +262,6 @@ func (a *AlbumRequest) Do() error {
 func (a *AlbumRequest) Prepare() ([]*provider.MP3, error) {
 	savePath := filepath.Join(".", utils.TrimInvalidFilePathChars(a.Response.Data.GetAlbumInfo.FAlbumName))
 	return prepare(a.Response.Data.GetSongInfo, savePath)
-}
-
-type PlaylistResponse struct {
-	Code int `json:"code"`
-	Data struct {
-		CDList []CD `json:"cdlist"`
-	} `json:"data"`
-}
-
-type PlaylistRequest struct {
-	Params   sreq.Value
-	Response PlaylistResponse
 }
 
 func NewPlaylistRequest(id string) *PlaylistRequest {
@@ -281,18 +283,20 @@ func (p *PlaylistRequest) Login() error {
 }
 
 func (p *PlaylistRequest) Do() error {
-	easylog.Debug("Send playlist api request")
-	resp, err := request(PlaylistAPI, p.Params)
+	easylog.Debug("PlaylistRequest: send playlist api request")
+	err := request(GetPlaylist,
+		sreq.WithParams(p.Params),
+	).JSON(&p.Response)
 	if err != nil {
-		return fmt.Errorf("playlist api request error: %w", err)
+		return fmt.Errorf("PlaylistRequest: GetPlaylist api request error: %w", err)
 	}
-	defer resp.Body.Close()
 
-	if err = json.NewDecoder(resp.Body).Decode(&p.Response); err != nil {
-		return fmt.Errorf("playlist api response error: %w", err)
-	}
 	if p.Response.Code != 0 {
-		return fmt.Errorf("playlist api status error: %d", p.Response.Code)
+		return fmt.Errorf("PlaylistRequest: GetPlaylist api status error: %d", p.Response.Code)
+	}
+
+	if len(p.Response.Data.CDList) == 0 {
+		return errors.New("PlaylistRequest: empty playlist data")
 	}
 
 	return nil
@@ -312,10 +316,8 @@ func (p *PlaylistRequest) Prepare() ([]*provider.MP3, error) {
 	return res, nil
 }
 
-func request(url string, params sreq.Value) (*http.Response, error) {
+func request(url string, opts ...sreq.RequestOption) *sreq.Response {
 	return provider.Client(provider.QQMusic).
-		Get(url,
-			sreq.WithParams(params),
-		).
-		Resolve()
+		Get(url, opts...).
+		EnsureStatusOk()
 }

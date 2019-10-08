@@ -4,6 +4,7 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/winterssy/music-get/provider/migu"
 	"github.com/winterssy/music-get/provider/netease"
 	"github.com/winterssy/music-get/provider/qq"
 )
@@ -35,7 +36,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			url:  "https://y.qq.com/n/yqq/singer/000Sp0Bz4JXH0o.html",
-			want: reflect.TypeOf(&qq.SingerRequest{}),
+			want: reflect.TypeOf(&qq.ArtistRequest{}),
 		},
 		{
 			url:  "https://y.qq.com/n/yqq/album/002fRO0N4FftzY.html",
@@ -48,6 +49,22 @@ func TestParse(t *testing.T) {
 		{
 			url:  "https://y.qq.com/n/yqq/playlist/5474239760.html",
 			want: reflect.TypeOf(&qq.PlaylistRequest{}),
+		},
+		{
+			url:  "http://music.migu.cn/v3/music/song/63273402938",
+			want: reflect.TypeOf(&migu.SongRequest{}),
+		},
+		{
+			url:  "http://music.migu.cn/v3/music/artist/208",
+			want: reflect.TypeOf(&migu.ArtistRequest{}),
+		},
+		{
+			url:  "http://music.migu.cn/v3/music/album/1121438701",
+			want: reflect.TypeOf(&migu.AlbumRequest{}),
+		},
+		{
+			url:  "http://music.migu.cn/v3/music/playlist/159248239",
+			want: reflect.TypeOf(&migu.PlaylistRequest{}),
 		},
 	}
 

@@ -6,16 +6,17 @@ import (
 	"strconv"
 
 	"github.com/winterssy/easylog"
-
 	"github.com/winterssy/music-get/provider"
+	"github.com/winterssy/music-get/provider/migu"
 	"github.com/winterssy/music-get/provider/netease"
 	"github.com/winterssy/music-get/provider/qq"
 )
 
 const (
-	URLPattern     = "music.163.com|y.qq.com"
+	URLPattern     = "music.163.com|y.qq.com|music.migu.cn"
 	NetEasePattern = "/(song|artist|album|playlist)\\?id=(\\d+)"
 	QQPattern      = "/(song|singer|album|playsquare|playlist)/(\\w+)\\.html"
+	MiguPattern    = "/v3/music/(song|artist|album|playlist)/(\\d+)"
 )
 
 func Parse(url string) (req provider.MusicRequest, err error) {
@@ -31,6 +32,8 @@ func Parse(url string) (req provider.MusicRequest, err error) {
 		req, err = parseNetEase(url)
 	case "y.qq.com":
 		req, err = parseQQ(url)
+	case "music.migu.cn":
+		req, err = parseMigu(url)
 	}
 
 	return
@@ -82,6 +85,29 @@ func parseQQ(url string) (req provider.MusicRequest, err error) {
 		req = qq.NewAlbumRequest(matched[2])
 	case "playsquare", "playlist":
 		req = qq.NewPlaylistRequest(matched[2])
+	}
+
+	return
+}
+
+func parseMigu(url string) (req provider.MusicRequest, err error) {
+	easylog.Debug("Use migu music parser")
+	re := regexp.MustCompile(MiguPattern)
+	matched, ok := re.FindStringSubmatch(url), re.MatchString(url)
+	if !ok || len(matched) < 3 {
+		err = errors.New("invalid migu music address")
+		return
+	}
+
+	switch matched[1] {
+	case "song":
+		req = migu.NewSongRequest(matched[2])
+	case "artist":
+		req = migu.NewArtistRequest(matched[2])
+	case "album":
+		req = migu.NewAlbumRequest(matched[2])
+	case "playlist":
+		req = migu.NewPlaylistRequest(matched[2])
 	}
 
 	return

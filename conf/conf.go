@@ -25,13 +25,15 @@ var (
 	Debug                        bool
 )
 
-type Config struct {
-	Cookies                      []*http.Cookie `json:"cookies,omitempty"`
-	Workspace                    string         `json:"-"`
-	DownloadDir                  string         `json:"-"`
-	DownloadOverwrite            bool           `json:"-"`
-	ConcurrentDownloadTasksCount int            `json:"-"`
-}
+type (
+	Config struct {
+		Cookies                      []*http.Cookie `json:"cookies,omitempty"`
+		Workspace                    string         `json:"-"`
+		DownloadDir                  string         `json:"-"`
+		DownloadOverwrite            bool           `json:"-"`
+		ConcurrentDownloadTasksCount int            `json:"-"`
+	}
+)
 
 func init() {
 	flag.BoolVar(&Debug, "v", false, "debug mode")

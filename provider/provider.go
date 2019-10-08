@@ -16,6 +16,7 @@ import (
 const (
 	NetEaseMusic = iota
 	QQMusic
+	MiguMusic
 )
 
 type MusicRequest interface {

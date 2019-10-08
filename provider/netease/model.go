@@ -8,42 +8,44 @@ import (
 	"github.com/winterssy/music-get/utils"
 )
 
-type Artist struct {
-	Id   int    `json:"id"`
-	Name string `json:"name"`
-}
+type (
+	Artist struct {
+		Id   int    `json:"id"`
+		Name string `json:"name"`
+	}
 
-type Album struct {
-	Id          int    `json:"id"`
-	Name        string `json:"name"`
-	PicURL      string `json:"picURL"`
-	PublishTime int64  `json:"publishTime"`
-}
+	Album struct {
+		Id          int    `json:"id"`
+		Name        string `json:"name"`
+		PicURL      string `json:"picURL"`
+		PublishTime int64  `json:"publishTime"`
+	}
 
-type SongURL struct {
-	Id   int    `json:"id"`
-	Code int    `json:"code"`
-	URL  string `json:"url"`
-}
+	SongURL struct {
+		Id   int    `json:"id"`
+		Code int    `json:"code"`
+		URL  string `json:"url"`
+	}
 
-type Song struct {
-	Id          int      `json:"id"`
-	Name        string   `json:"name"`
-	Artist      []Artist `json:"ar"`
-	Album       Album    `json:"al"`
-	Position    int      `json:"no"`
-	PublishTime int64    `json:"publishTime"`
-}
+	Song struct {
+		Id          int      `json:"id"`
+		Name        string   `json:"name"`
+		Artist      []Artist `json:"ar"`
+		Album       Album    `json:"al"`
+		Position    int      `json:"no"`
+		PublishTime int64    `json:"publishTime"`
+	}
 
-type TrackId struct {
-	Id int `json:"id"`
-}
+	TrackId struct {
+		Id int `json:"id"`
+	}
 
-type Playlist struct {
-	Id       int       `json:"id"`
-	Name     string    `json:"name"`
-	TrackIds []TrackId `json:"trackIds"`
-}
+	Playlist struct {
+		Id       int       `json:"id"`
+		Name     string    `json:"name"`
+		TrackIds []TrackId `json:"trackIds"`
+	}
+)
 
 func (s *Song) resolve() *provider.MP3 {
 	title := strings.TrimSpace(s.Name)

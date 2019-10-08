@@ -14,7 +14,7 @@ const (
 	BatchSongsCount = 10
 )
 
-func prepare(songs []Song, savePath string) ([]*provider.MP3, error) {
+func prepare(songs []*Song, savePath string) ([]*provider.MP3, error) {
 	n := len(songs)
 	midMap := make(map[string]string, n)
 	vkeyMap := make(map[string]string, n)

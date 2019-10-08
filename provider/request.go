@@ -1,11 +1,11 @@
 package provider
 
 import (
-	"github.com/winterssy/music-get/conf"
 	"math/rand"
 	"sync"
 	"time"
 
+	"github.com/winterssy/music-get/conf"
 	"github.com/winterssy/sreq"
 )
 

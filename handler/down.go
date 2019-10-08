@@ -10,11 +10,13 @@ import (
 	"github.com/winterssy/music-get/provider"
 )
 
-type DownloadError struct {
-	Name   string `json:"name"`
-	URL    string `json:"url"`
-	Reason string `json:"reason"`
-}
+type (
+	DownloadError struct {
+		Name   string `json:"name"`
+		URL    string `json:"url"`
+		Reason string `json:"reason"`
+	}
+)
 
 func SingleDownload(mp3List []*provider.MP3) {
 	total, success, failure, ignore := len(mp3List), 0, 0, 0
