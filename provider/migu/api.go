@@ -36,9 +36,9 @@ type (
 	}
 
 	SongResponse struct {
-		Code     string `json:"code"`
-		Info     string `json:"info"`
-		Resource []*Song
+		Code     string  `json:"code"`
+		Info     string  `json:"info"`
+		Resource []*Song `json:"resource"`
 	}
 
 	SongRequest struct {
@@ -66,9 +66,9 @@ type (
 	}
 
 	AlbumResponse struct {
-		Code     string `json:"code"`
-		Info     string `json:"info"`
-		Resource []Album
+		Code     string  `json:"code"`
+		Info     string  `json:"info"`
+		Resource []Album `json:"resource"`
 	}
 
 	AlbumRequest struct {
@@ -77,9 +77,9 @@ type (
 	}
 
 	PlaylistResponse struct {
-		Code     string `json:"code"`
-		Info     string `json:"info"`
-		Resource []Playlist
+		Code     string     `json:"code"`
+		Info     string     `json:"info"`
+		Resource []Playlist `json:"resource"`
 	}
 
 	PlaylistRequest struct {
