@@ -17,6 +17,7 @@ const (
 	NetEaseMusic = iota
 	QQMusic
 	MiguMusic
+	KugouMusic
 )
 
 type MusicRequest interface {

@@ -7,16 +7,18 @@ import (
 
 	"github.com/winterssy/easylog"
 	"github.com/winterssy/music-get/provider"
+	"github.com/winterssy/music-get/provider/kugou"
 	"github.com/winterssy/music-get/provider/migu"
 	"github.com/winterssy/music-get/provider/netease"
 	"github.com/winterssy/music-get/provider/qq"
 )
 
 const (
-	URLPattern     = "music.163.com|y.qq.com|music.migu.cn"
+	URLPattern     = "music.163.com|y.qq.com|music.migu.cn|www.kugou.com"
 	NetEasePattern = "/(song|artist|album|playlist)\\?id=(\\d+)"
 	QQPattern      = "/(song|singer|album|playsquare|playlist)/(\\w+)\\.html"
 	MiguPattern    = "/v3/music/(song|artist|album|playlist)/(\\d+)"
+	KugouPattern   = "/(song|singer|yy/album/single|yy/special/single)/(#hash=(\\w+)|(\\d+).html)"
 )
 
 func Parse(url string) (req provider.MusicRequest, err error) {
@@ -34,6 +36,8 @@ func Parse(url string) (req provider.MusicRequest, err error) {
 		req, err = parseQQ(url)
 	case "music.migu.cn":
 		req, err = parseMigu(url)
+	case "www.kugou.com":
+		req, err = parseKugou(url)
 	}
 
 	return
@@ -71,7 +75,7 @@ func parseQQ(url string) (req provider.MusicRequest, err error) {
 	easylog.Debug("Use qq music parser")
 	re := regexp.MustCompile(QQPattern)
 	matched, ok := re.FindStringSubmatch(url), re.MatchString(url)
-	if !ok || len(matched) < 3 {
+	if !ok {
 		err = errors.New("invalid qq music address")
 		return
 	}
@@ -94,7 +98,7 @@ func parseMigu(url string) (req provider.MusicRequest, err error) {
 	easylog.Debug("Use migu music parser")
 	re := regexp.MustCompile(MiguPattern)
 	matched, ok := re.FindStringSubmatch(url), re.MatchString(url)
-	if !ok || len(matched) < 3 {
+	if !ok {
 		err = errors.New("invalid migu music address")
 		return
 	}
@@ -108,6 +112,29 @@ func parseMigu(url string) (req provider.MusicRequest, err error) {
 		req = migu.NewAlbumRequest(matched[2])
 	case "playlist":
 		req = migu.NewPlaylistRequest(matched[2])
+	}
+
+	return
+}
+
+func parseKugou(url string) (req provider.MusicRequest, err error) {
+	easylog.Debug("Use kugou music parser")
+	re := regexp.MustCompile(KugouPattern)
+	matched, ok := re.FindStringSubmatch(url), re.MatchString(url)
+	if !ok {
+		err = errors.New("invalid kugou music address")
+		return
+	}
+
+	switch matched[1] {
+	case "song":
+		req = kugou.NewSongRequest(matched[3])
+	case "singer":
+		req = kugou.NewArtistRequest(matched[4])
+	case "yy/album/single":
+		req = kugou.NewAlbumRequest(matched[4])
+	case "yy/special/single":
+		req = kugou.NewPlaylistRequest(matched[4])
 	}
 
 	return

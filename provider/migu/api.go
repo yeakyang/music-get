@@ -264,10 +264,10 @@ func (a *ArtistRequest) Prepare() ([]*provider.MP3, error) {
 }
 
 func NewAlbumRequest(albumId string) *AlbumRequest {
-	query := sreq.Value{
+	params := sreq.Value{
 		"resourceId": albumId,
 	}
-	return &AlbumRequest{Params: query}
+	return &AlbumRequest{Params: params}
 }
 
 func (a *AlbumRequest) RequireLogin() bool {
@@ -305,10 +305,10 @@ func (a *AlbumRequest) Prepare() ([]*provider.MP3, error) {
 }
 
 func NewPlaylistRequest(playlistId string) *PlaylistRequest {
-	query := sreq.Value{
+	params := sreq.Value{
 		"resourceId": playlistId,
 	}
-	return &PlaylistRequest{Params: query}
+	return &PlaylistRequest{Params: params}
 }
 
 func (p *PlaylistRequest) RequireLogin() bool {

@@ -136,10 +136,10 @@ func (s *SongURLRequest) Do() error {
 }
 
 func NewSongRequest(songMid string) *SongRequest {
-	query := sreq.Value{
+	params := sreq.Value{
 		"songmid": songMid,
 	}
-	return &SongRequest{Params: query}
+	return &SongRequest{Params: params}
 }
 
 func (s *SongRequest) RequireLogin() bool {
@@ -171,10 +171,10 @@ func (s *SongRequest) Prepare() ([]*provider.MP3, error) {
 }
 
 func NewArtistRequest(singerMid string) *ArtistRequest {
-	query := sreq.Value{
+	params := sreq.Value{
 		"singermid": singerMid,
 	}
-	return &ArtistRequest{Params: query}
+	return &ArtistRequest{Params: params}
 }
 
 func (a *ArtistRequest) RequireLogin() bool {
@@ -215,10 +215,10 @@ func (a *ArtistRequest) Prepare() ([]*provider.MP3, error) {
 }
 
 func NewAlbumRequest(albumMid string) *AlbumRequest {
-	query := sreq.Value{
+	params := sreq.Value{
 		"albummid": albumMid,
 	}
-	return &AlbumRequest{Params: query}
+	return &AlbumRequest{Params: params}
 }
 
 func (a *AlbumRequest) RequireLogin() bool {
@@ -255,10 +255,10 @@ func (a *AlbumRequest) Prepare() ([]*provider.MP3, error) {
 }
 
 func NewPlaylistRequest(id string) *PlaylistRequest {
-	query := sreq.Value{
+	params := sreq.Value{
 		"id": id,
 	}
-	return &PlaylistRequest{Params: query}
+	return &PlaylistRequest{Params: params}
 }
 
 func (p *PlaylistRequest) RequireLogin() bool {
