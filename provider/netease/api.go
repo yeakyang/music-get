@@ -35,9 +35,9 @@ type (
 	}
 
 	SongURLResponse struct {
-		Code int       `json:"code"`
-		Msg  string    `json:"msg"`
-		Data []SongURL `json:"data"`
+		Code int        `json:"code"`
+		Msg  string     `json:"msg"`
+		Data []*SongURL `json:"data"`
 	}
 
 	SongURLRequest struct {
@@ -50,9 +50,9 @@ type (
 	}
 
 	SongResponse struct {
-		Code  int    `json:"code"`
-		Msg   string `json:"msg"`
-		Songs []Song `json:"songs"`
+		Code  int     `json:"code"`
+		Msg   string  `json:"msg"`
+		Songs []*Song `json:"songs"`
 	}
 
 	SongRequest struct {
@@ -63,10 +63,10 @@ type (
 	ArtistParams struct{}
 
 	ArtistResponse struct {
-		Code     int    `json:"code"`
-		Msg      string `json:"msg"`
-		Artist   Artist `json:"artist"`
-		HotSongs []Song `json:"hotSongs"`
+		Code     int     `json:"code"`
+		Msg      string  `json:"msg"`
+		Artist   Artist  `json:"artist"`
+		HotSongs []*Song `json:"hotSongs"`
 	}
 
 	ArtistRequest struct {

@@ -4,7 +4,7 @@ import (
 	"github.com/winterssy/music-get/provider"
 )
 
-func prepare(songs []Song, savePath string) ([]*provider.MP3, error) {
+func prepare(songs []*Song, savePath string) ([]*provider.MP3, error) {
 	n := len(songs)
 	ids := make([]int, 0, n)
 	for _, i := range songs {
