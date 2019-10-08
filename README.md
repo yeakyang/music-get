@@ -12,10 +12,10 @@
 
 ## 支持的音乐平台
 
-- [x] 网易云音乐
-- [x] QQ音乐
-- [x] 咪咕音乐
-- [x] 酷狗音乐 
+- [x] [网易云音乐](https://music.163.com)
+- [x] [QQ音乐](https://y.qq.com)
+- [x] [咪咕音乐](http://music.migu.cn/v3)
+- [x] [酷狗音乐](http://www.kugou.com) 
 
 ## 下载安装
 
