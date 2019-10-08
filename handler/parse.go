@@ -80,7 +80,7 @@ func parseQQ(url string) (req provider.MusicRequest, err error) {
 	case "song":
 		req = qq.NewSongRequest(matched[2])
 	case "singer":
-		req = qq.NewSingerRequest(matched[2])
+		req = qq.NewArtistRequest(matched[2])
 	case "album":
 		req = qq.NewAlbumRequest(matched[2])
 	case "playsquare", "playlist":

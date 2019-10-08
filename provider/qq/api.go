@@ -14,10 +14,10 @@ import (
 
 const (
 	GetSongURL  = "https://u.y.qq.com/cgi-bin/musicu.fcg"
-	GetSong     = "https://c.y.qq.com/v8/fcg-bin/fcg_play_single_song.fcg"
-	GetArtist   = "https://c.y.qq.com/v8/fcg-bin/fcg_v8_singer_track_cp.fcg"
-	GetAlbum    = "https://c.y.qq.com/v8/fcg-bin/fcg_v8_album_detail_cp.fcg"
-	GetPlaylist = "https://c.y.qq.com/v8/fcg-bin/fcg_v8_playlist_cp.fcg"
+	GetSong     = "https://c.y.qq.com/v8/fcg-bin/fcg_play_single_song.fcg?platform=yqq&format=json"
+	GetArtist   = "https://c.y.qq.com/v8/fcg-bin/fcg_v8_singer_track_cp.fcg?begin=0&num=50&order=listen&newsong=1&platform=yqq&format=json"
+	GetAlbum    = "https://c.y.qq.com/v8/fcg-bin/fcg_v8_album_detail_cp.fcg?newsong=1&platform=yqq&format=json"
+	GetPlaylist = "https://c.y.qq.com/v8/fcg-bin/fcg_v8_playlist_cp.fcg?newsong=1&platform=yqq&format=json"
 )
 
 type (
@@ -94,11 +94,11 @@ type (
 	}
 )
 
-func NewSongURLRequest(guid string, mids ...string) *SongURLRequest {
+func NewSongURLRequest(guid string, songMids ...string) *SongURLRequest {
 	param := map[string]interface{}{
 		"guid":      guid,
 		"loginflag": 1,
-		"songmid":   mids,
+		"songmid":   songMids,
 		"uin":       "0",
 		"platform":  "20",
 	}
@@ -135,11 +135,9 @@ func (s *SongURLRequest) Do() error {
 	return nil
 }
 
-func NewSongRequest(mid string) *SongRequest {
+func NewSongRequest(songMid string) *SongRequest {
 	query := sreq.Value{
-		"songmid":  mid,
-		"platform": "yqq",
-		"format":   "json",
+		"songmid": songMid,
 	}
 	return &SongRequest{Params: query}
 }
@@ -172,14 +170,9 @@ func (s *SongRequest) Prepare() ([]*provider.MP3, error) {
 	return prepare(s.Response.Data, ".")
 }
 
-func NewSingerRequest(mid string) *ArtistRequest {
+func NewArtistRequest(singerMid string) *ArtistRequest {
 	query := sreq.Value{
-		"singermid": mid,
-		"begin":     "0",
-		"num":       "50",
-		"order":     "listen",
-		"newsong":   "1",
-		"platform":  "yqq",
+		"singermid": singerMid,
 	}
 	return &ArtistRequest{Params: query}
 }
@@ -221,12 +214,9 @@ func (a *ArtistRequest) Prepare() ([]*provider.MP3, error) {
 	return prepare(songs, savePath)
 }
 
-func NewAlbumRequest(mid string) *AlbumRequest {
+func NewAlbumRequest(albumMid string) *AlbumRequest {
 	query := sreq.Value{
-		"albummid": mid,
-		"newsong":  "1",
-		"platform": "yqq",
-		"format":   "json",
+		"albummid": albumMid,
 	}
 	return &AlbumRequest{Params: query}
 }
@@ -266,10 +256,7 @@ func (a *AlbumRequest) Prepare() ([]*provider.MP3, error) {
 
 func NewPlaylistRequest(id string) *PlaylistRequest {
 	query := sreq.Value{
-		"id":       id,
-		"newsong":  "1",
-		"platform": "yqq",
-		"format":   "json",
+		"id": id,
 	}
 	return &PlaylistRequest{Params: query}
 }
@@ -303,7 +290,7 @@ func (p *PlaylistRequest) Do() error {
 }
 
 func (p *PlaylistRequest) Prepare() ([]*provider.MP3, error) {
-	var res []*provider.MP3
+	res := make([]*provider.MP3, 0, len(p.Response.Data.CDList))
 	for _, i := range p.Response.Data.CDList {
 		savePath := filepath.Join(".", utils.TrimInvalidFilePathChars(i.DissName))
 		mp3List, err := prepare(i.SongList, savePath)

@@ -4,6 +4,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"path/filepath"
@@ -212,6 +213,10 @@ func (a *ArtistRequest) Do() error {
 			a.Response.Code, a.Response.Msg)
 	}
 
+	if len(a.Response.HotSongs) == 0 {
+		return errors.New("ArtistRequest: empty artist data")
+	}
+
 	return nil
 }
 
@@ -255,6 +260,10 @@ func (a *AlbumRequest) Do() error {
 			a.Response.Code, a.Response.Msg)
 	}
 
+	if len(a.Response.Songs) == 0 {
+		return errors.New("AlbumRequest: empty album data")
+	}
+
 	return nil
 }
 
@@ -289,6 +298,10 @@ func (p *PlaylistRequest) Do() error {
 	if p.Response.Code != http.StatusOK {
 		return fmt.Errorf("PlaylistRequest: GetPlaylist api status error: %d: %s",
 			p.Response.Code, p.Response.Msg)
+	}
+
+	if len(p.Response.Playlist.TrackIds) == 0 {
+		return errors.New("PlaylistRequest: empty playlist data")
 	}
 
 	return nil

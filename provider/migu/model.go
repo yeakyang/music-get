@@ -22,17 +22,17 @@ type (
 	}
 
 	Album struct {
-		ResourceType string `json:"resourceType"`
-		AlbumId      string `json:"albumId"`
-		Title        string `json:"title"`
-		SongItems    []*Song
+		ResourceType string  `json:"resourceType"`
+		AlbumId      string  `json:"albumId"`
+		Title        string  `json:"title"`
+		SongItems    []*Song `json:"songItems"`
 	}
 
 	Playlist struct {
-		ResourceType string `json:"resourceType"`
-		MusicListId  string `json:"musicListId"`
-		Title        string `json:"title"`
-		SongItems    []*Song
+		ResourceType string  `json:"resourceType"`
+		MusicListId  string  `json:"musicListId"`
+		Title        string  `json:"title"`
+		SongItems    []*Song `json:"songItems"`
 	}
 
 	Artist struct {
@@ -49,6 +49,6 @@ func (s *Song) resolve() *provider.MP3 {
 	return &provider.MP3{
 		FileName: fileName,
 		Playable: true,
-		Provider: provider.QQMusic,
+		Provider: provider.MiguMusic,
 	}
 }
