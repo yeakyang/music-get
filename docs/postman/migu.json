@@ -1,0 +1,307 @@
+{
+	"info": {
+		"_postman_id": "44dd6c5c-e5e9-4236-bc03-953737e049ea",
+		"name": "咪咕音乐",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "获取歌曲ID",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Referer",
+						"value": "http://music.migu.cn",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://music.migu.cn/v3/api/music/audioPlayer/songs?type=1&copyrightId=63273402938",
+					"protocol": "http",
+					"host": [
+						"music",
+						"migu",
+						"cn"
+					],
+					"path": [
+						"v3",
+						"api",
+						"music",
+						"audioPlayer",
+						"songs"
+					],
+					"query": [
+						{
+							"key": "type",
+							"value": "1"
+						},
+						{
+							"key": "copyrightId",
+							"value": "63273402938"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "获取歌曲资源",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://app.c.nf.migu.cn/MIGUM2.0/v2.0/content/querySongBySongId.do?songId=1004108997&contentId=0",
+					"protocol": "https",
+					"host": [
+						"app",
+						"c",
+						"nf",
+						"migu",
+						"cn"
+					],
+					"path": [
+						"MIGUM2.0",
+						"v2.0",
+						"content",
+						"querySongBySongId.do"
+					],
+					"query": [
+						{
+							"key": "songId",
+							"value": "1004108997"
+						},
+						{
+							"key": "contentId",
+							"value": "0"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "获取专辑资源",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://app.c.nf.migu.cn/MIGUM2.0/v1.0/content/resourceinfo.do?needSimple=01&resourceId=1004383537&resourceType=2003",
+					"protocol": "https",
+					"host": [
+						"app",
+						"c",
+						"nf",
+						"migu",
+						"cn"
+					],
+					"path": [
+						"MIGUM2.0",
+						"v1.0",
+						"content",
+						"resourceinfo.do"
+					],
+					"query": [
+						{
+							"key": "needSimple",
+							"value": "01"
+						},
+						{
+							"key": "resourceId",
+							"value": "1004383537"
+						},
+						{
+							"key": "resourceType",
+							"value": "2003"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "获取歌单资源",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://app.c.nf.migu.cn/MIGUM2.0/v1.0/content/resourceinfo.do?needSimple=01&resourceId=159248239&resourceType=2021",
+					"protocol": "https",
+					"host": [
+						"app",
+						"c",
+						"nf",
+						"migu",
+						"cn"
+					],
+					"path": [
+						"MIGUM2.0",
+						"v1.0",
+						"content",
+						"resourceinfo.do"
+					],
+					"query": [
+						{
+							"key": "needSimple",
+							"value": "01"
+						},
+						{
+							"key": "resourceId",
+							"value": "159248239"
+						},
+						{
+							"key": "resourceType",
+							"value": "2021"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "获取歌手资源",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://app.c.nf.migu.cn/MIGUM2.0/v1.0/content/resourceinfo.do?needSimple=01&resourceType=2002&resourceId=112",
+					"protocol": "https",
+					"host": [
+						"app",
+						"c",
+						"nf",
+						"migu",
+						"cn"
+					],
+					"path": [
+						"MIGUM2.0",
+						"v1.0",
+						"content",
+						"resourceinfo.do"
+					],
+					"query": [
+						{
+							"key": "needSimple",
+							"value": "01"
+						},
+						{
+							"key": "resourceType",
+							"value": "2002"
+						},
+						{
+							"key": "resourceId",
+							"value": "112"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "获取歌手歌曲",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://app.c.nf.migu.cn/MIGUM3.0/v1.0/template/singerSongs/release?pageNo=1&pageSize=50&templateVersion=2&singerId=112",
+					"protocol": "https",
+					"host": [
+						"app",
+						"c",
+						"nf",
+						"migu",
+						"cn"
+					],
+					"path": [
+						"MIGUM3.0",
+						"v1.0",
+						"template",
+						"singerSongs",
+						"release"
+					],
+					"query": [
+						{
+							"key": "pageNo",
+							"value": "1"
+						},
+						{
+							"key": "pageSize",
+							"value": "50"
+						},
+						{
+							"key": "templateVersion",
+							"value": "2"
+						},
+						{
+							"key": "singerId",
+							"value": "112"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "获取歌曲下载地址",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "channel",
+						"value": "0146832",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://app.c.nf.migu.cn/MIGUM2.0/v2.0/content/listen-url?albumId=1121438701&contentId=600913000006669313&copyrightId=63273402938&lowerQualityContentId=600913000006669313&netType=01&resourceType=2&toneFlag=HQ",
+					"protocol": "https",
+					"host": [
+						"app",
+						"c",
+						"nf",
+						"migu",
+						"cn"
+					],
+					"path": [
+						"MIGUM2.0",
+						"v2.0",
+						"content",
+						"listen-url"
+					],
+					"query": [
+						{
+							"key": "albumId",
+							"value": "1121438701"
+						},
+						{
+							"key": "contentId",
+							"value": "600913000006669313"
+						},
+						{
+							"key": "copyrightId",
+							"value": "63273402938"
+						},
+						{
+							"key": "lowerQualityContentId",
+							"value": "600913000006669313"
+						},
+						{
+							"key": "netType",
+							"value": "01"
+						},
+						{
+							"key": "resourceType",
+							"value": "2"
+						},
+						{
+							"key": "toneFlag",
+							"value": "HQ"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

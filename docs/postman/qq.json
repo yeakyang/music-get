@@ -1,0 +1,270 @@
+{
+	"info": {
+		"_postman_id": "2a2c81a9-3aa8-4096-a0b8-843f6516da75",
+		"name": "QQ音乐",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "获取歌曲",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Origin",
+						"value": "https://c.y.qq.com",
+						"type": "text"
+					},
+					{
+						"key": "Referer",
+						"value": "https://c.y.qq.com",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://c.y.qq.com/v8/fcg-bin/fcg_play_single_song.fcg?platform=yqq&format=json&songmid=002Zkt5S2z8JZx",
+					"protocol": "https",
+					"host": [
+						"c",
+						"y",
+						"qq",
+						"com"
+					],
+					"path": [
+						"v8",
+						"fcg-bin",
+						"fcg_play_single_song.fcg"
+					],
+					"query": [
+						{
+							"key": "platform",
+							"value": "yqq"
+						},
+						{
+							"key": "format",
+							"value": "json"
+						},
+						{
+							"key": "songmid",
+							"value": "002Zkt5S2z8JZx"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "获取歌手",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Origin",
+						"value": "https://c.y.qq.com",
+						"type": "text"
+					},
+					{
+						"key": "Referer",
+						"value": "https://c.y.qq.com",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://c.y.qq.com/v8/fcg-bin/fcg_v8_singer_track_cp.fcg?begin=0&num=50&order=listen&newsong=1&platform=yqq&format=json&singermid=000Sp0Bz4JXH0o",
+					"protocol": "https",
+					"host": [
+						"c",
+						"y",
+						"qq",
+						"com"
+					],
+					"path": [
+						"v8",
+						"fcg-bin",
+						"fcg_v8_singer_track_cp.fcg"
+					],
+					"query": [
+						{
+							"key": "begin",
+							"value": "0"
+						},
+						{
+							"key": "num",
+							"value": "50"
+						},
+						{
+							"key": "order",
+							"value": "listen"
+						},
+						{
+							"key": "newsong",
+							"value": "1"
+						},
+						{
+							"key": "platform",
+							"value": "yqq"
+						},
+						{
+							"key": "format",
+							"value": "json"
+						},
+						{
+							"key": "singermid",
+							"value": "000Sp0Bz4JXH0o"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "获取专辑",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Origin",
+						"value": "https://c.y.qq.com",
+						"type": "text"
+					},
+					{
+						"key": "Referer",
+						"value": "https://c.y.qq.com",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://c.y.qq.com/v8/fcg-bin/fcg_v8_album_detail_cp.fcg?newsong=1&platform=yqq&format=json&albumid=002fRO0N4FftzY",
+					"protocol": "https",
+					"host": [
+						"c",
+						"y",
+						"qq",
+						"com"
+					],
+					"path": [
+						"v8",
+						"fcg-bin",
+						"fcg_v8_album_detail_cp.fcg"
+					],
+					"query": [
+						{
+							"key": "newsong",
+							"value": "1"
+						},
+						{
+							"key": "platform",
+							"value": "yqq"
+						},
+						{
+							"key": "format",
+							"value": "json"
+						},
+						{
+							"key": "albumid",
+							"value": "002fRO0N4FftzY"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "获取歌单",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Origin",
+						"value": "https://c.y.qq.com",
+						"type": "text"
+					},
+					{
+						"key": "Referer",
+						"value": "https://c.y.qq.com",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://c.y.qq.com/v8/fcg-bin/fcg_v8_playlist_cp.fcg?newsong=1&platform=yqq&format=json&id=5474239760",
+					"protocol": "https",
+					"host": [
+						"c",
+						"y",
+						"qq",
+						"com"
+					],
+					"path": [
+						"v8",
+						"fcg-bin",
+						"fcg_v8_playlist_cp.fcg"
+					],
+					"query": [
+						{
+							"key": "newsong",
+							"value": "1"
+						},
+						{
+							"key": "platform",
+							"value": "yqq"
+						},
+						{
+							"key": "format",
+							"value": "json"
+						},
+						{
+							"key": "id",
+							"value": "5474239760"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "获取歌曲下载地址",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Origin",
+						"name": "Content-Type",
+						"value": "https://c.y.qq.com",
+						"type": "text"
+					},
+					{
+						"key": "Referer",
+						"value": "https://c.y.qq.com",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "https://c.y.qq.com"
+					}
+				],
+				"url": {
+					"raw": "https://u.y.qq.com/cgi-bin/musicu.fcg?data={\"req0\":{\"method\":\"CgiGetVkey\",\"module\":\"vkey.GetVkeyServer\",\"param\":{\"guid\":\"7332953645\",\"loginflag\":1,\"platform\":\"20\",\"songmid\":[\"002Zkt5S2z8JZx\"],\"uin\":\"0\"}}}",
+					"protocol": "https",
+					"host": [
+						"u",
+						"y",
+						"qq",
+						"com"
+					],
+					"path": [
+						"cgi-bin",
+						"musicu.fcg"
+					],
+					"query": [
+						{
+							"key": "data",
+							"value": "{\"req0\":{\"method\":\"CgiGetVkey\",\"module\":\"vkey.GetVkeyServer\",\"param\":{\"guid\":\"7332953645\",\"loginflag\":1,\"platform\":\"20\",\"songmid\":[\"002Zkt5S2z8JZx\"],\"uin\":\"0\"}}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
