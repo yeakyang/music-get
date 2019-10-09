@@ -21,29 +21,31 @@ const (
 	KuwoMusic
 )
 
-type MusicRequest interface {
-	// 是否需要登录
-	RequireLogin() bool
-	// 发起登录请求
-	Login() error
-	// 发起API请求
-	Do() error
-	// 解析API响应获取音源
-	Prepare() ([]*MP3, error)
-}
+type (
+	MusicRequest interface {
+		// 是否需要登录
+		RequireLogin() bool
+		// 发起登录请求
+		Login() error
+		// 发起API请求
+		Do() error
+		// 解析API响应获取音源
+		Prepare() ([]*MP3, error)
+	}
 
-type MP3 struct {
-	FileName    string
-	SavePath    string
-	Playable    bool
-	DownloadURL string
-	Provider    int
-}
+	MP3 struct {
+		FileName    string
+		SavePath    string
+		Playable    bool
+		DownloadURL string
+		Provider    int
+	}
 
-type DownloadTask struct {
-	MP3    *MP3
-	Status int
-}
+	DownloadTask struct {
+		MP3    *MP3
+		Status int
+	}
+)
 
 func (m *MP3) SingleDownload() (status int) {
 	defer func() {
