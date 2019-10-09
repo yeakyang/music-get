@@ -105,6 +105,8 @@ func (s *SongURLRequest) Do() error {
 		sreq.WithParams(s.Params),
 		sreq.WithHeaders(sreq.Value{
 			"channel": "0146832",
+			"Origin":  "https://app.c.nf.migu.cn",
+			"Referer": "https://app.c.nf.migu.cn",
 		}),
 	).JSON(&s.Response)
 	if err != nil {
@@ -147,6 +149,7 @@ func (s *SongRequest) Do() error {
 	err := request(GetSongId,
 		sreq.WithParams(s.Params),
 		sreq.WithHeaders(sreq.Value{
+			"Origin":  "http://music.migu.cn",
 			"Referer": "http://music.migu.cn",
 		}),
 	).JSON(&data)
@@ -167,6 +170,10 @@ func (s *SongRequest) Do() error {
 	err = request(GetSong,
 		sreq.WithParams(sreq.Value{
 			"songId": data.Items[0].SongId,
+		}),
+		sreq.WithHeaders(sreq.Value{
+			"Origin":  "https://app.c.nf.migu.cn",
+			"Referer": "https://app.c.nf.migu.cn",
 		}),
 	).JSON(&s.Response)
 	if err != nil {
@@ -215,6 +222,10 @@ func (a *ArtistRequest) Do() error {
 		sreq.WithParams(sreq.Value{
 			"resourceId": a.SingerId,
 		}),
+		sreq.WithHeaders(sreq.Value{
+			"Origin":  "https://app.c.nf.migu.cn",
+			"Referer": "https://app.c.nf.migu.cn",
+		}),
 	).JSON(&data)
 	if err != nil {
 		return err
@@ -233,6 +244,10 @@ func (a *ArtistRequest) Do() error {
 	easylog.Debug("ArtistRequest: send GetArtistSongs api request")
 	err = request(GetArtistSongs,
 		sreq.WithParams(a.Params),
+		sreq.WithHeaders(sreq.Value{
+			"Origin":  "https://app.c.nf.migu.cn",
+			"Referer": "https://app.c.nf.migu.cn",
+		}),
 	).JSON(&a.Response)
 	if err != nil {
 		return fmt.Errorf("ArtistRequest: GetArtistSongs api request error: %w", err)
@@ -282,6 +297,10 @@ func (a *AlbumRequest) Do() error {
 	easylog.Debug("AlbumRequest: send GetAlbumResource api request")
 	err := request(GetAlbumResource,
 		sreq.WithParams(a.Params),
+		sreq.WithHeaders(sreq.Value{
+			"Origin":  "https://app.c.nf.migu.cn",
+			"Referer": "https://app.c.nf.migu.cn",
+		}),
 	).JSON(&a.Response)
 	if err != nil {
 		return fmt.Errorf("AlbumRequest: GetAlbumResource api request error: %w", err)
@@ -323,6 +342,10 @@ func (p *PlaylistRequest) Do() error {
 	easylog.Debug("PlaylistRequest: send GetPlaylistResource api request")
 	err := request(GetPlaylistResource,
 		sreq.WithParams(p.Params),
+		sreq.WithHeaders(sreq.Value{
+			"Origin":  "https://app.c.nf.migu.cn",
+			"Referer": "https://app.c.nf.migu.cn",
+		}),
 	).JSON(&p.Response)
 
 	if err != nil {

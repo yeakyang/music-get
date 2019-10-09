@@ -233,6 +233,10 @@ func (a *ArtistRequest) Do() error {
 	easylog.Debug("ArtistRequest: send GetArtistSongs api request")
 	err = request(GetArtistSongs,
 		sreq.WithParams(a.Params),
+		sreq.WithHeaders(sreq.Value{
+			"Origin":  "http://mobilecdn.kugou.com",
+			"Referer": "http://mobilecdn.kugou.com",
+		}),
 	).JSON(&a.Response)
 	if err != nil {
 		return fmt.Errorf("ArtistRequest: GetArtistSongs api request error: %w", err)
@@ -304,6 +308,10 @@ func (a *AlbumRequest) Do() error {
 	easylog.Debug("AlbumRequest: send GetAlbumSongs api request")
 	err = request(GetAlbumSongs,
 		sreq.WithParams(a.Params),
+		sreq.WithHeaders(sreq.Value{
+			"Origin":  "http://mobilecdn.kugou.com",
+			"Referer": "http://mobilecdn.kugou.com",
+		}),
 	).JSON(&a.Response)
 	if err != nil {
 		return fmt.Errorf("AlbumRequest: GetAlbumSongs api request error: %w", err)
