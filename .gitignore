@@ -14,7 +14,10 @@
 # Editor directories and files
 .idea
 
-# Temp or test files
+# Unnecessary project directories and files
+go.sum
+
+# Temp or test directories and files
 downloads
 music-get.json
 debug
