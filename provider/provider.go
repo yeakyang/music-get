@@ -18,6 +18,7 @@ const (
 	QQMusic
 	MiguMusic
 	KugouMusic
+	KuwoMusic
 )
 
 type MusicRequest interface {

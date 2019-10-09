@@ -16,6 +16,7 @@
 |     [QQ音乐](https://y.qq.com)      | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 | [咪咕音乐](http://music.migu.cn/v3) | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 |  [酷狗音乐](http://www.kugou.com)   | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
+|   [酷我音乐](http://www.kuwo.cn/)   | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: | :heavy_check_mark: |
 
 ## 下载安装
 
@@ -34,6 +35,8 @@ $ go get -u github.com/winterssy/music-get
 $ music-get https://music.163.com/#/song?id=553310243
 $ music-get https://y.qq.com/n/yqq/song/002Zkt5S2z8JZx.html
 $ music-get http://music.migu.cn/v3/music/song/63273402938
+$ music-get https://www.kugou.com/song/#hash=1571941D82D63AD614E35EAD9DB6A6A2
+$ music-get http://www.kuwo.cn/play_detail/76323299
 ```
 
 - 下载专辑：
@@ -41,6 +44,8 @@ $ music-get http://music.migu.cn/v3/music/song/63273402938
 $ music-get https://music.163.com/#/album?id=38373053
 $ music-get https://y.qq.com/n/yqq/album/002fRO0N4FftzY.html
 $ music-get http://music.migu.cn/v3/music/album/1121438701
+$ music-get https://www.kugou.com/yy/album/single/976965.html
+$ music-get http://www.kuwo.cn/album_detail/10685968
 ```
 
 - 下载歌单：
@@ -48,6 +53,8 @@ $ music-get http://music.migu.cn/v3/music/album/1121438701
 $ music-get https://music.163.com/#/playlist?id=156934569
 $ music-get https://y.qq.com/n/yqq/playsquare/5474239760.html
 $ music-get http://music.migu.cn/v3/music/playlist/159248239
+$ music-get https://www.kugou.com/yy/special/single/547134.html
+$ music-get http://www.kuwo.cn/playlist_detail/1085247459
 ```
 
 - 下载歌手热门歌曲：
@@ -55,6 +62,8 @@ $ music-get http://music.migu.cn/v3/music/playlist/159248239
 $ music-get https://music.163.com/#/artist?id=13193
 $ music-get https://y.qq.com/n/yqq/singer/000Sp0Bz4JXH0o.html
 $ music-get http://music.migu.cn/v3/music/artist/112
+$ music-get https://www.kugou.com/singer/8965.html
+$ music-get http://www.kuwo.cn/singer_detail/336
 ```
 
 命令选项：

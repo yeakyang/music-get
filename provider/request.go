@@ -33,6 +33,13 @@ func Client(platform int) *sreq.Client {
 					"Referer": "https://c.y.qq.com",
 				}),
 			)
+		case KuwoMusic:
+			client.SetDefaultRequestOpts(
+				sreq.WithHeaders(sreq.Value{
+					"Origin":  "http://www.kuwo.cn",
+					"Referer": "http://www.kuwo.cn",
+				}),
+			)
 		}
 		client.AddDefaultRequestOpts(
 			sreq.WithHeaders(sreq.Value{

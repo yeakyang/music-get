@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/winterssy/music-get/provider/kugou"
+	"github.com/winterssy/music-get/provider/kuwo"
 	"github.com/winterssy/music-get/provider/migu"
 	"github.com/winterssy/music-get/provider/netease"
 	"github.com/winterssy/music-get/provider/qq"
@@ -71,7 +72,7 @@ func TestParse(t *testing.T) {
 		},
 
 		{
-			url:  "https://www.kugou.com/song/#hash=1571941D82D63AD614E35EAD9DB6A6A2&album_id=976965",
+			url:  "https://www.kugou.com/song/#hash=1571941D82D63AD614E35EAD9DB6A6A2",
 			want: reflect.TypeOf(&kugou.SongRequest{}),
 		},
 		{
@@ -85,6 +86,23 @@ func TestParse(t *testing.T) {
 		{
 			url:  "https://www.kugou.com/yy/special/single/547134.html",
 			want: reflect.TypeOf(&kugou.PlaylistRequest{}),
+		},
+
+		{
+			url:  "http://www.kuwo.cn/play_detail/76323299",
+			want: reflect.TypeOf(&kuwo.SongRequest{}),
+		},
+		{
+			url:  "http://www.kuwo.cn/singer_detail/336",
+			want: reflect.TypeOf(&kuwo.ArtistRequest{}),
+		},
+		{
+			url:  "http://www.kuwo.cn/album_detail/10685968",
+			want: reflect.TypeOf(&kuwo.AlbumRequest{}),
+		},
+		{
+			url:  "http://www.kuwo.cn/playlist_detail/1085247459",
+			want: reflect.TypeOf(&kuwo.PlaylistRequest{}),
 		},
 	}
 

@@ -8,17 +8,19 @@ import (
 	"github.com/winterssy/easylog"
 	"github.com/winterssy/music-get/provider"
 	"github.com/winterssy/music-get/provider/kugou"
+	"github.com/winterssy/music-get/provider/kuwo"
 	"github.com/winterssy/music-get/provider/migu"
 	"github.com/winterssy/music-get/provider/netease"
 	"github.com/winterssy/music-get/provider/qq"
 )
 
 const (
-	URLPattern     = "music.163.com|y.qq.com|music.migu.cn|www.kugou.com"
+	URLPattern     = "music.163.com|y.qq.com|music.migu.cn|www.kugou.com|www.kuwo.cn"
 	NetEasePattern = "/(song|artist|album|playlist)\\?id=(\\d+)"
 	QQPattern      = "/(song|singer|album|playsquare|playlist)/(\\w+)\\.html"
 	MiguPattern    = "/v3/music/(song|artist|album|playlist)/(\\d+)"
 	KugouPattern   = "/(song|singer|yy/album/single|yy/special/single)/(#hash=(\\w+)|(\\d+).html)"
+	KuwoPattern    = "/(play_detail|singer_detail|album_detail|playlist_detail)/(\\d+)"
 )
 
 func Parse(url string) (req provider.MusicRequest, err error) {
@@ -38,6 +40,8 @@ func Parse(url string) (req provider.MusicRequest, err error) {
 		req, err = parseMigu(url)
 	case "www.kugou.com":
 		req, err = parseKugou(url)
+	case "www.kuwo.cn":
+		req, err = parseKuwo(url)
 	}
 
 	return
@@ -135,6 +139,29 @@ func parseKugou(url string) (req provider.MusicRequest, err error) {
 		req = kugou.NewAlbumRequest(matched[4])
 	case "yy/special/single":
 		req = kugou.NewPlaylistRequest(matched[4])
+	}
+
+	return
+}
+
+func parseKuwo(url string) (req provider.MusicRequest, err error) {
+	easylog.Debug("Use kuwo music parser")
+	re := regexp.MustCompile(KuwoPattern)
+	matched, ok := re.FindStringSubmatch(url), re.MatchString(url)
+	if !ok {
+		err = errors.New("invalid kuwo music address")
+		return
+	}
+
+	switch matched[1] {
+	case "play_detail":
+		req = kuwo.NewSongRequest(matched[2])
+	case "singer_detail":
+		req = kuwo.NewArtistRequest(matched[2])
+	case "album_detail":
+		req = kuwo.NewAlbumRequest(matched[2])
+	case "playlist_detail":
+		req = kuwo.NewPlaylistRequest(matched[2])
 	}
 
 	return

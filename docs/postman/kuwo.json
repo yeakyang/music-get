@@ -1,0 +1,362 @@
+{
+	"info": {
+		"_postman_id": "19de2931-ecd0-4433-bb9f-a4a2c7b8cbbc",
+		"name": "酷狗音乐",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "获取歌曲",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Origin",
+						"value": "http://m.kugou.com",
+						"type": "text"
+					},
+					{
+						"key": "Referer",
+						"value": "http://m.kugou.com",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://m.kugou.com/api/v1/song/get_song_info?cmd=playInfo&hash=5FCE4CBCB96D6025033BCE2025FC3943",
+					"protocol": "http",
+					"host": [
+						"m",
+						"kugou",
+						"com"
+					],
+					"path": [
+						"api",
+						"v1",
+						"song",
+						"get_song_info"
+					],
+					"query": [
+						{
+							"key": "cmd",
+							"value": "playInfo"
+						},
+						{
+							"key": "hash",
+							"value": "5FCE4CBCB96D6025033BCE2025FC3943"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "获取歌手信息",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Origin",
+						"value": "http://mobilecdn.kugou.com",
+						"type": "text"
+					},
+					{
+						"key": "Referer",
+						"value": "http://mobilecdn.kugou.com",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://mobilecdn.kugou.com/api/v3/singer/info?singerid=8965",
+					"protocol": "http",
+					"host": [
+						"mobilecdn",
+						"kugou",
+						"com"
+					],
+					"path": [
+						"api",
+						"v3",
+						"singer",
+						"info"
+					],
+					"query": [
+						{
+							"key": "singerid",
+							"value": "8965"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "获取歌手歌曲",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Origin",
+						"value": "http://mobilecdn.kugou.com",
+						"type": "text"
+					},
+					{
+						"key": "Referer",
+						"value": "http://mobilecdn.kugou.com",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://mobilecdn.kugou.com/api/v3/singer/song?page=1&singerid=8965&pagesize=50",
+					"protocol": "http",
+					"host": [
+						"mobilecdn",
+						"kugou",
+						"com"
+					],
+					"path": [
+						"api",
+						"v3",
+						"singer",
+						"song"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "singerid",
+							"value": "8965"
+						},
+						{
+							"key": "pagesize",
+							"value": "50"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "获取专辑信息",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Origin",
+						"value": "http://mobilecdn.kugou.com",
+						"type": "text"
+					},
+					{
+						"key": "Referer",
+						"value": "http://mobilecdn.kugou.com",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://mobilecdn.kugou.com/api/v3/album/info?albumid=1748942",
+					"protocol": "http",
+					"host": [
+						"mobilecdn",
+						"kugou",
+						"com"
+					],
+					"path": [
+						"api",
+						"v3",
+						"album",
+						"info"
+					],
+					"query": [
+						{
+							"key": "albumid",
+							"value": "1748942"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "获取专辑歌曲",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Origin",
+						"value": "http://mobilecdn.kugou.com",
+						"type": "text"
+					},
+					{
+						"key": "Referer",
+						"value": "http://mobilecdn.kugou.com",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://mobilecdn.kugou.com/api/v3/album/song?page=1&pagesize=-1&albumid=1748942",
+					"protocol": "http",
+					"host": [
+						"mobilecdn",
+						"kugou",
+						"com"
+					],
+					"path": [
+						"api",
+						"v3",
+						"album",
+						"song"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "pagesize",
+							"value": "-1"
+						},
+						{
+							"key": "albumid",
+							"value": "1748942"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "获取歌单信息",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Origin",
+						"type": "text",
+						"value": "http://mobilecdn.kugou.com"
+					},
+					{
+						"key": "Referer",
+						"type": "text",
+						"value": "http://mobilecdn.kugou.com"
+					}
+				],
+				"url": {
+					"raw": "http://mobilecdn.kugou.com/api/v3/special/info?specialid=698070",
+					"protocol": "http",
+					"host": [
+						"mobilecdn",
+						"kugou",
+						"com"
+					],
+					"path": [
+						"api",
+						"v3",
+						"special",
+						"info"
+					],
+					"query": [
+						{
+							"key": "specialid",
+							"value": "698070"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "获取歌单歌曲",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Origin",
+						"value": "http://mobilecdn.kugou.com",
+						"type": "text"
+					},
+					{
+						"key": "Referer",
+						"value": "http://mobilecdn.kugou.com",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://mobilecdn.kugou.com/api/v3/special/song?specialid=698070&page=1&pagesize=-1",
+					"protocol": "http",
+					"host": [
+						"mobilecdn",
+						"kugou",
+						"com"
+					],
+					"path": [
+						"api",
+						"v3",
+						"special",
+						"song"
+					],
+					"query": [
+						{
+							"key": "specialid",
+							"value": "698070"
+						},
+						{
+							"key": "page",
+							"value": "1"
+						},
+						{
+							"key": "pagesize",
+							"value": "-1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "获取歌曲下载地址",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://trackercdn.kugou.com/i/v2/?key=867e0d665bd34c45dea9bc6e3035d7ba&hash=1571941D82D63AD614E35EAD9DB6A6A2&pid=2&behavior=play&cmd=25",
+					"protocol": "http",
+					"host": [
+						"trackercdn",
+						"kugou",
+						"com"
+					],
+					"path": [
+						"i",
+						"v2",
+						""
+					],
+					"query": [
+						{
+							"key": "key",
+							"value": "867e0d665bd34c45dea9bc6e3035d7ba"
+						},
+						{
+							"key": "hash",
+							"value": "1571941D82D63AD614E35EAD9DB6A6A2"
+						},
+						{
+							"key": "pid",
+							"value": "2"
+						},
+						{
+							"key": "behavior",
+							"value": "play"
+						},
+						{
+							"key": "cmd",
+							"value": "25"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

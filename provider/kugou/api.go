@@ -204,7 +204,7 @@ func (a *ArtistRequest) Login() error {
 
 func (a *ArtistRequest) Do() error {
 	var data struct {
-		Data   Artist
+		Data   Artist `json:"data"`
 		Status int    `json:"status"`
 		Error  string `json:"error"`
 	}
@@ -275,7 +275,7 @@ func (a *AlbumRequest) Login() error {
 
 func (a *AlbumRequest) Do() error {
 	var data struct {
-		Data   Album
+		Data   Album  `json:"data"`
 		Status int    `json:"status"`
 		Error  string `json:"error"`
 	}
@@ -346,9 +346,9 @@ func (p *PlaylistRequest) Login() error {
 
 func (p *PlaylistRequest) Do() error {
 	var data struct {
-		Data   Playlist
-		Status int    `json:"status"`
-		Error  string `json:"error"`
+		Data   Playlist `json:"data"`
+		Status int      `json:"status"`
+		Error  string   `json:"error"`
 	}
 
 	easylog.Debug("PlaylistRequest: send GetPlaylistInfo api request")
