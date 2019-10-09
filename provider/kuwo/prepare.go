@@ -21,7 +21,7 @@ func prepare(songs []*Song, savePath string) ([]*provider.MP3, error) {
 			req := NewSongURLRequest(strconv.Itoa(song.RId))
 			if err := req.Do(); err != nil {
 				mp3.Playable = false
-				easylog.Errorf("Get song download url failed: %s: %s", song.RId, err.Error())
+				easylog.Errorf("Get song download url failed: %d: %s", song.RId, err.Error())
 			} else {
 				mp3.Playable = req.Response.Code == http.StatusOK
 				mp3.DownloadURL = req.Response.URL
