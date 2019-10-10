@@ -4,7 +4,7 @@ var errors map[int]string
 
 const (
 	Success           = -1
-	ParseURLException = 100 + iota
+	ParseURLException = 1000 + iota
 	AlreadyDownloaded
 	SongUnavailable
 	BuildPathException

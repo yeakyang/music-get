@@ -14,13 +14,13 @@ const (
 	LogFileName = "music-get.log"
 )
 
-func outputLog(errs []*DownloadError) {
-	if len(errs) == 0 {
+func outputLog(dlErrs []*DownloadError) {
+	if len(dlErrs) == 0 {
 		return
 	}
 
 	var data bytes.Buffer
-	for _, i := range errs {
+	for _, i := range dlErrs {
 		buf := &bytes.Buffer{}
 		enc := json.NewEncoder(buf)
 		enc.SetEscapeHTML(false)
