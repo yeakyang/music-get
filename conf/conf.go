@@ -81,7 +81,7 @@ func load(confPath string) error {
 }
 
 func (c *Config) Save() error {
-	data, err := json.MarshalIndent(c, "", "    ")
+	data, err := json.MarshalIndent(c, "", "\t")
 	if err != nil {
 		return err
 	}

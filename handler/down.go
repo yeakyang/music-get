@@ -12,9 +12,9 @@ import (
 
 type (
 	DownloadError struct {
-		Name   string `json:"name"`
-		URL    string `json:"url"`
-		Reason string `json:"reason"`
+		FileName string `json:"filename"`
+		URL      string `json:"url,omitempty"`
+		Reason   string `json:"reason"`
 	}
 )
 
@@ -26,7 +26,7 @@ func SingleDownload(mp3List []*provider.MP3) {
 		switch status := m.SingleDownload(); status {
 		case ecode.Success:
 			success++
-		case ecode.SongUnavailable, ecode.AlreadyDownloaded:
+		case ecode.AlreadyDownloaded:
 			ignore++
 		default:
 			failure++
