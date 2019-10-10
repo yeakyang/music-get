@@ -102,7 +102,7 @@ func NewSongURLRequest(albumId, contentId, copyrightId, resourceType string) *So
 func (s *SongURLRequest) Do() error {
 	easylog.Debug("SongURLRequest: send GetSongURL api request")
 	err := request(GetSongURL,
-		sreq.WithParams(s.Params),
+		sreq.WithQuery(s.Params),
 		sreq.WithHeaders(sreq.Value{
 			"channel": "0146832",
 			"Origin":  "https://app.c.nf.migu.cn",
@@ -147,7 +147,7 @@ func (s *SongRequest) Do() error {
 
 	easylog.Debug("SongRequest: send GetSongId api request")
 	err := request(GetSongId,
-		sreq.WithParams(s.Params),
+		sreq.WithQuery(s.Params),
 		sreq.WithHeaders(sreq.Value{
 			"Origin":  "http://music.migu.cn",
 			"Referer": "http://music.migu.cn",
@@ -168,7 +168,7 @@ func (s *SongRequest) Do() error {
 
 	easylog.Debug("SongRequest: send GetSong api request")
 	err = request(GetSong,
-		sreq.WithParams(sreq.Value{
+		sreq.WithQuery(sreq.Value{
 			"songId": data.Items[0].SongId,
 		}),
 		sreq.WithHeaders(sreq.Value{
@@ -219,7 +219,7 @@ func (a *ArtistRequest) Do() error {
 
 	easylog.Debug("ArtistRequest: send GetArtistResource api request")
 	err := request(GetArtistResource,
-		sreq.WithParams(sreq.Value{
+		sreq.WithQuery(sreq.Value{
 			"resourceId": a.SingerId,
 		}),
 		sreq.WithHeaders(sreq.Value{
@@ -243,7 +243,7 @@ func (a *ArtistRequest) Do() error {
 
 	easylog.Debug("ArtistRequest: send GetArtistSongs api request")
 	err = request(GetArtistSongs,
-		sreq.WithParams(a.Params),
+		sreq.WithQuery(a.Params),
 		sreq.WithHeaders(sreq.Value{
 			"Origin":  "https://app.c.nf.migu.cn",
 			"Referer": "https://app.c.nf.migu.cn",
@@ -296,7 +296,7 @@ func (a *AlbumRequest) Login() error {
 func (a *AlbumRequest) Do() error {
 	easylog.Debug("AlbumRequest: send GetAlbumResource api request")
 	err := request(GetAlbumResource,
-		sreq.WithParams(a.Params),
+		sreq.WithQuery(a.Params),
 		sreq.WithHeaders(sreq.Value{
 			"Origin":  "https://app.c.nf.migu.cn",
 			"Referer": "https://app.c.nf.migu.cn",
@@ -341,7 +341,7 @@ func (p *PlaylistRequest) Login() error {
 func (p *PlaylistRequest) Do() error {
 	easylog.Debug("PlaylistRequest: send GetPlaylistResource api request")
 	err := request(GetPlaylistResource,
-		sreq.WithParams(p.Params),
+		sreq.WithQuery(p.Params),
 		sreq.WithHeaders(sreq.Value{
 			"Origin":  "https://app.c.nf.migu.cn",
 			"Referer": "https://app.c.nf.migu.cn",

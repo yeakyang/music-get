@@ -100,7 +100,7 @@ func NewSongURLRequest(rid string) *SongURLRequest {
 func (s *SongURLRequest) Do() error {
 	easylog.Debug("SongURLRequest: send GetSongURL api request")
 	err := request(GetSongURL,
-		sreq.WithParams(s.Params),
+		sreq.WithQuery(s.Params),
 	).JSON(&s.Response)
 	if err != nil {
 		return fmt.Errorf("SongURLRequest: GetSongURL api request error: %w", err)
@@ -136,7 +136,7 @@ func (s *SongRequest) Login() error {
 func (s *SongRequest) Do() error {
 	easylog.Debug("SongRequest: send GetSong api request")
 	err := request(GetSong,
-		sreq.WithParams(s.Params),
+		sreq.WithQuery(s.Params),
 	).JSON(&s.Response)
 	if err != nil {
 		return fmt.Errorf("SongRequest: GetSong api request error: %w", err)
@@ -184,7 +184,7 @@ func (a *ArtistRequest) Do() error {
 
 	easylog.Debug("ArtistRequest: send GetArtistInfo api request")
 	err := request(GetArtistInfo,
-		sreq.WithParams(sreq.Value{
+		sreq.WithQuery(sreq.Value{
 			"artistid": a.artistId,
 		}),
 	).JSON(&data)
@@ -201,7 +201,7 @@ func (a *ArtistRequest) Do() error {
 
 	easylog.Debug("ArtistRequest: send GetArtistSongs api request")
 	err = request(GetArtistSongs,
-		sreq.WithParams(a.Params),
+		sreq.WithQuery(a.Params),
 	).JSON(&a.Response)
 	if err != nil {
 		return fmt.Errorf("ArtistRequest: GetArtistSongs api request error: %w", err)
@@ -244,7 +244,7 @@ func (a *AlbumRequest) Login() error {
 func (a *AlbumRequest) Do() error {
 	easylog.Debug("AlbumRequest: send GetAlbum api request")
 	err := request(GetAlbum,
-		sreq.WithParams(a.Params),
+		sreq.WithQuery(a.Params),
 	).JSON(&a.Response)
 	if err != nil {
 		return fmt.Errorf("AlbumRequest: GetAlbum api request error: %w", err)
@@ -287,7 +287,7 @@ func (p *PlaylistRequest) Login() error {
 func (p *PlaylistRequest) Do() error {
 	easylog.Debug("PlaylistRequest: send GetPlaylist api request")
 	err := request(GetPlaylist,
-		sreq.WithParams(p.Params),
+		sreq.WithQuery(p.Params),
 	).JSON(&p.Response)
 	if err != nil {
 		return fmt.Errorf("PlaylistRequest: GetPlaylist api request error: %w", err)
