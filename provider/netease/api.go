@@ -371,6 +371,6 @@ func request(url string, data interface{}) *sreq.Response {
 
 	return provider.Client(provider.NetEaseMusic).
 		Post(url,
-			sreq.WithForm(sreq.Value{"params": params, "encSecKey": encSecKey}),
+			sreq.WithForm(sreq.Form{"params": params, "encSecKey": encSecKey}),
 		).EnsureStatusOk()
 }

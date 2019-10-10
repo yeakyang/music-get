@@ -20,7 +20,7 @@ func Client(platform int) *sreq.Client {
 		switch platform {
 		case NetEaseMusic:
 			client.SetDefaultRequestOpts(
-				sreq.WithHeaders(sreq.Value{
+				sreq.WithHeaders(sreq.Headers{
 					"Origin":  "https://music.163.com",
 					"Referer": "https://music.163.com",
 				}),
@@ -28,21 +28,21 @@ func Client(platform int) *sreq.Client {
 			)
 		case QQMusic:
 			client.SetDefaultRequestOpts(
-				sreq.WithHeaders(sreq.Value{
+				sreq.WithHeaders(sreq.Headers{
 					"Origin":  "https://c.y.qq.com",
 					"Referer": "https://c.y.qq.com",
 				}),
 			)
 		case KuwoMusic:
 			client.SetDefaultRequestOpts(
-				sreq.WithHeaders(sreq.Value{
+				sreq.WithHeaders(sreq.Headers{
 					"Origin":  "http://www.kuwo.cn",
 					"Referer": "http://www.kuwo.cn",
 				}),
 			)
 		}
 		client.AddDefaultRequestOpts(
-			sreq.WithHeaders(sreq.Value{
+			sreq.WithHeaders(sreq.Headers{
 				"User-Agent": chooseUserAgent(),
 			}),
 		)

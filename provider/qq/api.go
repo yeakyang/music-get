@@ -36,7 +36,7 @@ type (
 	}
 
 	SongURLRequest struct {
-		Params   sreq.Value
+		Params   sreq.Params
 		Response SongURLResponse
 	}
 
@@ -46,7 +46,7 @@ type (
 	}
 
 	SongRequest struct {
-		Params   sreq.Value
+		Params   sreq.Params
 		Response SongResponse
 	}
 
@@ -64,7 +64,7 @@ type (
 	}
 
 	ArtistRequest struct {
-		Params   sreq.Value
+		Params   sreq.Params
 		Response SingerResponse
 	}
 
@@ -77,7 +77,7 @@ type (
 	}
 
 	AlbumRequest struct {
-		Params   sreq.Value
+		Params   sreq.Params
 		Response AlbumResponse
 	}
 
@@ -89,7 +89,7 @@ type (
 	}
 
 	PlaylistRequest struct {
-		Params   sreq.Value
+		Params   sreq.Params
 		Response PlaylistResponse
 	}
 )
@@ -112,7 +112,7 @@ func NewSongURLRequest(guid string, songMids ...string) *SongURLRequest {
 	}
 
 	enc, _ := json.Marshal(data)
-	params := sreq.Value{
+	params := sreq.Params{
 		"data": string(enc),
 	}
 
@@ -136,7 +136,7 @@ func (s *SongURLRequest) Do() error {
 }
 
 func NewSongRequest(songMid string) *SongRequest {
-	params := sreq.Value{
+	params := sreq.Params{
 		"songmid": songMid,
 	}
 	return &SongRequest{Params: params}
@@ -171,7 +171,7 @@ func (s *SongRequest) Prepare() ([]*provider.MP3, error) {
 }
 
 func NewArtistRequest(singerMid string) *ArtistRequest {
-	params := sreq.Value{
+	params := sreq.Params{
 		"singermid": singerMid,
 	}
 	return &ArtistRequest{Params: params}
@@ -215,7 +215,7 @@ func (a *ArtistRequest) Prepare() ([]*provider.MP3, error) {
 }
 
 func NewAlbumRequest(albumMid string) *AlbumRequest {
-	params := sreq.Value{
+	params := sreq.Params{
 		"albummid": albumMid,
 	}
 	return &AlbumRequest{Params: params}
@@ -255,7 +255,7 @@ func (a *AlbumRequest) Prepare() ([]*provider.MP3, error) {
 }
 
 func NewPlaylistRequest(id string) *PlaylistRequest {
-	params := sreq.Value{
+	params := sreq.Params{
 		"id": id,
 	}
 	return &PlaylistRequest{Params: params}

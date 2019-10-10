@@ -29,7 +29,7 @@ type (
 	}
 
 	SongURLRequest struct {
-		Params   sreq.Value
+		Params   sreq.Params
 		Response SongURLResponse
 	}
 
@@ -40,7 +40,7 @@ type (
 	}
 
 	SongRequest struct {
-		Params   sreq.Value
+		Params   sreq.Params
 		Response SongResponse
 	}
 
@@ -55,7 +55,7 @@ type (
 	ArtistRequest struct {
 		artistId   string
 		artistName string
-		Params     sreq.Value
+		Params     sreq.Params
 		Response   ArtistResponse
 	}
 
@@ -70,7 +70,7 @@ type (
 	}
 
 	AlbumRequest struct {
-		Params   sreq.Value
+		Params   sreq.Params
 		Response AlbumResponse
 	}
 
@@ -85,13 +85,13 @@ type (
 	}
 
 	PlaylistRequest struct {
-		Params   sreq.Value
+		Params   sreq.Params
 		Response PlaylistResponse
 	}
 )
 
 func NewSongURLRequest(rid string) *SongURLRequest {
-	params := sreq.Value{
+	params := sreq.Params{
 		"rid": rid,
 	}
 	return &SongURLRequest{Params: params}
@@ -119,7 +119,7 @@ func (s *SongURLRequest) Do() error {
 }
 
 func NewSongRequest(mid string) *SongRequest {
-	params := sreq.Value{
+	params := sreq.Params{
 		"mid": mid,
 	}
 	return &SongRequest{Params: params}
@@ -158,7 +158,7 @@ func (s *SongRequest) Prepare() ([]*provider.MP3, error) {
 }
 
 func NewArtistRequest(artistId string) *ArtistRequest {
-	params := sreq.Value{
+	params := sreq.Params{
 		"artistid": artistId,
 	}
 	return &ArtistRequest{
@@ -184,7 +184,7 @@ func (a *ArtistRequest) Do() error {
 
 	easylog.Debug("ArtistRequest: send GetArtistInfo api request")
 	err := request(GetArtistInfo,
-		sreq.WithQuery(sreq.Value{
+		sreq.WithQuery(sreq.Params{
 			"artistid": a.artistId,
 		}),
 	).JSON(&data)
@@ -225,7 +225,7 @@ func (a *ArtistRequest) Prepare() ([]*provider.MP3, error) {
 }
 
 func NewAlbumRequest(albumId string) *AlbumRequest {
-	params := sreq.Value{
+	params := sreq.Params{
 		"albumId": albumId,
 	}
 	return &AlbumRequest{
@@ -268,7 +268,7 @@ func (a *AlbumRequest) Prepare() ([]*provider.MP3, error) {
 }
 
 func NewPlaylistRequest(pid string) *PlaylistRequest {
-	params := sreq.Value{
+	params := sreq.Params{
 		"pid": pid,
 	}
 	return &PlaylistRequest{

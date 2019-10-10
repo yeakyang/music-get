@@ -32,7 +32,7 @@ type (
 	}
 
 	SongURLRequest struct {
-		Params   sreq.Value
+		Params   sreq.Params
 		Response SongURLResponse
 	}
 
@@ -53,7 +53,7 @@ type (
 	}
 
 	SongRequest struct {
-		Params   sreq.Value
+		Params   sreq.Params
 		Response SongResponse
 	}
 
@@ -68,7 +68,7 @@ type (
 	ArtistRequest struct {
 		SingerId   string
 		SingerName string
-		Params     sreq.Value
+		Params     sreq.Params
 		Response   ArtistResponse
 	}
 
@@ -83,7 +83,7 @@ type (
 	AlbumRequest struct {
 		AlbumId   string
 		AlbumName string
-		Params    sreq.Value
+		Params    sreq.Params
 		Response  AlbumResponse
 	}
 
@@ -98,7 +98,7 @@ type (
 	PlaylistRequest struct {
 		SpecialId   string
 		SpecialName string
-		Params      sreq.Value
+		Params      sreq.Params
 		Response    PlaylistResponse
 	}
 )
@@ -106,7 +106,7 @@ type (
 func NewSongURLRequest(hash string) *SongURLRequest {
 	data := []byte(hash + "kgcloudv2")
 	key := fmt.Sprintf("%x", md5.Sum(data))
-	params := sreq.Value{
+	params := sreq.Params{
 		"hash": hash,
 		"key":  key,
 	}
@@ -117,7 +117,7 @@ func (s *SongURLRequest) Do() error {
 	easylog.Debug("SongURLRequest: send GetSongURL api request")
 	err := request(GetSongURL,
 		sreq.WithQuery(s.Params),
-		sreq.WithHeaders(sreq.Value{
+		sreq.WithHeaders(sreq.Headers{
 			"Origin":  "http://trackercdn.kugou.com",
 			"Referer": "http://trackercdn.kugou.com",
 		}),
@@ -138,7 +138,7 @@ func (s *SongURLRequest) Do() error {
 }
 
 func NewSongRequest(hash string) *SongRequest {
-	params := sreq.Value{
+	params := sreq.Params{
 		"hash": hash,
 	}
 	return &SongRequest{Params: params}
@@ -156,7 +156,7 @@ func (s *SongRequest) Do() error {
 	easylog.Debug("SongRequest: send GetSong api request")
 	err := request(GetSong,
 		sreq.WithQuery(s.Params),
-		sreq.WithHeaders(sreq.Value{
+		sreq.WithHeaders(sreq.Headers{
 			"Origin":  "http://m.kugou.com",
 			"Referer": "http://m.kugou.com",
 		}),
@@ -185,7 +185,7 @@ func (s *SongRequest) Prepare() ([]*provider.MP3, error) {
 }
 
 func NewArtistRequest(singerId string) *ArtistRequest {
-	params := sreq.Value{
+	params := sreq.Params{
 		"singerid": singerId,
 	}
 	return &ArtistRequest{
@@ -211,10 +211,10 @@ func (a *ArtistRequest) Do() error {
 
 	easylog.Debug("ArtistRequest: send GetArtistInfo api request")
 	err := request(GetArtistInfo,
-		sreq.WithQuery(sreq.Value{
+		sreq.WithQuery(sreq.Params{
 			"singerid": a.SingerId,
 		}),
-		sreq.WithHeaders(sreq.Value{
+		sreq.WithHeaders(sreq.Headers{
 			"Origin":  "http://mobilecdn.kugou.com",
 			"Referer": "http://mobilecdn.kugou.com",
 		}),
@@ -233,7 +233,7 @@ func (a *ArtistRequest) Do() error {
 	easylog.Debug("ArtistRequest: send GetArtistSongs api request")
 	err = request(GetArtistSongs,
 		sreq.WithQuery(a.Params),
-		sreq.WithHeaders(sreq.Value{
+		sreq.WithHeaders(sreq.Headers{
 			"Origin":  "http://mobilecdn.kugou.com",
 			"Referer": "http://mobilecdn.kugou.com",
 		}),
@@ -260,7 +260,7 @@ func (a *ArtistRequest) Prepare() ([]*provider.MP3, error) {
 }
 
 func NewAlbumRequest(albumId string) *AlbumRequest {
-	params := sreq.Value{
+	params := sreq.Params{
 		"albumid": albumId,
 	}
 	return &AlbumRequest{
@@ -286,10 +286,10 @@ func (a *AlbumRequest) Do() error {
 
 	easylog.Debug("AlbumRequest: send GetAlbumInfo api request")
 	err := request(GetAlbumInfo,
-		sreq.WithQuery(sreq.Value{
+		sreq.WithQuery(sreq.Params{
 			"albumid": a.AlbumId,
 		}),
-		sreq.WithHeaders(sreq.Value{
+		sreq.WithHeaders(sreq.Headers{
 			"Origin":  "http://mobilecdn.kugou.com",
 			"Referer": "http://mobilecdn.kugou.com",
 		}),
@@ -308,7 +308,7 @@ func (a *AlbumRequest) Do() error {
 	easylog.Debug("AlbumRequest: send GetAlbumSongs api request")
 	err = request(GetAlbumSongs,
 		sreq.WithQuery(a.Params),
-		sreq.WithHeaders(sreq.Value{
+		sreq.WithHeaders(sreq.Headers{
 			"Origin":  "http://mobilecdn.kugou.com",
 			"Referer": "http://mobilecdn.kugou.com",
 		}),
@@ -335,7 +335,7 @@ func (a *AlbumRequest) Prepare() ([]*provider.MP3, error) {
 }
 
 func NewPlaylistRequest(specialId string) *PlaylistRequest {
-	params := sreq.Value{
+	params := sreq.Params{
 		"specialid": specialId,
 	}
 	return &PlaylistRequest{
@@ -361,10 +361,10 @@ func (p *PlaylistRequest) Do() error {
 
 	easylog.Debug("PlaylistRequest: send GetPlaylistInfo api request")
 	err := request(GetPlaylistInfo,
-		sreq.WithQuery(sreq.Value{
+		sreq.WithQuery(sreq.Params{
 			"specialid": p.SpecialId,
 		}),
-		sreq.WithHeaders(sreq.Value{
+		sreq.WithHeaders(sreq.Headers{
 			"Origin":  "http://mobilecdn.kugou.com",
 			"Referer": "http://mobilecdn.kugou.com",
 		}),
