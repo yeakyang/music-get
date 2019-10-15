@@ -56,7 +56,7 @@ func (s *Song) resolve() *provider.MP3 {
 		artists = append(artists, strings.TrimSpace(ar.Name))
 	}
 
-	fileName := utils.TrimInvalidFilePathChars(fmt.Sprintf("%s - %s.mp3", strings.Join(artists, " "), title))
+	fileName := utils.TrimInvalidFilePathChars(fmt.Sprintf("%s - %s.m4a", strings.Join(artists, " "), title))
 	return &provider.MP3{
 		FileName: fileName,
 		Playable: true,

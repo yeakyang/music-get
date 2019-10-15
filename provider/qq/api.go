@@ -27,10 +27,12 @@ type (
 			Data struct {
 				MidURLInfo []struct {
 					FileName string `json:"filename"`
+					PURL     string `json:"purl"`
 					SongMid  string `json:"songmid"`
 					Vkey     string `json:"vkey"`
 				} `json:"midurlinfo"`
-				TestFile2g string `json:"testfile2g"`
+				Sip        []string `json:"sip"`
+				TestFile2g string   `json:"testfile2g"`
 			} `json:"data"`
 		} `json:"req0"`
 	}
@@ -130,6 +132,9 @@ func (s *SongURLRequest) Do() error {
 
 	if s.Response.Code != 0 {
 		return fmt.Errorf("SongURLRequest: GetSongURL api status error: %d", s.Response.Code)
+	}
+	if len(s.Response.Req0.Data.Sip) == 0 {
+		return errors.New("SongURLRequest: no sip")
 	}
 
 	return nil
